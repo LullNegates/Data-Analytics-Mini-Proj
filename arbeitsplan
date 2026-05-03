@@ -1,0 +1,124 @@
+# Arbeitsplan — Data Analytics Mini-Projekt
+**Datensatz**: Speedrunning World Records (speedrun.com)  
+**Abgabe**: 17.05.2026 | **Präsentation**: 18./19./26.05.2026
+
+---
+
+## Phase 1 & 2 — Fragestellung & Vorbereitung
+*Bis: 04.05.2026*
+
+### Fragestellung
+- [ ] `final_idea.md` final reviewen und ggf. letzte Anpassungen vornehmen
+- [ ] KAOS-Baum grafisch aufbereiten (für Ausarbeitung und Gespräch mit Prof. Klünder)
+- [ ] Motivation und Kontext der Fragestellung schriftlich skizzieren (1–2 Absätze für die Einleitung)
+
+### Organisation
+- [ ] Gantt-Chart erstellen (Zeitraum 01.05.–17.05., alle Phasen abdecken)
+- [ ] Gantt-Chart an Prof. Klünder schicken
+- [ ] Pflichttermin mit Prof. Klünder vereinbaren
+- [ ] Ordnerstruktur anlegen (`data/`, `notebooks/`, `docs/`)
+- [ ] Git-Repository aufsetzen (`.gitignore` für Rohdaten anlegen)
+- [ ] Selbständigkeitserklärung in Ausarbeitung einplanen
+
+### Datenbeschaffung (Vorbereitung)
+- [ ] Datensatz auf speedrun.com API und Kaggle sichten
+- [ ] Entscheiden, welche Spiele / Kategorien in Scope sind
+- [ ] Datensatz herunterladen und in `data/` ablegen
+
+---
+
+## Phase 3 — Datenbeschaffung & Bereinigung
+*05.05. – 09.05.2026*
+
+### Datenbeschaffung
+- [ ] Vollständigkeit des Datensatzes prüfen (fehlende Jahre, Kategorien, Spiele)
+- [ ] Datenstruktur dokumentieren (Spalten, Typen, Umfang)
+- [ ] Relevante Zusatzdaten beschaffen (z.B. Plattform-Einführungsdaten: YouTube 2005, Twitch 2011, TASVideos.org)
+
+### Datenbereinigung
+- [ ] Fehlende Werte identifizieren und Umgang dokumentieren
+- [ ] Ausreißer identifizieren und Entscheidung treffen (entfernen / behalten / begründen)
+- [ ] Datumsformate harmonisieren
+- [ ] Kategorien vereinheitlichen (z.B. Spielgenres: Action / Plattformer / RPG)
+- [ ] Bereinigten Datensatz separat speichern (Rohdaten nie überschreiben)
+- [ ] Bereinigungsschritte im Notebook dokumentieren (was, warum)
+
+---
+
+## Phase 4 & 5 — Analyse & Visualisierung
+*10.05. – 13.05.2026*
+
+### Deskriptive Statistik
+- [ ] Überblick über den Datensatz: Anzahl Rekorde, Zeitraum, Spiele, Kategorien
+- [ ] Verteilungen plotten (Rekordzeiten, Verbesserungsraten, Rekord-Lebensdauern)
+- [ ] Erste visuelle Inspektion der Rekordverläufe pro Spiel
+
+### Hypothesentests
+
+**Frage 1 — Verbessern sich Rekorde in bestimmten Spielen schneller?**
+- [ ] Prozentuale Zeitreduktion pro Spielkategorie berechnen
+- [ ] Ranking der Kategorien nach Verbesserungsrate erstellen
+- [ ] Visualisierung: Balkendiagramm / Heatmap
+
+**Frage 2 — Gibt es einen Sättigungspunkt?**
+- [ ] Verbesserungsrate über Zeit pro Spiel berechnen
+- [ ] Logarithmische Regression fitten
+- [ ] Güte des Fits beurteilen (R²)
+- [ ] Visualisierung: Kurvenplot mit Regressionslinie
+
+**Frage 3a — Setzt ein Durchbruch die Abflachungsrate zurück?**
+- [ ] Signifikante Zeitsprünge (>5% in <30 Tagen) identifizieren
+- [ ] Decay-Koeffizienten vor und nach jedem Sprung berechnen
+- [ ] Koeffizienten vergleichen (Regression)
+- [ ] Visualisierung: Kurvenplot mit markierten Durchbrüchen
+
+**Frage 3b — Lässt sich der Moment des Tool-Einflusses sehen?**
+- [ ] Bekannte Tool-Einführungsdaten recherchieren und als Variablen anlegen
+- [ ] Strukturbruchtest durchführen (Chow-Test)
+- [ ] Voraussetzungen prüfen und dokumentieren
+- [ ] Visualisierung: Rekordverlauf mit Wendepunkt-Markierung
+
+**Frage 3c — Hält ein Weltrekord heute kürzer als früher?**
+- [ ] Lebensdauer jedes Weltrekords berechnen (Datum gesetzt → Datum gebrochen)
+- [ ] Medianen Lebensdauern nach Jahrzehnt gruppieren
+- [ ] Trendanalyse + Strukturbruchtest an Plattform-Einführungsdaten
+- [ ] Visualisierung: Boxplots nach Jahrzehnt, Trendlinie
+
+### Allgemein
+- [ ] Normalverteilung vor jedem Test prüfen (Shapiro-Wilk o.ä.)
+- [ ] Effektgrößen berechnen (Cohens d, r oder r²) und berichten
+- [ ] Alle relevanten Kennzahlen dokumentieren (nicht nur p-Wert)
+- [ ] Korrelation ≠ Kausalität explizit im Notebook vermerken
+
+---
+
+## Phase 6 — Ausarbeitung & Präsentation
+*14.05. – 17.05.2026*
+
+### Ausarbeitung (max. 10 Seiten)
+- [ ] 1. Einleitung: Kontext, Motivation, KAOS-Baum
+- [ ] 2a. Datenbasis: Herkunft, Umfang, Struktur
+- [ ] 2b. Datenbereinigung: Was, warum
+- [ ] 2c. Analyse: Gewählte Tests + Begründung
+- [ ] 3. Ergebnisse: Findings explizit formulieren ("Finding 1: …"), Visualisierungen einbinden
+- [ ] 4. Diskussion: Bedeutung der Ergebnisse, Grenzen, Korrelation ≠ Kausalität
+- [ ] 5. Fazit
+- [ ] 6. Selbständigkeitserklärung *(Pflicht)*
+- [ ] Seitenanzahl prüfen (max. 10 Seiten)
+
+### Präsentation (20 Min.)
+- [ ] Storyline ausarbeiten: Wie seid ihr auf die Fragestellung gekommen?
+- [ ] Folien erstellen (Fragestellung → Daten → Analyse → Ergebnisse → Fazit)
+- [ ] Visualisierungen aus Notebooks in Folien übernehmen
+- [ ] Präsentation proben (Zeitkontrolle: 20 Min.)
+
+---
+
+## Abgabe-Checkliste
+
+- [ ] Ausarbeitung als PDF exportiert
+- [ ] Notebooks aufgeräumt und kommentiert
+- [ ] Rohdaten in `data/` vorhanden
+- [ ] Selbständigkeitserklärung unterschrieben
+- [ ] Gantt-Chart in Abgabe enthalten
+- [ ] Abgabe bis **17.05.2026 23:59** eingereicht
