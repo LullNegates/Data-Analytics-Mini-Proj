@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from config import DATA_DIR, MODEL, OLLAMA_URL, OUTPUT_DIR
+from config import DATA_DIR, KEEP_ALIVE, MODEL, OLLAMA_URL, OUTPUT_DIR
 from questions.registry import QUESTION_REGISTRY
 
 
@@ -51,6 +51,7 @@ def main() -> None:
         output_dir = OUTPUT_DIR,
         model      = MODEL,
         ollama_url = OLLAMA_URL,
+        keep_alive = KEEP_ALIVE,
     )
 
 

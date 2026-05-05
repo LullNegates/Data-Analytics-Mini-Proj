@@ -65,15 +65,16 @@ def _build_table(rows: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _call_ollama_streaming(url: str, model: str, system: str, user: str) -> str:
+def _call_ollama_streaming(url: str, model: str, system: str, user: str, keep_alive: int = 0) -> str:
     payload = {
         "model": model,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user",   "content": user},
         ],
-        "stream": True,
-        "options": {"temperature": 0.15, "num_predict": 3000},
+        "stream":     True,
+        "keep_alive": keep_alive,
+        "options":    {"temperature": 0.15, "num_predict": 3000},
     }
     resp = requests.post(url, json=payload, stream=True, timeout=300)
     resp.raise_for_status()
@@ -104,7 +105,7 @@ def _parse_json(raw: str) -> dict:
     return json.loads(text)
 
 
-def run_q1(data_dir: Path, output_dir: Path, model: str, ollama_url: str) -> None:
+def run_q1(data_dir: Path, output_dir: Path, model: str, ollama_url: str, keep_alive: int) -> None:
     csv_path = data_dir / "q1_reduction.csv"
     if not csv_path.exists():
         print(f"[error] Not found: {csv_path}")
@@ -141,7 +142,7 @@ Antworte nur mit dem JSON-Objekt gemäß dem vorgegebenen Schema.\
     print("  " + "─" * 60)
 
     try:
-        raw = _call_ollama_streaming(ollama_url, model, SYSTEM_PROMPT, user_prompt)
+        raw = _call_ollama_streaming(ollama_url, model, SYSTEM_PROMPT, user_prompt, keep_alive)
     except requests.ConnectionError:
         print("[error] Ollama nicht erreichbar. Ist 'ollama serve' gestartet?")
         return

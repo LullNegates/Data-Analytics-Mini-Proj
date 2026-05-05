@@ -1,0 +1,45 @@
+{
+  "question": "q1",
+  "title": "Prozentuale Zeitreduktion je Spielkategorie",
+  "model": "phi4-mini",
+  "generated_at": "2026-05-05T20:56:21",
+  "data_rows": 17,
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Höchste prozentuale Verbesserung im Speedrunning-Wettbewerb",
+      "text": "Pokémon Red/Blue hat die größte absolute Zeitreduktion von 14,04% erfahren."
+    },
+    {
+      "id": "F2",
+      "title": "Geringste prozentuale Verbesserung im Speedrunning-Wettbewerb",
+      "text": "Super Mario Bros. zeigt mit einer jährlichen Rate von nur 0,401% die geringste Verbesserung auf."
+    },
+    {
+      "id": "F3",
+      "title": "Genre-basierte Verbesserungsraten",
+      "text": "Action-Adventure-Spiele wie Hollow Knight und Celeste zeigen höhere jährliche Reduktionsraten im Vergleich zu anderen Genres."
+    },
+    {
+      "id": "F4",
+      "title": "Unterschiede zwischen absoluten Reduktionen und jährlichen Raten",
+      "text": "Alte Spiele, insbesondere solche mit der PSX-Engine wie Final Fantasy VII, zeigen oft höhere absolute Zeitreduktionen im Vergleich zu neueren Spielen."
+    },
+    {
+      "id": "F5",
+      "title": "Auffällige Werte in den Daten",
+      "text": "Portal 2 zeigt eine bemerkenswerte jährliche Reduktionsrate von 4,015% trotz eines relativ niedrigen absoluten Prozentsatzes der Zeitreduktion."
+    }
+  ],
+  "genre_patterns": [
+    {
+      "genre": "Action-Adventure",
+      "observation": "Diese Kategorie hat im Vergleich zu anderen Genres tendenziell höhere jährliche Reduktionsraten gezeigt, was auf eine starke Community und technologische Fortschritte hinweist."
+    },
+    {
+      "genre": "Arcade",
+      "observation": "Spiele aus der Arcade-Genre zeigen oft niedrigere prozentuale Verbesserungen im Vergleich zu anderen Genres, möglicherweise aufgrund ihrer älteren Natur oder des geringen Interesses an Speedrunning für diese Spiele."
+    }
+  ],
+  "summary": "Die Analyse zeigt eine signifikante Variation in den Zeitreduktionen zwischen verschiedenen Spielkategorien und -genres. Action-Adventure-Spiele weisen tendenziell höhere jährliche Reduktionsraten auf, was möglicherweise durch aktive Communities und technologische Fortschritte erklärt werden kann. Arcade-Spiele zeigen im Vergleich zu anderen Genres oft niedrigere prozentuale Verbesserungen. Es gibt einen deutlichen Unterschied zwischen absoluten Zeitreduktionen bei älteren Spielen (insbesondere denen mit der PSX-Engine) und neueren Titeln, wobei ältere Spiele höhere absolute Reduktionsraten aufweisen können. Auffällige Werte umfassen die bemerkenswerte jährliche Rate von Portal 2 trotz eines relativ niedrigen absoluten Prozentsatzes."
+}
