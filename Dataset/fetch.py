@@ -59,26 +59,69 @@ def find_category(categories: list, target: str) -> dict | None:
     return per_game[0] if per_game else None
 
 
+_MAX_OFFSET = 9800  # API hard-caps at 10000; stop 200 short to avoid a 400 error
+
+
 def fetch_all_runs(game_id: str, category_id: str) -> list:
-    runs, offset = [], 0
+    """
+    Paginate all verified runs for a game/category.
+
+    speedrun.com v1 rejects offset >= 10000, so games with >10k runs (e.g. Minecraft)
+    require two passes: forward (oldest first) then reverse (newest first).
+    Results are merged by run_id so there are no duplicates.
+    """
+    runs_by_id: dict = {}
+
+    # --- Forward pass (date asc) ---
+    offset = 0
     while True:
         page = _get(f"{API_BASE}/runs", params={
-            "game": game_id,
-            "category": category_id,
-            "status": "verified",
-            "orderby": "date",
+            "game":      game_id,
+            "category":  category_id,
+            "status":    "verified",
+            "orderby":   "date",
             "direction": "asc",
-            "max": 200,
-            "offset": offset,
+            "max":       200,
+            "offset":    offset,
         }).get("data", [])
         if not page:
             break
-        runs.extend(page)
-        print(f"    {len(runs)} runs fetched...", end="\r", flush=True)
+        for r in page:
+            runs_by_id[r["id"]] = r
+        print(f"    {len(runs_by_id)} runs...", end="\r", flush=True)
         if len(page) < 200:
             break
         offset += 200
-    return runs
+        if offset >= _MAX_OFFSET:
+            break
+
+    # --- Reverse pass (date desc) if we hit the API limit ---
+    if offset >= _MAX_OFFSET:
+        print(f"\n    >10k limit -- fetching tail (date desc)...")
+        offset = 0
+        while True:
+            page = _get(f"{API_BASE}/runs", params={
+                "game":      game_id,
+                "category":  category_id,
+                "status":    "verified",
+                "orderby":   "date",
+                "direction": "desc",
+                "max":       200,
+                "offset":    offset,
+            }).get("data", [])
+            if not page:
+                break
+            new = sum(1 for r in page if r["id"] not in runs_by_id)
+            for r in page:
+                runs_by_id[r["id"]] = r
+            print(f"    {len(runs_by_id)} runs (tail)...", end="\r", flush=True)
+            if len(page) < 200 or new == 0:
+                break
+            offset += 200
+            if offset >= _MAX_OFFSET:
+                break
+
+    return sorted(runs_by_id.values(), key=lambda r: r.get("date") or "")
 
 
 def extract_all_runs(runs: list) -> list:

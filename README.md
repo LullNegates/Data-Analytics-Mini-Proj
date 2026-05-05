@@ -32,19 +32,30 @@ Data-Analytics-Mini-Proj/
 ├── requirements.txt           <- Alle Python-Abhaengigkeiten (requests, plotext, numpy)
 ├── setup.ps1                  <- Einmaliges Setup: venv + Ollama + phi4-mini
 │
-├── Dataset/                   <- Datenbeschaffung & Bereinigung
-│   ├── main.py                <- fetch + clean in einem Schritt
+├── Dataset/                   <- Datenbeschaffung, Bereinigung & Statistik
+│   ├── Dataset.md             <- Vollstaendige Dokumentation (Spalten, Modelle, API)
+│   ├── main.py                <- fetch + clean (+ optional --stats)
 │   ├── config.py              <- Spieleliste (17 Spiele, 7 Genres)
-│   ├── fetch.py               <- speedrun.com API -> data/raw/
-│   ├── clean.py               <- Rohdaten -> 5 bereinigte CSVs
+│   ├── fetch.py               <- speedrun.com API -> data/raw/ (10k-Limit-Handling)
+│   ├── clean.py               <- Rohdaten -> 5 bereinigte CSVs (erweiterte Felder)
+│   ├── analysis/              <- Statistische Analyse-Module
+│   │   ├── models.py          <- Kurvenanpassung: log, power law, exp decay, poly2, LOWESS
+│   │   ├── q1_analysis.py     <- Q1: Power Law auf WR-Verbesserungen, Kruskal-Wallis
+│   │   ├── q2_analysis.py     <- Q2: Multi-Modell-Vergleich (AIC), Saettigungspunkt
+│   │   ├── q3_analysis.py     <- Q3: Gini, Mann-Whitney U, Jahrzehnt-Vergleich
+│   │   └── run.py             <- Alle drei Analysen ausfuehren
 │   └── data/
 │       ├── raw/               <- API-Rohdaten JSON (nicht im Git)
-│       └── clean/             <- Bereinigte Datensaetze (im Git)
-│           ├── all_runs.csv
-│           ├── wr_progression.csv
-│           ├── q1_reduction.csv
-│           ├── q2_saturation.csv
-│           └── q3_lifetimes.csv
+│       ├── clean/             <- Bereinigte Datensaetze (im Git)
+│       │   ├── all_runs.csv
+│       │   ├── wr_progression.csv
+│       │   ├── q1_reduction.csv
+│       │   ├── q2_saturation.csv
+│       │   └── q3_lifetimes.csv
+│       └── analysis/          <- JSON-Ergebnisse der stat. Analyse
+│           ├── q1_stats.json
+│           ├── q2_stats.json
+│           └── q3_stats.json
 │
 ├── visualise/                 <- Terminal-Visualisierung (plotext, kein GUI)
 │   ├── main.py
@@ -98,9 +109,13 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 
 ## Datenbeschaffung
 
+Vollstaendige Dokumentation: [Dataset/Dataset.md](Dataset/Dataset.md)
+
 ```powershell
 cd Dataset
-python main.py     # fetch + clean in einem Schritt
+python main.py          # fetch + clean
+python main.py --stats  # fetch + clean + statistische Analyse
+python analysis/run.py  # nur Analyse (wenn clean-Daten bereits vorhanden)
 ```
 
 Oder einzeln:
@@ -111,6 +126,9 @@ python clean.py    # 5 bereinigte CSVs generieren
 ```
 
 Rohdaten (`data/raw/`) sind nicht im Git. Bereinigte CSVs (`data/clean/`) sind committed.
+
+Die API-Paginierung behandelt Spiele mit >10.000 Runs (z.B. Minecraft) automatisch
+durch einen zweiten Durchlauf in umgekehrter Reihenfolge.
 
 ---
 
@@ -195,6 +213,9 @@ Dataset/clean.py  ->  data/clean/*.csv
 - [x] Visualisierungs-Tool aufgebaut
 - [x] Modell-Projekt aufgebaut -- Q1 implementiert
 - [x] Setup-Skript (Ollama + phi4-mini)
+- [x] Statistische Analyse-Module (analysis/) mit 4 Modellen + Kruskal-Wallis + Gini
+- [x] API-Pagination fuer >10.000 Runs
+- [ ] `python main.py --stats` ausfuehren -> statistische Analyse
 - [ ] Q1-Analyse ausfuehren (`python main.py` in `Model/`)
 - [ ] Q2 und Q3 in `Model/questions/` implementieren
 - [ ] Explorative Analyse in `notebooks/`

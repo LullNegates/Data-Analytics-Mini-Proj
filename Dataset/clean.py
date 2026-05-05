@@ -73,7 +73,7 @@ def build_wr_master(records: list[dict]) -> list[dict]:
 
 
 def build_q1_reduction(records: list[dict]) -> list[dict]:
-    """One summary row per game/category — sorted by % reduction descending."""
+    """One summary row per game/category -- sorted by % reduction descending."""
     rows = []
     for rec in records:
         prog = rec["wr_progression"]
@@ -82,21 +82,36 @@ def build_q1_reduction(records: list[dict]) -> list[dict]:
         first, last = prog[0], prog[-1]
         d0 = datetime.fromisoformat(first["date"])
         d1 = datetime.fromisoformat(last["date"])
-        years = max((d1 - d0).days / 365.25, 0.01)
-        pct = (first["time_seconds"] - last["time_seconds"]) / first["time_seconds"] * 100
+        days  = max((d1 - d0).days, 1)
+        years = days / 365.25
+        total_saved = first["time_seconds"] - last["time_seconds"]
+        pct = total_saved / first["time_seconds"] * 100
+
+        # Median per-WR improvement in seconds
+        improvements = [
+            prog[i - 1]["time_seconds"] - prog[i]["time_seconds"]
+            for i in range(1, len(prog))
+        ]
+        sorted_imp = sorted(improvements)
+        mid = len(sorted_imp) // 2
+        median_imp = (sorted_imp[mid - 1] + sorted_imp[mid]) / 2 if len(sorted_imp) % 2 == 0 else sorted_imp[mid]
+
         rows.append({
-            "game":            rec["game"],
-            "genre":           rec["genre"],
-            "category":        rec["category"],
-            "wr_count":        len(prog),
-            "total_runs":      rec["total_runs"],
-            "first_date":      first["date"],
-            "last_date":       last["date"],
-            "first_time_s":    round(first["time_seconds"], 3),
-            "last_time_s":     round(last["time_seconds"], 3),
-            "pct_reduction":   round(pct, 4),
-            "years_span":      round(years, 2),
-            "annual_rate_pct": round(pct / years, 4),
+            "game":                       rec["game"],
+            "genre":                      rec["genre"],
+            "category":                   rec["category"],
+            "wr_count":                   len(prog),
+            "total_runs":                 rec["total_runs"],
+            "first_date":                 first["date"],
+            "last_date":                  last["date"],
+            "first_time_s":               round(first["time_seconds"], 3),
+            "last_time_s":                round(last["time_seconds"], 3),
+            "pct_reduction":              round(pct, 4),
+            "years_span":                 round(years, 2),
+            "annual_rate_pct":            round(pct / max(years, 0.01), 4),
+            "wr_density_per_year":        round(len(prog) / max(years, 0.01), 3),
+            "improvement_velocity_s_per_day": round(total_saved / days, 5),
+            "median_improvement_s":       round(median_imp, 3),
         })
     rows.sort(key=lambda r: r["pct_reduction"], reverse=True)
     return rows
@@ -104,9 +119,9 @@ def build_q1_reduction(records: list[dict]) -> list[dict]:
 
 def build_q2_saturation(records: list[dict]) -> list[dict]:
     """
-    Time-series rows for log-regression saturation analysis.
+    Time-series rows for saturation analysis.
     Only includes game/category combos with >= 5 WR entries spanning >= 2 years.
-    Adds days_since_first so the analyst can directly fit log(x+1) vs time_seconds.
+    Includes cumulative reduction metrics so multiple model types can be fitted directly.
     """
     rows = []
     for rec in records:
@@ -117,43 +132,59 @@ def build_q2_saturation(records: list[dict]) -> list[dict]:
         d1 = datetime.fromisoformat(prog[-1]["date"])
         if (d1 - d0).days < Q2_MIN_YEARS * 365:
             continue
+        total_reduction = prog[0]["time_seconds"] - prog[-1]["time_seconds"]
+        cumulative = 0.0
         for i, entry in enumerate(prog, 1):
             d = datetime.fromisoformat(entry["date"])
+            improvement = (prog[i - 2]["time_seconds"] - entry["time_seconds"]) if i > 1 else 0.0
+            cumulative += improvement
             rows.append({
-                "game":             rec["game"],
-                "genre":            rec["genre"],
-                "category":         rec["category"],
-                "wr_number":        i,
-                "date":             entry["date"],
-                "days_since_first": (d - d0).days,
-                "time_seconds":     entry["time_seconds"],
+                "game":                   rec["game"],
+                "genre":                  rec["genre"],
+                "category":               rec["category"],
+                "wr_number":              i,
+                "date":                   entry["date"],
+                "days_since_first":       (d - d0).days,
+                "time_seconds":           entry["time_seconds"],
+                "improvement_s":          round(improvement, 3),
+                "pct_of_total_reduction": round(cumulative / total_reduction * 100, 3) if total_reduction > 0 else 0.0,
             })
     return rows
 
 
 def build_q3_lifetimes(records: list[dict]) -> list[dict]:
     """
-    One row per consecutive WR pair — how long each record stood.
-    Tagged by genre and decade for cross-genre and cross-era comparison.
+    One row per WR -- how long each record stood before being broken.
+    The final entry per game has is_final=True (open lifetime, not yet broken).
     """
     rows = []
     for rec in records:
         prog = rec["wr_progression"]
-        if len(prog) < 3:
+        if len(prog) < 2:
             continue
-        for i in range(len(prog) - 1):
-            d_set    = datetime.fromisoformat(prog[i]["date"])
-            d_broken = datetime.fromisoformat(prog[i + 1]["date"])
+        for i in range(len(prog)):
+            is_final = i == len(prog) - 1
+            d_set = datetime.fromisoformat(prog[i]["date"])
+            if is_final:
+                duration = None
+                d_broken = None
+                improvement_s = None
+            else:
+                d_broken = datetime.fromisoformat(prog[i + 1]["date"])
+                duration = (d_broken - d_set).days
+                improvement_s = round(prog[i]["time_seconds"] - prog[i + 1]["time_seconds"], 3)
             rows.append({
                 "game":           rec["game"],
                 "genre":          rec["genre"],
                 "category":       rec["category"],
                 "wr_number":      i + 1,
                 "wr_set_date":    prog[i]["date"],
-                "wr_broken_date": prog[i + 1]["date"],
-                "duration_days":  (d_broken - d_set).days,
+                "wr_broken_date": prog[i + 1]["date"] if not is_final else "",
+                "duration_days":  duration if duration is not None else "",
                 "decade":         f"{(d_set.year // 10) * 10}s",
                 "time_seconds":   prog[i]["time_seconds"],
+                "improvement_s":  improvement_s if improvement_s is not None else "",
+                "is_final":       is_final,
             })
     return rows
 
