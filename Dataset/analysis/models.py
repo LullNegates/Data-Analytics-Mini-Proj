@@ -1,9 +1,15 @@
 """
 Curve fitting models for WR progression analysis.
 
-Available models: log, power_law, exp_decay, poly2
-Each returns a FitResult with R2, RMSE, AIC, BIC, and named params.
-fit_all() runs every model and returns results sorted by AIC (best first).
+Available models: log, power_law, exp_decay, poly2, gompertz, lowess.
+Each parametric fit returns a FitResult with R2, RMSE, AIC, BIC, and named params.
+fit_all() runs every model and returns results sorted by AIC (lower = better).
+
+Why AIC, not R2: R2 always rises when you add parameters, so it would always pick
+the most flexible model regardless of whether the extra flexibility is justified.
+AIC penalises each parameter (+2 per param), so a complex model only wins when its
+fit improves enough to overcome the complexity penalty -- which is exactly the
+question we want to answer for saturation analysis.
 """
 
 import numpy as np
@@ -118,11 +124,12 @@ def fit_exp_decay(x: np.ndarray, y: np.ndarray) -> "FitResult | None":
                        "b": round(float(popt[1]), 8),
                        "c": round(float(popt[2]), 6)},
                       _f(x, *popt), y, 3)
-        # Attach saturation estimate: days until within 5% of asymptote
+        # Saturation estimate: days until WR time is within 5% of the asymptote c.
+        # Solving a*exp(-b*x) = 0.05*a  =>  x = -ln(0.05) / b
+        # Interpreted as the "theoretical limit date" -- the point at which continued
+        # improvement would be smaller than typical run-to-run variance.
         a, b, c = popt
         if b > 0 and a > 0:
-            sat_days = float(-np.log(0.05 * a / a) / b) if a > 0 else None
-            # Correct formula: y = c + 0.05*a  =>  0.05 = exp(-b*x)  =>  x = -ln(0.05)/b
             sat_days = round(float(-np.log(0.05) / b), 1)
             r.params["saturation_days_95pct"] = sat_days
         return r
@@ -167,11 +174,74 @@ def fit_all(x: np.ndarray, y: np.ndarray) -> list[FitResult]:
     Fit all parametric models plus LOWESS.
     Returns list sorted by AIC ascending (best model first).
     LOWESS is excluded from ranking (non-parametric, no meaningful AIC).
+    Gompertz is included: it beats exp_decay on S-shaped saturation curves.
     """
-    parametric = [fit_log, fit_power_law, fit_exp_decay, fit_poly2]
+    parametric = [fit_log, fit_power_law, fit_exp_decay, fit_poly2, fit_gompertz]
     results = [r for fn in parametric for r in [fn(x, y)] if r is not None]
     results.sort(key=lambda r: r.aic)
     lowess_r = fit_lowess(x, y)
     if lowess_r:
         results.append(lowess_r)
     return results
+
+def fit_gompertz(x: np.ndarray, y: np.ndarray) -> "FitResult | None":
+    """
+    Gompertz decay curve adapted for decreasing WR times:
+    y = floor + amplitude * exp(b * exp(-c * x))
+
+    Reduces to: starts at floor + amplitude*exp(b) at x=0, decays to floor as x→∞.
+    This is the 'reflected' Gompertz, modelling asymmetric S-shaped decay toward a
+    hard floor -- appropriate when improvement was slow early, accelerated after a
+    glitch discovery, then plateaued. The 4-parameter form (vs exp_decay's 3) captures
+    the S-shape; AIC will penalise the extra parameter, so Gompertz only wins when the
+    S-shape provides a materially better fit.
+    """
+    def func(t, amplitude, b, c, floor):
+        return floor + amplitude * np.exp(b * np.exp(-c * t))
+    try:
+        floor0    = float(np.min(y))
+        amp0      = float(np.max(y) - np.min(y))
+        span      = float(np.max(x)) + 1
+        p0 = [amp0, 1.0, 3.0 / span, floor0]
+        popt, _ = curve_fit(func, x, y, p0=p0,
+                            bounds=([0, 0, 0, 0], [np.inf, np.inf, np.inf, np.inf]),
+                            maxfev=10000)
+        y_pred = func(x, *popt)
+        return FitResult("gompertz",
+                         {"amplitude": round(float(popt[0]), 6),
+                          "b":         round(float(popt[1]), 6),
+                          "c":         round(float(popt[2]), 8),
+                          "floor":     round(float(popt[3]), 6)},
+                         y_pred, y, 4)
+    except Exception:
+        return None
+
+def chow_test(x: np.ndarray, y: np.ndarray, split_idx: int) -> float:
+    """
+    Compute the Chow Test F-statistic for a structural break at split_idx.
+
+    The test asks: is the data better described by one linear regression or by two
+    separate regressions -- one before split_idx and one after?
+
+    F = [ (RSS_pooled - (RSS1 + RSS2)) / k ] / [ (RSS1 + RSS2) / (N - 2k) ]
+
+    where k=2 (parameters per linear fit), RSS_pooled is the residual sum of squares
+    for the single pooled fit, and RSS1+RSS2 is the combined residual for the two-segment
+    fit. A high F means the two-segment model fits substantially better than the one --
+    evidence that the data has a different slope after the split point (new glitch,
+    route change, patch). Critical value at p=0.05 for large N: F(2, inf) ≈ 3.00.
+    """
+    def _get_rss(tx, ty):
+        if len(tx) < 3: return 1e10
+        coeffs = np.polyfit(tx, ty, 1)
+        return np.sum((ty - np.polyval(coeffs, tx))**2)
+
+    rss_pooled = _get_rss(x, y)
+    rss_left = _get_rss(x[:split_idx], y[:split_idx])
+    rss_right = _get_rss(x[split_idx:], y[split_idx:])
+    
+    k = 2 # parameters for linear fit
+    n1, n2 = split_idx, len(x) - split_idx
+    numerator = (rss_pooled - (rss_left + rss_right)) / k
+    denominator = (rss_left + rss_right) / (n1 + n2 - 2 * k)
+    return numerator / denominator if denominator > 0 else 0

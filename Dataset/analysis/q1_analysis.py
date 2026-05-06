@@ -57,6 +57,11 @@ def _velocity_trend(wr_rows: list[dict]) -> dict:
     Spearman correlation between WR date and per-WR improvement size.
     rho < 0 => improvements are shrinking over time (saturation).
     rho > 0 => improvements are growing (community is accelerating).
+
+    Spearman (not Pearson) because improvement sizes are right-skewed: a single
+    glitch discovery can save orders of magnitude more time than a typical WR.
+    Pearson's r is sensitive to those outliers and would misrepresent the general
+    trend. Spearman's rho works on ranks, making it robust to extreme values.
     """
     pairs = [(r["date"], float(r.get("improvement_s") or 0))
              for r in wr_rows if r.get("improvement_s")]
@@ -91,6 +96,8 @@ def run() -> dict:
     games = []
     for r in q1_rows:
         game_wrs = wr_by_game.get(r["game"], [])
+        total_runs = max(float(r.get("total_runs") or 1), 1)
+        wr_count   = float(r.get("wr_count") or 0)
         games.append({
             "game":               r["game"],
             "genre":              r["genre"],
@@ -99,6 +106,10 @@ def run() -> dict:
             "wr_density_per_year": float(r["wr_density_per_year"]),
             "improvement_velocity_s_per_day": float(r["improvement_velocity_s_per_day"]),
             "median_improvement_s": float(r["median_improvement_s"]),
+            # Fraction of all submitted runs that set a new WR.
+            # Low wr_rate = record is hard to break relative to total attempts (saturation signal).
+            # High wr_rate = community was actively improving at a high success rate.
+            "wr_rate": round(wr_count / total_runs, 6),
             "power_law_fit":      _power_law_on_improvements(game_wrs),
             "velocity_trend":     _velocity_trend(game_wrs),
         })
@@ -107,20 +118,23 @@ def run() -> dict:
     genre_stats: dict[str, dict] = {}
     for g in games:
         genre = g["genre"]
-        genre_stats.setdefault(genre, {"annual_rates": [], "densities": [], "pct_reductions": []})
+        genre_stats.setdefault(genre, {"annual_rates": [], "densities": [], "pct_reductions": [], "wr_rates": []})
         genre_stats[genre]["annual_rates"].append(g["annual_rate_pct"])
         genre_stats[genre]["densities"].append(g["wr_density_per_year"])
         genre_stats[genre]["pct_reductions"].append(g["pct_reduction"])
+        genre_stats[genre]["wr_rates"].append(g["wr_rate"])
 
     genre_summary = {}
     for genre, data in genre_stats.items():
         rates = np.array(data["annual_rates"])
+        wr_rates = np.array(data.get("wr_rates", []))
         genre_summary[genre] = {
             "game_count":        len(rates),
             "mean_annual_rate":  round(float(np.mean(rates)), 4),
             "median_annual_rate": round(float(np.median(rates)), 4),
             "mean_pct_reduction": round(float(np.mean(data["pct_reductions"])), 4),
             "mean_wr_density":   round(float(np.mean(data["densities"])), 3),
+            "mean_wr_rate":      round(float(np.mean(wr_rates)), 6) if len(wr_rates) > 0 else None,
         }
 
     # --- Kruskal-Wallis test across genres ---

@@ -23,7 +23,7 @@ from pathlib import Path
 
 import numpy as np
 
-from models import fit_all, fit_lowess
+from models import fit_all, fit_lowess, chow_test
 
 CLEAN_DIR    = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -37,7 +37,47 @@ def _load_csv(name: str) -> list[dict]:
         return list(csv.DictReader(f))
 
 
+def _detect_structural_break(x: np.ndarray, y: np.ndarray, rows: list[dict]) -> dict | None:
+    """
+    Scan all valid split points and return the one with the highest Chow Test F-statistic.
+
+    A high F-statistic means the data is better described by two separate linear regressions
+    than one -- evidence of a paradigm shift (new glitch, route discovery, tool/technique change).
+    Requires at least 3 points on each side of the split for a valid regression.
+    F critical value at p=0.05: F(2, inf) = 3.00; we use 3.0 as a conservative threshold.
+    """
+    MIN_EACH_SIDE = 3
+    if len(x) < MIN_EACH_SIDE * 2 + 1:
+        return None
+
+    best_f, best_idx = 0.0, None
+    for split_idx in range(MIN_EACH_SIDE, len(x) - MIN_EACH_SIDE):
+        f = chow_test(x, y, split_idx)
+        if f > best_f:
+            best_f, best_idx = f, split_idx
+
+    if best_idx is None:
+        return None
+
+    return {
+        "split_wr_number":    int(rows[best_idx]["wr_number"]),
+        "split_date":         rows[best_idx]["date"],
+        "f_statistic":        round(float(best_f), 4),
+        "significant_at_0.05": bool(best_f > 3.0),
+    }
+
+
 def _analyse_game(game: str, rows: list[dict]) -> dict:
+    """
+    Fit all curve models to one game's WR time series and detect structural breaks.
+
+    x = days_since_first (elapsed time), y = time_seconds (WR time).
+    AIC selects the best parametric model. If exp_decay or Gompertz wins, the game
+    is converging on a theoretical minimum; if log or power_law wins, it is still
+    improving without an obvious floor. Also computes improvement acceleration
+    (is each successive WR saving more or less time?) and the most likely structural
+    break point via the Chow Test.
+    """
     x = np.array([float(r["days_since_first"]) for r in rows])
     y = np.array([float(r["time_seconds"]) for r in rows])
 
@@ -47,7 +87,10 @@ def _analyse_game(game: str, rows: list[dict]) -> dict:
 
     best = parametric[0] if parametric else None
 
-    # Improvement acceleration: fit a line to per-WR improvement sizes over time
+    # Improvement acceleration: linear slope of per-WR improvement sizes over time.
+    # A negative slope means each new WR saves less time than the previous one --
+    # the classic saturation signature. A positive slope means improvements are
+    # growing, signalling an active discovery or optimisation phase.
     imps = [(float(r["days_since_first"]), float(r["improvement_s"]))
             for r in rows if float(r.get("improvement_s") or 0) > 0]
     acceleration = None
@@ -61,7 +104,6 @@ def _analyse_game(game: str, rows: list[dict]) -> dict:
             "interpretation": "decelerating" if slope < 0 else "accelerating",
         }
 
-    # pct_of_total_reduction at each data point (last value = coverage)
     pct_coverage = round(float(rows[-1].get("pct_of_total_reduction", 0)), 2)
 
     return {
@@ -74,6 +116,7 @@ def _analyse_game(game: str, rows: list[dict]) -> dict:
         "best_model": best.to_dict() if best else None,
         "lowess_r2": lowess_r.r2 if lowess_r else None,
         "improvement_acceleration": acceleration,
+        "structural_break": _detect_structural_break(x, y, rows),
     }
 
 
@@ -115,16 +158,17 @@ def print_summary(result: dict) -> None:
     if not result:
         return
     print("\n  Q2 -- Saturation Model Comparison")
-    print(f"  {'Game':<42} {'Best Model':<14} {'R2':<8} {'AIC':<10} {'Trend'}")
-    print("  " + "-" * 80)
+    print(f"  {'Game':<38} {'Best Model':<12} {'R2':<8} {'Trend':<14} {'Break?'}")
+    print("  " + "-" * 82)
     for g in result["games"]:
         bm    = g["best_model"]
         trend = g["improvement_acceleration"]
+        brk   = g.get("structural_break")
         model_name = bm["model"] if bm else "n/a"
         r2    = f"{bm['r2']:.4f}" if bm else "-"
-        aic   = f"{bm['aic']:.1f}" if bm else "-"
         acc   = trend["interpretation"] if trend else "n/a"
-        print(f"  {g['game']:<42} {model_name:<14} {r2:<8} {aic:<10} {acc}")
+        brk_str = f"WR#{brk['split_wr_number']} ({brk['split_date'][:7]})" if brk and brk["significant_at_0.05"] else "-"
+        print(f"  {g['game']:<38} {model_name:<12} {r2:<8} {acc:<14} {brk_str}")
 
     wins = result.get("model_wins", {})
     if wins:

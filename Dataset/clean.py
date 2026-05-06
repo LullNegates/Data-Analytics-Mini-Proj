@@ -15,6 +15,13 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+
+def _parse_date(s: str) -> datetime:
+    """Parse ISO date string, stripping timezone so arithmetic stays naive."""
+    if "T" in s:
+        return datetime.fromisoformat(s.replace("Z", "+00:00")).replace(tzinfo=None)
+    return datetime.strptime(s, "%Y-%m-%d")
+
 RAW_DIR = Path(__file__).parent / "data" / "raw"
 CLEAN_DIR = Path(__file__).parent / "data" / "clean"
 
@@ -155,36 +162,45 @@ def build_q2_saturation(records: list[dict]) -> list[dict]:
 def build_q3_lifetimes(records: list[dict]) -> list[dict]:
     """
     One row per WR -- how long each record stood before being broken.
-    The final entry per game has is_final=True (open lifetime, not yet broken).
+
+    Right-censoring: the current standing WR for each game is NOT dropped.
+    Its duration is computed as days elapsed since it was set (anchored to today),
+    and its event flag is 0 (censored). Broken records have event=1.
+    This allows Kaplan-Meier survival analysis without survivorship bias.
     """
     rows = []
+    today = datetime.now()
     for rec in records:
         prog = rec["wr_progression"]
         if len(prog) < 2:
             continue
         for i in range(len(prog)):
             is_final = i == len(prog) - 1
-            d_set = datetime.fromisoformat(prog[i]["date"])
+            d_set = _parse_date(prog[i]["date"])
             if is_final:
-                duration = None
-                d_broken = None
-                improvement_s = None
+                duration = max((today - d_set).days, 0)
+                d_broken_str = ""
+                improvement_s_val = ""
+                event = 0  # censored: record still standing
             else:
-                d_broken = datetime.fromisoformat(prog[i + 1]["date"])
-                duration = (d_broken - d_set).days
-                improvement_s = round(prog[i]["time_seconds"] - prog[i + 1]["time_seconds"], 3)
+                d_broken = _parse_date(prog[i + 1]["date"])
+                duration = max((d_broken - d_set).days, 0)
+                d_broken_str = prog[i + 1]["date"]
+                improvement_s_val = round(prog[i]["time_seconds"] - prog[i + 1]["time_seconds"], 3)
+                event = 1  # record was broken
             rows.append({
                 "game":           rec["game"],
                 "genre":          rec["genre"],
                 "category":       rec["category"],
                 "wr_number":      i + 1,
                 "wr_set_date":    prog[i]["date"],
-                "wr_broken_date": prog[i + 1]["date"] if not is_final else "",
-                "duration_days":  duration if duration is not None else "",
+                "wr_broken_date": d_broken_str,
+                "duration_days":  duration,
                 "decade":         f"{(d_set.year // 10) * 10}s",
                 "time_seconds":   prog[i]["time_seconds"],
-                "improvement_s":  improvement_s if improvement_s is not None else "",
+                "improvement_s":  improvement_s_val,
                 "is_final":       is_final,
+                "event":          event,
             })
     return rows
 
