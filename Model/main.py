@@ -15,16 +15,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from config import DATA_DIR, KEEP_ALIVE, MODEL, OLLAMA_URL, OUTPUT_DIR
+from config import (ANALYSIS_DIR, DATA_DIR, DATASET_MD, KEEP_ALIVE,
+                    MODEL, NUM_CTX, OLLAMA_URL, OUTPUT_DIR)
 from questions.registry import QUESTION_REGISTRY
 
 
 def main() -> None:
     print("\nSpeedrun Model — Lokale LLM-Inferenz")
     print("=" * 38)
-    print(f"  Modell : {MODEL}")
-    print(f"  Daten  : {DATA_DIR}")
-    print(f"  Output : {OUTPUT_DIR}\n")
+    print(f"  Modell  : {MODEL}")
+    print(f"  num_ctx : {NUM_CTX:,} Tokens")
+    print(f"  Daten   : {DATA_DIR}")
+    print(f"  Analyse : {ANALYSIS_DIR}")
+    print(f"  Output  : {OUTPUT_DIR}\n")
 
     if not QUESTION_REGISTRY:
         print("Keine Fragen registriert.")
@@ -47,11 +50,14 @@ def main() -> None:
     print("  " + "─" * 60)
 
     meta["fn"](
-        data_dir   = DATA_DIR,
-        output_dir = OUTPUT_DIR,
-        model      = MODEL,
-        ollama_url = OLLAMA_URL,
-        keep_alive = KEEP_ALIVE,
+        data_dir     = DATA_DIR,
+        output_dir   = OUTPUT_DIR,
+        analysis_dir = ANALYSIS_DIR,
+        dataset_md   = DATASET_MD,
+        model        = MODEL,
+        ollama_url   = OLLAMA_URL,
+        keep_alive   = KEEP_ALIVE,
+        num_ctx      = NUM_CTX,
     )
 
 

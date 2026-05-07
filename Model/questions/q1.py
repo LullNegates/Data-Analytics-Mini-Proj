@@ -1,11 +1,12 @@
 """
 Q1 — Prozentuale Zeitreduktion je Spielkategorie
 
-Loads q1_reduction.csv, builds a prompt, calls Ollama (streaming),
-and saves the structured JSON response to output/q1_analysis.json.
+Context layers (see docs/model-context-strategy.md):
+  1. Dataset.md Q1 excerpt + q1_reduction.csv schema
+  2. Full q1_reduction.csv table (17 rows, ~530 tokens — small enough verbatim)
+  3. q1_stats.json (pre-computed genre comparisons, Kruskal-Wallis, velocity trends)
 """
 
-import csv
 import json
 import sys
 from datetime import datetime
@@ -13,11 +14,17 @@ from pathlib import Path
 
 import requests
 
+from questions.context_builder import build_q1_context
+
 SYSTEM_PROMPT = """\
 Du bist ein Datenanalyst für ein Hochschulprojekt über Speedrunning-Weltrekorde an der FHDW Hannover.
-Du erhältst eine bereits berechnete Datentabelle und sollst die Ergebnisse interpretieren.
+Du erhältst drei Informationsschichten:
+  1. Schema: Beschreibung der Forschungsfrage und der CSV-Spalten
+  2. Rohdaten: die berechnete q1_reduction.csv-Tabelle (eine Zeile pro Spiel)
+  3. Analyse: vorberechnete statistische Kennzahlen aus q1_stats.json
 
 Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt — kein Text davor oder danach.
+Erfinde keine Zahlen — verwende nur Werte, die in den bereitgestellten Daten stehen.
 Halte dich exakt an dieses Schema:
 
 {
@@ -38,47 +45,35 @@ Regeln:
 - Mindestens 4 Findings, mindestens ein Genre-Muster pro Genre in den Daten.\
 """
 
+USER_PROMPT_TEMPLATE = """\
+{context}
 
-def _fmt_seconds(s: float) -> str:
-    s = int(s)
-    h, rem = divmod(s, 3600)
-    m, sec = divmod(rem, 60)
-    return f"{h}:{m:02d}:{sec:02d}" if h else f"{m}:{sec:02d}"
+---
 
+Beantworte anhand dieser drei Informationsschichten:
+1. Welche Spielkategorie hat sich prozentual am stärksten verbessert und welche am wenigsten?
+2. Gibt es erkennbare Muster nach Genre (z.B. verbessern sich bestimmte Genres schneller)?
+3. Wie unterscheiden sich absolute Reduktion und jährliche Rate zwischen alten und neuen Spielen?
+4. Welche überraschenden oder auffälligen Werte gibt es in den Daten?
 
-def _build_table(rows: list[dict]) -> str:
-    header = (
-        f"{'Rang':<5} {'Spiel':<42} {'Genre':<18} {'Kat.':<22} "
-        f"{'% Red.':<8} {'Jahre':<7} {'Jährl.%':<9} {'WRs':<5} "
-        f"{'Erste Zeit':<12} {'Aktuelle Zeit'}"
-    )
-    sep = "-" * len(header)
-    lines = [header, sep]
-    for i, r in enumerate(rows, 1):
-        lines.append(
-            f"{i:<5} {r['game']:<42} {r['genre']:<18} {r['category']:<22} "
-            f"{float(r['pct_reduction']):<8.2f} {float(r['years_span']):<7.1f} "
-            f"{float(r['annual_rate_pct']):<9.3f} {r['wr_count']:<5} "
-            f"{_fmt_seconds(float(r['first_time_s'])):<12} "
-            f"{_fmt_seconds(float(r['last_time_s']))}"
-        )
-    return "\n".join(lines)
+Antworte nur mit dem JSON-Objekt gemäß dem vorgegebenen Schema.\
+"""
 
 
-def _call_ollama_streaming(url: str, model: str, system: str, user: str, keep_alive: int = 0) -> str:
+def _call_ollama_streaming(url: str, model: str, system: str, user: str,
+                           keep_alive: int, num_ctx: int) -> str:
     payload = {
-        "model": model,
-        "messages": [
+        "model":      model,
+        "messages":   [
             {"role": "system", "content": system},
             {"role": "user",   "content": user},
         ],
         "stream":     True,
         "keep_alive": keep_alive,
-        "options":    {"temperature": 0.15, "num_predict": 3000},
+        "options":    {"temperature": 0.15, "num_predict": 3000, "num_ctx": num_ctx},
     }
     resp = requests.post(url, json=payload, stream=True, timeout=300)
     resp.raise_for_status()
-
     full = []
     print()
     for line in resp.iter_lines():
@@ -95,54 +90,32 @@ def _call_ollama_streaming(url: str, model: str, system: str, user: str, keep_al
 
 
 def _parse_json(raw: str) -> dict:
-    # strip possible markdown code fences
     text = raw.strip()
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
-    text = text.strip().rstrip("`").strip()
-    return json.loads(text)
+    return json.loads(text.strip().rstrip("`").strip())
 
 
-def run_q1(data_dir: Path, output_dir: Path, model: str, ollama_url: str, keep_alive: int) -> None:
-    csv_path = data_dir / "q1_reduction.csv"
-    if not csv_path.exists():
-        print(f"[error] Not found: {csv_path}")
-        print("        Run Dataset/clean.py first.")
-        return
+def run_q1(data_dir: Path, output_dir: Path, analysis_dir: Path, dataset_md: Path,
+           model: str, ollama_url: str, keep_alive: int, num_ctx: int) -> None:
+    context, tok_estimate = build_q1_context(data_dir, analysis_dir, dataset_md)
 
-    with open(csv_path, encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
+    print(f"  Modell  : {model}")
+    print(f"  Kontext : ~{tok_estimate:,} Tokens  (num_ctx={num_ctx})")
+    print(f"  Ollama  : {ollama_url}")
 
-    if not rows:
-        print("[error] q1_reduction.csv is empty.")
-        return
+    if tok_estimate > num_ctx - 500:
+        print(f"  [warn] Kontext ({tok_estimate}) nähert sich num_ctx ({num_ctx}) — Ausgabe kann abgeschnitten werden.")
 
-    table = _build_table(rows)
-    user_prompt = f"""\
-Hier sind die berechneten Speedrunning-Weltrekord-Daten für Forschungsfrage 1.
-Die Tabelle ist nach prozentualer Zeitreduktion absteigend sortiert.
-
-{table}
-
-Beantworte anhand dieser Daten:
-1. Welche Spielkategorie hat sich prozentual am stärksten verbessert und welche am wenigsten?
-2. Gibt es erkennbare Muster nach Genre (z.B. verbessern sich bestimmte Genres schneller)?
-3. Wie unterscheiden sich absolute Reduktion und jährliche Rate zwischen alten und neuen Spielen?
-4. Welche überraschenden oder auffälligen Werte gibt es in den Daten?
-
-Antworte nur mit dem JSON-Objekt gemäß dem vorgegebenen Schema.\
-"""
-
-    print(f"  Modell : {model}")
-    print(f"  Daten  : {csv_path.name}  ({len(rows)} Zeilen)")
-    print(f"  Ollama : {ollama_url}")
     print("\n  Generiere Antwort (Streaming)...")
     print("  " + "─" * 60)
 
+    user_prompt = USER_PROMPT_TEMPLATE.format(context=context)
+
     try:
-        raw = _call_ollama_streaming(ollama_url, model, SYSTEM_PROMPT, user_prompt, keep_alive)
+        raw = _call_ollama_streaming(ollama_url, model, SYSTEM_PROMPT, user_prompt, keep_alive, num_ctx)
     except requests.ConnectionError:
         print("[error] Ollama nicht erreichbar. Ist 'ollama serve' gestartet?")
         return
@@ -154,15 +127,14 @@ Antworte nur mit dem JSON-Objekt gemäß dem vorgegebenen Schema.\
         result = _parse_json(raw)
     except json.JSONDecodeError as exc:
         print(f"[warn] Antwort ist kein valides JSON ({exc})")
-        print("       Rohantwort wird als Fallback gespeichert.")
         result = {"raw_response": raw, "parse_error": str(exc)}
 
     output = {
-        "question":     "q1",
-        "title":        "Prozentuale Zeitreduktion je Spielkategorie",
-        "model":        model,
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "data_rows":    len(rows),
+        "question":      "q1",
+        "title":         "Prozentuale Zeitreduktion je Spielkategorie",
+        "model":         model,
+        "generated_at":  datetime.now().isoformat(timespec="seconds"),
+        "token_estimate": tok_estimate,
         **result,
     }
 
