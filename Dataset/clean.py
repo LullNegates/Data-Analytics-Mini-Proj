@@ -40,6 +40,57 @@ def load_raw() -> list[dict]:
     return records
 
 
+def sanitize_wr_progressions(records: list[dict]) -> int:
+    """Strip implausible WR entries before any builder consumes them.
+
+    speedrun.com occasionally records full-game runs with bogus sub-second
+    times (e.g. credit-warp manipulations, mistyped times, or moderator
+    placeholders). One such row in Minecraft's any%-glitchless trail
+    (2025-09-05, 0.001 s) inflated `pct_reduction` to 100.0 %, dragged the
+    Q2 saturation fit, and trained the LLM to claim Minecraft achieved a
+    "vollständige Reduktion".
+
+    Filter rule: drop any WR whose time is below 1 % of the progression's
+    median AND under 1.0 s, but only when the median itself is above 10 s
+    (so legitimately fast arcade games are untouched). The same row is also
+    removed from `all_runs` so the two views stay consistent.
+
+    Returns the total number of dropped entries.
+    """
+    dropped_total = 0
+    for rec in records:
+        prog = rec.get("wr_progression", [])
+        if len(prog) < 3:
+            continue
+
+        times = sorted(e["time_seconds"] for e in prog)
+        median = times[len(times) // 2]
+        if median <= 10.0:
+            continue  # arcade-style game where sub-second times are plausible
+
+        threshold = min(1.0, 0.01 * median)
+        bogus_ids: set = set()
+        kept: list[dict] = []
+        for e in prog:
+            if e["time_seconds"] < threshold:
+                print(
+                    f"  [filter] Drop bogus WR for {rec['game']}: "
+                    f"{e['date']} t={e['time_seconds']}s (median={median:.1f}s)"
+                )
+                bogus_ids.add(e.get("run_id"))
+                dropped_total += 1
+                continue
+            kept.append(e)
+        rec["wr_progression"] = kept
+
+        if bogus_ids and "all_runs" in rec:
+            rec["all_runs"] = [
+                e for e in rec["all_runs"] if e.get("run_id") not in bogus_ids
+            ]
+
+    return dropped_total
+
+
 # ---------- builders ----------
 
 def build_all_runs(records: list[dict]) -> list[dict]:
@@ -226,6 +277,10 @@ def main() -> None:
         return
 
     print(f"Loaded {len(records)} raw files\n")
+
+    dropped = sanitize_wr_progressions(records)
+    if dropped:
+        print(f"  Sanity filter: removed {dropped} unphysical WR entries\n")
 
     all_runs   = build_all_runs(records)
     wr_master  = build_wr_master(records)

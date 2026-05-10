@@ -24,7 +24,7 @@ if (-not (Test-Path $venv)) {
 
 & "$venv\Scripts\python.exe" -m pip install --upgrade pip --quiet
 & "$venv\Scripts\pip.exe" install -r "$ProjectRoot\requirements.txt" --quiet
-Write-Host "      Abhaengigkeiten installiert (requests, plotext, numpy)"
+Write-Host "      Abhaengigkeiten installiert (requests, plotext, numpy, json-repair)"
 
 # -- 2. Ollama installieren --------------------------------------------------
 Write-Host ""
@@ -45,9 +45,9 @@ Write-Host "[3/4] Ollama-Konfiguration" -ForegroundColor Cyan
 $env:OLLAMA_KEEP_ALIVE = "0"
 Write-Host "      OLLAMA_KEEP_ALIVE=0 gesetzt -- Modell entlaedt nach Inaktivitaet"
 
-# -- 4. phi4-mini pullen -----------------------------------------------------
+# -- 4. Modelle pullen (Manager + Council) -----------------------------------
 Write-Host ""
-Write-Host "[4/4] Modell phi4-mini laden" -ForegroundColor Cyan
+Write-Host "[4/4] Modelle laden (Manager + Council)" -ForegroundColor Cyan
 
 $ollamaRunning = $false
 try {
@@ -61,7 +61,28 @@ if (-not $ollamaRunning) {
     Start-Sleep -Seconds 3
 }
 
-ollama pull phi4-mini
+# phi4-mini   = Manager (Microsoft, strongest overall, BBH 70.4)
+# qwen3:4b    = Statistician (Alibaba, best math after phi4-mini, MMLU ~70%)
+# llama3.2:3b = Domain Expert (Meta, best commonsense HellaSwag 77.2)
+# gemma3:4b   = Skeptic (Google, replaces gemma2:2b whose GSM8K was only 23.9%)
+# See docs/council-architecture.md for full benchmark rationale.
+$models = @("phi4-mini", "qwen3:4b", "llama3.2:3b", "gemma3:4b")
+foreach ($m in $models) {
+    Write-Host "      Pulling $m ..."
+    ollama pull $m
+}
+
+# Remove models that were replaced in the council upgrade.
+# qwen2.5:3b  -> qwen3:4b   (Statistician: gen-2 Qwen with better math)
+# gemma2:2b   -> gemma3:4b  (Skeptic: gemma2 had GSM8K of only 23.9%)
+$deprecated = @("qwen2.5:3b", "gemma2:2b")
+foreach ($m in $deprecated) {
+    $exists = ollama list 2>$null | Select-String $m
+    if ($exists) {
+        Write-Host "      Removing deprecated model $m ..."
+        ollama rm $m
+    }
+}
 
 Write-Host ""
 Write-Host "[OK] Setup abgeschlossen." -ForegroundColor Green
