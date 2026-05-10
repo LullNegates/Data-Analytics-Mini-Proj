@@ -204,19 +204,3 @@ Dataset/clean.py  ->  data/clean/*.csv
 | Sandbox | Minecraft: Java Edition |
 | Arcade | Pac-Man, Donkey Kong |
 
----
-
-## Status
-
-- [x] Thema gewaehlt und von Prof. Kluender genehmigt
-- [x] Dataset-Pipeline aufgebaut und ausgefuehrt
-- [x] Visualisierungs-Tool aufgebaut
-- [x] Modell-Projekt aufgebaut -- Q1 implementiert
-- [x] Setup-Skript (Ollama + phi4-mini)
-- [x] Statistische Analyse-Module (analysis/) mit 4 Modellen + Kruskal-Wallis + Gini
-- [x] API-Pagination fuer >10.000 Runs
-- [ ] `python main.py --stats` ausfuehren -> statistische Analyse
-- [ ] Q1-Analyse ausfuehren (`python main.py` in `Model/`)
-- [ ] Q2 und Q3 in `Model/questions/` implementieren
-- [ ] Explorative Analyse in `notebooks/`
-- [ ] Ausarbeitung + Praesentation in `docs/`
