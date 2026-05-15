@@ -1,0 +1,105 @@
+\chapter{Ergebnisse}
+\label{chap:ergebnisse}
+
+\section{F1 — Prozentuale Zeitreduktion}
+
+Tabelle~\ref{tab:q1} zeigt die prozentuale Zeitreduktion aller 17~Spiele, sortiert nach Gesamtreduktion absteigend.
+
+\begin{table}[htb]
+  \centering
+  \caption{Prozentuale Zeitreduktion und jährliche Verbesserungsrate je Spiel (any\%-Kategorie)}
+  \label{tab:q1}
+  \small
+  \begin{tabular}{llrr}
+    \toprule
+    \textbf{Spiel} & \textbf{Genre} & \textbf{Reduktion (\%)} & \textbf{Jährl.\ Rate (\%/a)} \\
+    \midrule
+    Minecraft: Java Edition         & Sandbox         & 98,9 & 11,8 \\
+    The Talos Principle             & Puzzle          & 95,9 & 12,8 \\
+    Portal                          & Puzzle          & 91,1 & 6,7  \\
+    Hollow Knight                   & Action-Adventure& 89,8 & 12,8 \\
+    Celeste                         & Platformer      & 78,9 & 26,0 \\
+    Half-Life~2                     & FPS             & 75,4 & 6,2  \\
+    Zelda: Ocarina of Time          & Action-Adventure& 71,2 & 15,8 \\
+    Pac-Man                         & Arcade          & 69,0 & 11,2 \\
+    Doom~3                          & FPS             & 61,6 & 4,8  \\
+    Portal~2                        & Puzzle          & 55,2 & 4,0  \\
+    Quake                           & FPS             & 47,5 & 1,8  \\
+    Super Metroid                   & Action-Adventure& 41,5 & 3,1  \\
+    Final Fantasy~VII               & RPG             & 34,3 & 2,9  \\
+    Super Mario~64                  & Platformer      & 27,1 & 1,4  \\
+    Donkey Konga                    & Arcade          & 14,9 & 2,0  \\
+    Pokémon Red/Blue                & RPG             & 14,0 & 1,0  \\
+    Super Mario Bros.               & Platformer      & 9,4  & 0,4  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Auf Genre-Ebene zeigen sich deutliche Unterschiede in der mittleren Gesamtreduktion: Sandbox~(98,9~\%), Puzzle~(80,7~\%), Action-Adventure~(67,5~\%) und FPS~(61,5~\%) liegen deutlich über Arcade~(41,9~\%), Platformer~(38,5~\%) und RPG~(24,2~\%). Der Kruskal-Wallis-Test auf die \emph{jährlichen Verbesserungsraten} ergibt jedoch keinen signifikanten Unterschied zwischen den sieben~Genres ($H = 4{,}48$; $p = 0{,}483$).
+
+\finding{1}{Die prozentuale Zeitreduktion variiert stark zwischen Spielen (9,4~\% bis 98,9~\%). Spiele mit kurzer Spielzeit oder vielen nutzbaren Programmfehlern (Minecraft, Puzzle-Spiele) erzielen die höchsten Reduktionen.}
+
+\finding{2}{Ein Kruskal-Wallis-Test auf die jährlichen Verbesserungsraten zeigt keinen statistisch signifikanten Unterschied zwischen Genres ($H = 4{,}48$; $p = 0{,}483$). Die Verbesserungsrate hängt demnach stärker vom einzelnen Spiel als vom Genre ab.}
+
+\section{F2 — Sättigung der Verbesserungsrate}
+
+Tabelle~\ref{tab:q2_modelle} fasst die Modellvergleiche zusammen. Über alle 17~Spiele gewinnt das quadratische Polynom~(poly2) am häufigsten nach AIC~(6/17~Spiele), gefolgt von Gompertz~(5/17), exponentiellem Zerfall~(4/17) und logarithmischer Regression~(2/17). Der mittlere $R^2$-Wert des jeweils besten Modells beträgt~$0{,}93$ (Bereich: $0{,}73$–$0{,}98$).
+
+\begin{table}[htb]
+  \centering
+  \caption{AIC-Modellvergleich: Siege und mittleres $R^2$ je Modelltyp (alle 17~Spiele)}
+  \label{tab:q2_modelle}
+  \small
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Modell} & \textbf{Siege (von 17)} & \textbf{Ø $R^2$} \\
+    \midrule
+    Quadr.\ Polynom (poly2)  & 6 & 0,901 \\
+    Gompertz                  & 5 & 0,915 \\
+    Exponentieller Zerfall    & 4 & 0,950 \\
+    Logarithmisch             & 2 & 0,932 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten Strukturbruch ($p < 0{,}05$). Der Bruchpunkt fällt bei der Mehrheit der Spiele auf die ersten 6–10~Weltrekorde, d.\,h.\ sehr früh in der Entwicklung der jeweiligen Community.
+
+\finding{3}{Für alle 17~Spiele gelingt eine Kurvenanpassung mit $R^2 > 0{,}73$ (Median: $0{,}96$). Kein einzelnes Modell dominiert universell; poly2~(6/17) und Gompertz~(5/17) erzielen die meisten Siege nach AIC. Modelle mit explizitem Sättigungsverhalten (Gompertz, Exp.\ Zerfall) gewinnen gemeinsam für 9/17~Spiele.}
+
+\finding{4}{Alle 17~Spiele weisen einen statistisch signifikanten Strukturbruch auf (Chow-Test, $p < 0{,}05$). Der Bruchpunkt tritt überwiegend in der frühen Rekordphase auf, was auf einen initialen Optimierungsschub durch Routing und Glitch-Entdeckungen hindeutet, auf den eine flachere Sättigungsphase folgt.}
+
+\section{F3 — Lebensdauer von Weltrekorden}
+
+Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Die 842~ausgewerteten Weltrekord-Datenpunkte umfassen 17~rechtszensierte Rekorde (zum Analysezeitpunkt noch Bestand).
+
+\begin{table}[htb]
+  \centering
+  \caption{Kaplan-Meier-Schätzungen der Weltrekord-Lebensdauer nach Genre}
+  \label{tab:q3}
+  \small
+  \begin{tabular}{lrrrl}
+    \toprule
+    \textbf{Genre} & \textbf{Median (d)} & \textbf{Überleben 1 Jahr} & \textbf{$n$} & \textbf{Gini} \\
+    \midrule
+    RPG              & 52  & 15,5~\% & 58  & 0,655 \\
+    FPS              & 14  & 10,6~\% & 146 & 0,753 \\
+    Action-Adventure & 14  & 6,4~\%  & 140 & 0,716 \\
+    Platformer       & 15  & 6,0~\%  & 209 & 0,878 \\
+    Arcade           & 7   & 18,8~\% & 32  & 0,838 \\
+    Puzzle           & 8   & 6,5~\%  & 197 & 0,849 \\
+    Sandbox          & 6   & 5,0~\%  & 60  & 0,918 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Der Kruskal-Wallis-Test zeigt einen hochsignifikanten Unterschied in den Lebensdauerverteilungen zwischen Genres ($H = 43{,}05$; $p < 0{,}001$; $\eta^2 = 0{,}044$, kleiner bis mittlerer Effekt). Paarweise Mann-Whitney-U-Tests belegen, dass sich RPG von allen anderen Genres außer Arcade signifikant unterscheidet ($p < 0{,}05$). Die übrigen Genres unterscheiden sich untereinander weniger konsistent.
+
+Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{,}655$–$0{,}918$): Ein kleiner Anteil der Weltrekorde macht den Großteil der erzielten Zeitersparnis aus.
+
+Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste mittlere Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (105,4~Tage) sind deutlich kurzlebiger.
+
+\finding{5}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $H = 43{,}05$; $p < 0{,}001$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa 4,4~\% der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
+
+\finding{6}{RPG-Rekorde überleben mit einem Kaplan-Meier-Median von 52~Tagen signifikant länger als Rekorde anderer Genres (Median: 6–15~Tage). Die geringere Spielgeschwindigkeit und die größere Komplexität von RPGs erschweren schnelle Optimierungen.}
+
+\finding{7}{Im Jahrzehntvergleich sinkt die mittlere Rekordlebensdauer von 665,8~Tagen in den 2000er~Jahren auf 82,4~Tage in den 2010ern. Der Einbruch fällt zeitlich mit dem starken Wachstum der Speedrunning-Community ab 2010 zusammen, das den Wettbewerbsdruck erhöhte.}

@@ -1,0 +1,30 @@
+\chapter{Diskussion}
+\label{chap:diskussion}
+
+\section{Interpretation der Ergebnisse}
+
+\subsection*{F1 — Zeitreduktion}
+
+Die starke Variation der prozentualen Zeitreduktion (9,4~\%–98,9~\%) lässt sich nicht primär auf das Genre zurückführen --- der Kruskal-Wallis-Test zeigt keinen signifikanten Genreeffekt auf die jährlichen Verbesserungsraten. Entscheidender scheinen spielspezifische Faktoren zu sein: Spiele mit kurzer Grundlaufzeit und nutzbaren Programmfehlern (Minecraft~< 2~Min., Portal~< 10~Min.) bieten mehr relativen Optimierungsspielraum als Spiele, bei denen physikalische oder narrative Grenzen die minimal erreichbare Laufzeit nach unten begrenzen (Super Mario Bros.: jedes Frame zählt, wenige Glitches verfügbar). Innerhalb des RPG-Genres schlägt die Spiellänge --- Final Fantasy~VII dauert im Normalspiel über 35~Stunden --- als limitierender Faktor durch.
+
+\subsection*{F2 — Sättigung}
+
+Der universelle Strukturbruch (alle 17~Spiele, Chow-Test signifikant) ist das stärkste Ergebnis von F2. Er deutet darauf hin, dass Speedrunning-Optimierung nicht linear verläuft: Eine frühe Hochaktivitätsphase (intensive Routing-Suche, Entdeckung spielverändernder Glitches) geht in eine flachere Plateau-Phase über, in der nur noch marginale Verbesserungen möglich sind. Die Tatsache, dass der Strukturbruch überwiegend bei den ersten 6–10~Weltrekorden auftritt, legt nahe, dass die initialen Community-Pioniere den größten Anteil der gesamten erzielbaren Optimierung leisten. Das hohe $R^2$ aller Modelle ($> 0{,}73$) bestätigt, dass der Kurvenverfall statistisch gut beschreibbar ist, unabhängig vom gewählten Modelltyp.
+
+\subsection*{F3 — Lebensdauer}
+
+Das Jahrzehntmuster --- lange Lebensdauer in den 2000ern, drastischer Rückgang ab 2010 --- passt zur historischen Entwicklung der Speedrunning-Community. Vor der Gründung von speedrun.com~(2014) und der Popularisierung über Streaming-Plattformen gab es deutlich weniger aktive Speedrunner, sodass Weltrekorde länger unangefochten blieben. Der moderate Effekt ($\eta^2 = 0{,}044$) zeigt, dass das Genre zwar eine messbare Rolle spielt, aber bei weitem nicht der einzige Einflussfaktor ist. Community-Größe, Spielalter und Popularität auf Streaming-Plattformen sind wahrscheinlich stärkere Prädiktoren, konnten im vorliegenden Datensatz jedoch nicht kontrolliert werden.
+
+Der hohe Gini-Koeffizient in allen Genres ($G = 0{,}65$–$0{,}92$) zeigt, dass Weltrekordverbesserungen hochgradig ungleich verteilt sind: Wenige Schlüsselentdeckungen (Glitches, neue Routen) dominieren die Gesamtoptimierung, während die meisten späteren Rekorde nur marginale Sekundenbruchteile einsparen.
+
+\section{Limitationen}
+
+\textbf{Stichprobengröße:} Mit 17~Spielen ist der Datensatz für generalisierbare Aussagen eingeschränkt. Schlüsse auf das Verhalten aller Spielgenres sind mit Vorsicht zu treffen.
+
+\textbf{Kategorie any\%:} Die Beschränkung auf any\% schließt andere gängige Kategorien aus (z.\,B.~100\%, No-Major-Glitches). Die Dynamiken können sich je nach Kategorie erheblich unterscheiden.
+
+\textbf{Plattformbias:} speedrun.com hat einen Schwerpunkt auf PC-Spielen und englischsprachige Communities. Konsolen-Speedrunning und nicht-englischsprachige Spiele sind unterrepräsentiert.
+
+\textbf{Fehlende Kontrollvariablen:} Community-Größe, Spieleranzahl und Medienaufmerksamkeit konnten nicht in die Analyse einbezogen werden, obwohl sie die Lebensdauer und Verbesserungsrate stark beeinflussen dürften.
+
+\textbf{Kausalität:} Alle Ergebnisse sind korrelativer Natur. Kausalaussagen (z.\,B.\ „Glitches \emph{verursachen} Strukturbrüche") sind aus den vorliegenden Daten nicht ableitbar.
