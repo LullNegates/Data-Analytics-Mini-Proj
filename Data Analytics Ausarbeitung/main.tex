@@ -30,6 +30,22 @@
 
 % Finding-Box im Klünder-Stil
 \definecolor{findingbg}{gray}{0.93}
+\definecolor{todobg}{RGB}{255,243,205}
+\newcommand{\placeholder}[1]{%
+  \begin{mdframed}[
+    backgroundcolor=todobg,
+    linewidth=0.8pt,
+    linecolor=orange,
+    skipabove=\medskipamount,
+    skipbelow=\medskipamount,
+    innerleftmargin=10pt,
+    innerrightmargin=10pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+  ]
+  \noindent\textbf{[Ausstehend]} #1
+  \end{mdframed}%
+}
 \newcommand{\finding}[2]{%
   \begin{mdframed}[
     backgroundcolor=findingbg,

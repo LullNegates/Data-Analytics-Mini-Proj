@@ -21,7 +21,19 @@ Für jedes Spiel wird die kumulierte Bestzeit gegen den Weltrekord-Index aufgetr
 
 Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{chow1960} eingesetzt. Dieser prüft, ob sich die Regressionskoeffizienten vor und nach einem möglichen Strukturbruch signifikant unterscheiden ($F$-Statistik gegen $F$-Verteilung). Alle validen Trennpunkte werden durchsucht; der Trennpunkt mit der höchsten $F$-Statistik wird als Strukturbruch gemeldet.
 
-\subsection*{F3 — Lebensdauer von Weltrekorden (Q3)}
+\subsection*{F3a — Abflachungsrate nach Durchbruch}
+
+Um zu untersuchen, ob ein bekannter Durchbruch (z.\,B.\ eine Glitch-Entdeckung oder ein neues Routing) die Abflachungsrate zurücksetzt, wird der \textbf{Decay-Koeffizient} der Verbesserungskurve vor und nach einem identifizierten Zeitsprung verglichen. Hierfür werden Strukturbrüche aus F2 (Chow-Test) als Kandidaten für Durchbruchereignisse genutzt. Eine erneute Beschleunigung nach einem Bruchpunkt würde sich als signifikant erhöhter Decay-Koeffizient im Post-Break-Segment zeigen.
+
+\placeholder{Datengrundlage und konkrete Umsetzung der Decay-Koeffizientenberechnung ergänzen (z.\,B.\ welche Spiele, welche Bruchpunkte als Ereignismarker verwendet werden).}
+
+\subsection*{F3b — Messbarkeit des Tool-Einflusses}
+
+Um zu prüfen, ob der Einfluss von Tools (TAS, Routing-Software) im Datensatz statistisch nachweisbar ist, werden bekannte Tool-Einführungszeitpunkte als externe Ereignisse kodiert und mittels \textbf{Chow-Test} auf Strukturbrüche in der Verbesserungskurve geprüft. Alternativ kann ein Dummy-kodierter Regressionsterm für \enquote{Tool-Ära} gegen die Nullhypothese keines Effekts getestet werden.
+
+\placeholder{Quellen für die Tool-Zeitpunkte angeben (Community-Wikis, speedrun.com-Kategoriedaten o.\,ä.) und Kodierungsschema beschreiben.}
+
+\subsection*{F3c — Lebensdauer von Weltrekorden (Q3)}
 
 Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor: Die tatsächliche Lebensdauer ist unbekannt, aber mindestens so lang wie der bisher vergangene Zeitraum.
 
