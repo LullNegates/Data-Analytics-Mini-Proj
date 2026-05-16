@@ -639,3 +639,38 @@ Or use the `all` mode with `analysis` to see all analysis charts at once.
 The Model project (`Model/`) reads from `Dataset/data/analysis/` via `ANALYSIS_DIR` in
 `Model/config.py`. The new `f3b_tas_stats.json` is therefore automatically available to
 the LLM council for F3b inference without any Model code changes.
+
+---
+
+## References
+
+### Data Sources
+
+| # | Source | Used for |
+|---|--------|---------|
+| [1] | speedrun.com API v1 — https://github.com/speedruncomorg/api | Primary data source: all WR runs, categories, leaderboards |
+| [2] | TASVideos.org — https://tasvideos.org | TAS reference times for F3b (curated manually; no public API) |
+| [3] | Speed Demos Archive — https://speeddemosarchive.com/TAS.html | TAS methodology documentation; route-transfer mechanism description |
+
+### Academic / Research Literature
+
+| # | Reference | Used for |
+|---|-----------|---------|
+| [4] | Wooten, D. B. (2022). *Leaps in Innovation and the Bannister Effect in Contests*. Production and Operations Management. https://doi.org/10.1111/poms.13707 | Theoretical framework for F3b: TAS as a benchmark innovation that stimulates subsequent human WR progress through technique diffusion |
+| [5] | Magness, S. (2017). *The Roger Bannister Effect: The Myth of the Psychological Breakthrough*. Science of Running. https://www.scienceofrunning.com/2017/05/the-roger-bannister-effect | Counter-argument to purely psychological framing; supports technique/route diffusion as the real mechanism — directly applicable to TAS route adoption |
+| [6] | Akaike, H. (1974). A new look at the statistical model identification. *IEEE Transactions on Automatic Control*, 19(6), 716–723. | AIC model selection criterion used in Q2 curve fitting (models.py) |
+| [7] | Kaplan, E. L., & Meier, P. (1958). Nonparametric estimation from incomplete observations. *Journal of the American Statistical Association*, 53(282), 457–481. | Kaplan-Meier estimator used in Q3 (right-censoring treatment for WR lifetimes) |
+| [8] | Chow, G. C. (1960). Tests of equality between sets of coefficients in two linear regressions. *Econometrica*, 28(3), 591–605. | Chow test for structural break detection in WR time series (Q2, models.py) |
+| [9] | Kruskal, W. H., & Wallis, W. A. (1952). Use of ranks in one-criterion variance analysis. *Journal of the American Statistical Association*, 47(260), 583–621. | Kruskal-Wallis H-test used for cross-genre improvement rate comparison (Q1, Q3) |
+| [10] | Mann, H. B., & Whitney, D. R. (1947). On a test of whether one of two random variables is stochastically larger than the other. *Annals of Mathematical Statistics*, 18(1), 50–60. | Mann-Whitney U test for pairwise genre comparison (Q3) |
+| [11] | Spearman, C. (1904). The proof and measurement of association between two things. *The American Journal of Psychology*, 15(1), 72–101. | Spearman rank correlation for improvement velocity trend detection (Q1) |
+| [12] | Gompertz, B. (1825). On the nature of the function expressive of the law of human mortality. *Philosophical Transactions of the Royal Society*, 115, 513–583. | Gompertz S-curve model used for asymmetric saturation fitting (Q2, models.py) |
+
+### Community / Analytical Sources
+
+| # | Source | Used for |
+|---|--------|---------|
+| [13] | Bamsoftware.com speedrun WR visualisation — https://www.bamsoftware.com/computers/speedrun-wr/ | Referenced as prior descriptive WR analysis; confirms structural-break visual patterns |
+| [14] | *Setting World Records in Speedrunning: Technical, Strategic and Psychological Considerations* — Academia.edu (2024) — https://www.academia.edu/144611877 | Frames TAS as "research tool" not competitor; supports F3b framing |
+| [15] | LessWrong linkpost: *Analysis of World Records in Speedrunning* — https://www.lesswrong.com/posts/nhjaegqWxbBhiqMGS | Identifies "successive cascades of improvements" pattern; validates structural break model approach |
+| [16] | speedrun.com site rules — https://www.speedrun.com/support/learn/site-rules | Confirms TAS prohibition on standard leaderboards; explains why no TAS API exists |
