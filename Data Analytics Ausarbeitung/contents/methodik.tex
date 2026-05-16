@@ -3,39 +3,15 @@
 
 \section{Datenbeschaffung und Aufbereitung}
 
-Die Rohdaten wurden über die speedrun.com API~v1~\cite{speedruncom_api} abgerufen. Ausgewählt wurden 17~Spiele aus sieben~Genres (Platformer, Action-Adventure, RPG, FPS, Puzzle, Sandbox, Arcade), die eine breite stilistische und zeitliche Variation abdecken (Tabelle~\ref{tab:spiele}). Alle Analysen beschränken sich auf die \emph{any\%}-Kategorie,\footnote{Any\% bezeichnet in der Speedrunning-Community den schnellsten Weg zum Spielabschluss, unabhängig vom Fertigstellungsgrad.} da diese als einzige Kategorie in allen 17~Spielen vorhanden und zwischen Spielen vergleichbar ist.
+Die Rohdaten wurden über die \textit{speedrun.com} API~v1~\cite{speedruncom_api} abgerufen. Ausgewählt wurden 17~Spiele aus sieben~Genres: Platformer (Super Mario Bros., Super Mario~64, Celeste), Action-Adventure (Super Metroid, Zelda: Ocarina of Time, Hollow Knight), RPG (Pokémon Red/Blue, Final Fantasy~VII), FPS (Doom~3, Quake, Half-Life~2), Puzzle (Portal, Portal~2, The Talos Principle), Sandbox (Minecraft: Java Edition) und Arcade (Pac-Man, Donkey Konga). Alle Analysen beschränken sich auf die \emph{any\%}-Kategorie,\footnote{Any\% bezeichnet in der Speedrunning-Community den schnellsten Weg zum Spielabschluss, unabhängig vom Fertigstellungsgrad.} da diese als einzige Kategorie in allen 17~Spielen vorhanden und vergleichbar ist.
 
-\begin{table}[htb]
-  \centering
-  \caption{Spieleliste nach Genre}
-  \label{tab:spiele}
-  \small
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Genre} & \textbf{Spiele} \\
-    \midrule
-    Platformer       & Super Mario Bros., Super Mario~64, Celeste \\
-    Action-Adventure & Super Metroid, Zelda: Ocarina of Time, Hollow Knight \\
-    RPG              & Pokémon Red/Blue, Final Fantasy~VII \\
-    FPS              & Doom~3, Quake, Half-Life~2 \\
-    Puzzle           & Portal, Portal~2, The Talos Principle \\
-    Sandbox          & Minecraft: Java Edition \\
-    Arcade           & Pac-Man, Donkey Konga \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-Die API liefert für jedes Spiel alle verifizierten Runs der gewählten Kategorie als JSON. Für Spiele mit mehr als 10.000~Runs (Minecraft) wurde die Paginierung in umgekehrter Reihenfolge wiederholt, um vollständige Daten zu erhalten. Im Bereinigungsschritt wurden unplausible Einträge entfernt (z.\,B.\ Laufzeiten von $0$~Sekunden oder Runs ohne Zeitstempel). Die bereinigten Daten umfassen fünf~CSV-Dateien mit insgesamt 842~Weltrekord-Datenpunkten für die Lebensdaueranalyse (Q3).
+Im Bereinigungsschritt wurden unplausible Einträge entfernt (z.\,B.\ Laufzeiten von $0$~Sekunden oder Runs ohne Zeitstempel). Die bereinigten Daten umfassen fünf~CSV-Dateien mit insgesamt 842~Weltrekord-Datenpunkten für die Lebensdaueranalyse (Q3).
 
 \section{Statistische Methoden}
 
 \subsection*{F1 — Prozentuale Zeitreduktion (Q1)}
 
-Die prozentuale Zeitreduktion wird definiert als:
-\[
-  r_i = \frac{t_{\text{first},i} - t_{\text{best},i}}{t_{\text{first},i}} \cdot 100\,\%
-\]
-wobei $t_{\text{first},i}$ die erste und $t_{\text{best},i}$ die aktuell beste Laufzeit im Datensatz für Spiel~$i$ ist. Zusätzlich werden die jährliche Verbesserungsrate und die Weltrekord-Dichte berechnet.
+Die prozentuale Zeitreduktion je Spiel~$i$ berechnet sich als $r_i = (t_{\text{first},i} - t_{\text{best},i})\,/\,t_{\text{first},i} \cdot 100\,\%$, wobei $t_{\text{first},i}$ die erste und $t_{\text{best},i}$ die aktuell beste Laufzeit im Datensatz ist. Zusätzlich werden die jährliche Verbesserungsrate und die Weltrekord-Dichte berechnet.
 
 Um zu prüfen, ob Genres sich systematisch in ihren jährlichen Raten unterscheiden, wird der \textbf{Kruskal-Wallis-Test}~\cite{kruskal1952} eingesetzt. Dieser nichtparametrische Test ist eine rangskalierte Erweiterung der einfaktoriellen Varianzanalyse und setzt keine Normalverteilung der Daten voraus --- eine wichtige Eigenschaft, da Laufzeit-Daten typischerweise stark rechtsschief verteilt sind.
 

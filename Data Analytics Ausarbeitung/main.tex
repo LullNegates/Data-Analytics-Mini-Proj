@@ -16,6 +16,8 @@
 \usepackage{booktabs}
 \usepackage{microtype}
 \usepackage{epstopdf}
+\usepackage{xcolor}
+\usepackage{mdframed}
 
 \setlength{\emergencystretch}{3em}
 \usepackage{etoolbox}
@@ -26,9 +28,21 @@
 
 \newcommand{\stdScaleFactor}{0.45}
 
-% Finding-Hervorhebung im Klünder-Stil
+% Finding-Box im Klünder-Stil
+\definecolor{findingbg}{gray}{0.93}
 \newcommand{\finding}[2]{%
-  \medskip\noindent\textbf{Finding #1:} #2\medskip%
+  \begin{mdframed}[
+    backgroundcolor=findingbg,
+    linewidth=0pt,
+    skipabove=\medskipamount,
+    skipbelow=\medskipamount,
+    innerleftmargin=10pt,
+    innerrightmargin=10pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+  ]
+  \noindent\textbf{Finding #1:} #2
+  \end{mdframed}%
 }
 
 \usepackage{sethesis}
