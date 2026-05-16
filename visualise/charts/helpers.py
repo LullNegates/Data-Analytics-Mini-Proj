@@ -1,6 +1,7 @@
 """Shared utilities used by every chart module."""
 
 import csv
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -26,6 +27,11 @@ def color(genre: str) -> str:
 def load_csv(path: Path) -> list[dict]:
     with open(path, encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+def load_json(path: Path) -> dict:
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
 
 
 def parse_date(s: str) -> datetime | None:

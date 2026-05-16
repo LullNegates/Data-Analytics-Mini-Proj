@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import q1_analysis
 import q2_analysis
 import q3_analysis
+import f3b_tas_analysis
 
 
 def main() -> None:
@@ -39,13 +40,21 @@ def main() -> None:
         print(f"  [error] {exc}")
         errors.append(f"Q2: {exc}")
 
-    print("\n[Q3] WR lifetime distribution...")
+    print("\n[Q3] WR lifetime distribution + F3a post-breakthrough + F3b TAS proximity...")
     try:
         r3 = q3_analysis.run()
         q3_analysis.print_summary(r3)
     except Exception as exc:
         print(f"  [error] {exc}")
         errors.append(f"Q3: {exc}")
+
+    print("\n[F3b] TAS vs human WR gap analysis (known TAS references)...")
+    try:
+        rf = f3b_tas_analysis.run()
+        f3b_tas_analysis.print_summary(rf)
+    except Exception as exc:
+        print(f"  [error] {exc}")
+        errors.append(f"F3b: {exc}")
 
     print("\n" + "=" * 50)
     if errors:

@@ -374,3 +374,268 @@ F(2, ∞) -- a conservative but standard cutoff for large samples.
 - Era spread (1980–2018) is required for Q2 decade comparison and long-arc saturation curves
 - Arcade games are the most valuable for Q2: they have 40+ years of WR history, which
   gives curve fitting enough signal to distinguish saturation from ongoing improvement
+
+---
+
+## Extended Analysis — F3a, F3b, and TAS Comparison (added 2026-05-15)
+
+These analyses extend Q3 with three additional questions about the structure of WR
+improvement and the proximity to a theoretical minimum. All results land in
+`data/analysis/`.
+
+---
+
+### F3a — Post-Breakthrough Dynamics → `q3_stats.json["post_breakthrough_dynamics"]`
+
+**Question:** After the single biggest WR improvement (breakthrough), does the game
+continue improving rapidly or flatten out?
+
+**Method:**
+
+The WR time series is split at the largest single-step time reduction — the breakthrough.
+
+1. **Identify the breakthrough:** scan consecutive WR pairs for the maximum improvement
+   (first_time − second_time). This is the "glitch drop" or "route discovery" that caused
+   the graph's big step.
+
+2. **Pre-breakthrough velocity:** (sum of all pre-break improvements) / (days from first
+   WR to the breakthrough WR). Units: seconds saved per day.
+
+3. **Post-breakthrough velocity:** (sum of all post-break improvements) / (days from the
+   breakthrough to the final WR). Same units.
+
+4. **Flattening ratio = post_velocity / pre_velocity:**
+   - < 0.5 → clear plateau: improvement collapsed after the breakthrough
+   - > 1.0 → acceleration: the breakthrough triggered even faster improvement
+   - 0.5–1.0 → gradual slowdown (most common)
+
+5. **Post-breakthrough Spearman trend (rho):** rank correlation of post-break improvement
+   sizes vs time. ρ < −0.2 = decelerating, ρ > 0.2 = accelerating, else stable.
+   Returns `None` when all post-break improvements are identical (constant-input warning
+   from scipy; handled gracefully).
+
+6. **Days-to-10%-threshold:** how many days after the breakthrough until individual
+   improvements shrink below 10 % of the breakthrough magnitude. A proxy for how quickly
+   the community "digested" the discovery and returned to incremental progress.
+
+**Output fields (per game):**
+
+| Field | Description |
+|-------|-------------|
+| `breakthrough_magnitude_s` | Seconds saved in the single biggest drop |
+| `breakthrough_date` | ISO date of that WR |
+| `breakthrough_wr_number` | Sequential WR index |
+| `breakthrough_pct_of_total` | Breakthrough as % of total ever saved |
+| `pre_velocity_s_per_day` | Avg seconds/day saved before the breakthrough |
+| `post_velocity_s_per_day` | Avg seconds/day saved after the breakthrough |
+| `flattening_ratio` | post_velocity / pre_velocity |
+| `post_trend.rho` | Spearman ρ on post-break improvement sizes vs time |
+| `post_trend.interpretation` | "decelerating" / "accelerating" / "stable" |
+| `days_to_10pct_threshold` | Days until improvements < 10 % of breakthrough |
+| `interpretation` | "flattens_after_breakthrough" / "accelerates_after_breakthrough" / "gradual_slowdown" |
+
+**Key design decisions:**
+- Breakthrough = max single improvement, NOT the Chow-test break (which is the steepest
+  slope change). A route discovery often appears as the biggest single WR, not the
+  biggest slope change.
+- Velocity (s/day) rather than median improvement is used because it accounts for the
+  time between WRs — a game where only 3 WRs were set in 10 years post-break is very
+  different from one where 30 WRs happened in 2 years.
+- The 10 % threshold is an arbitrary but interpretable proxy for "the community absorbed
+  the breakthrough." It is not a formal statistical test.
+
+---
+
+### F3b (Model) — TAS Proximity via Asymptote → `q3_stats.json["tas_proximity"]`
+
+**Question:** How close is the current world record to the theoretical minimum
+(TAS floor), and how fast is the gap closing?
+
+**Background:** TAS (Tool Assisted Speedruns) define the optimal route with perfect
+execution — the mathematical lower bound for a given category. The WR cannot go below
+the TAS time. Modelling how WRs converge toward this floor lets us estimate how much
+room for improvement remains.
+
+**Method:**
+
+1. **Fit exp_decay and Gompertz** to each game's WR time series (x = days since first
+   WR, y = WR time in seconds). Both models have an explicit floor parameter:
+   - exp_decay: `y = a·exp(−b·x) + c`  →  floor = `c`
+   - Gompertz:  `y = floor + amp·exp(b·exp(−c·x))`  →  floor = `floor`
+   R² threshold of 0.70 required; below this the model is too noisy to trust the
+   asymptote estimate.
+
+2. **If no saturating model fits** (R² < 0.70 for both), or the inferred floor is ≥ the
+   current WR, the game is classified as `none_detected` — it is still in a log or
+   power_law improvement regime with no hard floor visible in the data.
+
+3. **Gap metrics:**
+   - `gap_to_floor_s` = current_wr − floor (seconds remaining)
+   - `gap_to_floor_pct_of_first_wr` = gap / first_wr × 100 (normalised)
+   - `pct_of_theoretical_reduction_achieved` = (first_wr − current_wr) / (first_wr − floor) × 100
+     (how much of the mathematically possible improvement has been realised)
+
+4. **Convergence velocity:** average seconds closed per year, computed from the last
+   min(5, n−1) WRs. Uses recent improvement rate rather than the full historical average
+   because improvement rates change over time.
+
+5. **Estimated years to floor:** gap / convergence_velocity. A rough forward projection;
+   subject to large uncertainty because improvement rates are not constant.
+
+**Output fields (per game):**
+
+| Field | Description |
+|-------|-------------|
+| `floor_model` | "exp_decay" / "gompertz" / "none_detected" |
+| `theoretical_floor_s` | Asymptote in seconds (TAS proxy) |
+| `current_wr_s` | Current world record in seconds |
+| `gap_to_floor_s` | Remaining gap in seconds |
+| `gap_to_floor_pct_of_first_wr` | Gap as % of the first-ever WR time |
+| `pct_of_theoretical_reduction_achieved` | % of (first − floor) already cut |
+| `convergence_velocity_s_per_year` | Seconds/year currently closing the gap |
+| `estimated_years_to_floor` | Rough projection at current pace |
+| `note` | Set only when `floor_model = none_detected` |
+
+**Key design decisions:**
+- The asymptote is used as a TAS *proxy*, not a true TAS time. See F3b (Reference) below
+  for the approach that uses actual TAS times.
+- R² ≥ 0.70 is a conservative threshold. Some games with valid floors may be excluded
+  if the WR series is too noisy or too short to fit a reliable asymptote.
+- Games with `none_detected` are typically younger games still in active discovery
+  (Celeste, Hollow Knight) or games where improvement is fundamentally unbounded.
+
+---
+
+### F3b (Reference) — TAS vs Human WR → `f3b_tas_stats.json`
+
+**Question:** For games where actual TAS times are publicly documented, how close is
+the human WR and how fast is the gap closing?
+
+**Why a separate module from the asymptote approach above:**
+speedrun.com prohibits TAS submissions on standard leaderboards (site rules). The
+canonical TAS archive is TASVideos.org which has no public API. TAS times are therefore
+sourced from a manually curated reference file (`data/reference/tas_known.json`).
+
+**Academic framing:**
+Wooten (2022, *Production and Operations Management*, "Leaps in Innovation and the
+Bannister Effect in Contests") formally models how benchmark innovations stimulate
+subsequent progress through technique diffusion. TAS serves exactly this role in
+speedrunning: once TAS demonstrates a strategy is possible, the human RTA community
+works to adopt it. The gap narrows through route diffusion, not independent re-discovery.
+
+The Sports Science literature on the "Bannister Effect" (first sub-4-minute mile in 1954)
+shows the same mechanism: the post-Bannister clustering of sub-4-minute miles is better
+explained by training/technique diffusion than psychological barrier removal (Science of
+Running, 2017). For speedrunning, the diffusion channel is TAS route documentation.
+
+**Method:**
+
+1. **TAS reference file** (`data/reference/tas_known.json`):
+   - Manually curated TAS times for games where the TAS category is directly comparable
+     to the human Any% category we track.
+   - `null` for games where no comparable TAS exists (procedural games, score-based games,
+     or games where ACE glitches make the categories incomparable).
+   - Currently includes: Super Mario Bros. (294.265 s, TASVideos/Maru370, 2023),
+     Super Metroid (~2446 s), Half-Life 2 (~4494 s).
+
+2. **Gap computation per game:**
+   - `current_gap_s` = max(0, human_wr − tas_time)
+   - `current_gap_pct` = current_gap / first_wr × 100
+   - `pct_closed` = (first_wr − current_wr) / (first_wr − tas_time) × 100
+
+3. **Historical gap timeline:** for every WR in the progression, the gap to TAS is
+   recorded. This shows whether the gap has been narrowing consistently or in jumps.
+
+4. **Gap velocity:** average gap-closing rate (s/year) from the last 5 WRs. Projects
+   how long until the human WR matches the TAS.
+
+5. **Model validation:** for games where both an actual TAS time AND an asymptote
+   estimate exist, `model_vs_tas_delta_s` = model_floor − tas_time. A positive delta
+   means the model overestimates the floor (too pessimistic about how good humans can get).
+
+**Output:**
+
+`data/analysis/f3b_tas_stats.json`
+
+| Key | Description |
+|-----|-------------|
+| `games[]` | Per-game comparison results |
+| `skipped[]` | Games without a comparable TAS reference (with reason) |
+| `summary` | Cross-game aggregates: mean gap %, games that matched TAS, model accuracy |
+
+---
+
+### Tests → `Dataset/Test/`
+
+All analysis modules are covered by a pytest suite. Run from `Dataset/` with:
+
+```powershell
+python -m pytest Test/ -v
+```
+
+| File | Covers |
+|------|--------|
+| `test_models.py` | All curve-fitting functions, AIC ordering, Chow test |
+| `test_q1_analysis.py` | `_velocity_trend`, `_power_law_on_improvements` |
+| `test_q2_analysis.py` | `_detect_structural_break`, `_analyse_game` |
+| `test_q3_analysis.py` | `_gini`, `_kaplan_meier`, `_km_predict`, F3a DTO, F3b proxy DTO |
+| `test_f3b_tas_analysis.py` | `_build_gap_history`, `_gap_velocity`, `_analyse_game`, `_cross_game_summary`, DTOs |
+
+**Total: 134 tests, 0 failures.**
+
+**Notable test design choices:**
+- No CSV or JSON data files are required — all tests use synthetic in-memory data.
+- The Chow test is NOT tested on a perfect straight line because floating-point arithmetic
+  makes RSS_pooled slightly larger than RSS1+RSS2, giving a spurious F > 3.0. A small-
+  noise linear trend is used instead, asserting F < 15 (true breaks have F >> 100).
+- Gini max is (n−1)/n, so the "single dominant value → Gini near 1" test uses n=20 to
+  reach a ceiling of 0.95 rather than n=5 which caps at 0.80.
+- `spearmanr` returns NaN when its input is a constant array. `_post_breakthrough_dynamics`
+  catches this and stores `None` in `post_trend.rho`; the tests account for this.
+- `_gap_velocity` uses the last 5 WRs; the "stagnant gap" test uses 7 rows so that all
+  5 recent WRs are identical (using 6 rows would include the earlier 500→350 drop).
+
+---
+
+### DTOs → `shared/DTOs/`
+
+Analysis functions that return structured objects use DTOs (Data Transfer Objects).
+
+| Class | File | Returned by |
+|-------|------|-------------|
+| `PostBreakthroughResult` | `q3_dtos.py` | `_post_breakthrough_dynamics()` |
+| `PostTrendDTO` | `q3_dtos.py` | embedded in `PostBreakthroughResult` |
+| `TasProximityResult` | `q3_dtos.py` | `_tas_proximity()` |
+| `TasComparisonResult` | `f3b_dtos.py` | `_analyse_game()` in `f3b_tas_analysis.py` |
+| `TasGapSnapshot` | `f3b_dtos.py` | embedded in `TasComparisonResult.gap_history` |
+
+**Why DTOs instead of raw dicts:**
+- Typed fields — missing a required field raises `TypeError` at construction, not a silent
+  `KeyError` at read time
+- Attribute access (`result.floor_s`) over `result.get("floor_s")`
+- `.to_dict()` produces the exact JSON structure expected by `run.py` and the tests
+- All new analysis functions must follow this pattern
+
+---
+
+### Visualisation → `visualise/`
+
+Two new terminal charts are registered in `visualise/charts/registry.py`:
+
+| Input file | Chart function | What it shows |
+|-----------|---------------|---------------|
+| `data/analysis/q3_stats.json` | `graph_f3a_post_breakthrough` | Flattening ratios + breakthrough magnitude % per game |
+| `data/analysis/f3b_tas_stats.json` | `graph_f3b_tas_comparison` | TAS gap per game + gap history timeline |
+
+To view:
+```powershell
+# From visualise/ directory:
+python main.py
+# At prompt, type:  q3_stats   or   f3b_tas_stats
+```
+
+Or use the `all` mode with `analysis` to see all analysis charts at once.
+
+The Model project (`Model/`) reads from `Dataset/data/analysis/` via `ANALYSIS_DIR` in
+`Model/config.py`. The new `f3b_tas_stats.json` is therefore automatically available to
+the LLM council for F3b inference without any Model code changes.

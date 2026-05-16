@@ -18,20 +18,33 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from charts.registry import CHART_REGISTRY, FALLBACK
 
-# default data source — adjust if Dataset/ moves
-_DEFAULT_DATA = Path(__file__).parent.parent / "Dataset" / "data" / "clean"
+# default data sources — CSV files and analysis JSON files
+_DEFAULT_CLEAN    = Path(__file__).parent.parent / "Dataset" / "data" / "clean"
+_DEFAULT_ANALYSIS = Path(__file__).parent.parent / "Dataset" / "data" / "analysis"
+_DEFAULT_DATA     = _DEFAULT_CLEAN  # kept for backwards compat
 
 
 def resolve_paths(raw_inputs: list[str]) -> list[Path]:
     paths = []
     for raw in raw_inputs:
         p = Path(raw.strip())
-        if not p.exists():
-            p = _DEFAULT_DATA / raw.strip()
         if p.exists():
             paths.append(p)
-        else:
-            print(f"  [warn] not found: {raw.strip()}")
+            continue
+        # Try clean/ directory (CSV files)
+        candidate = _DEFAULT_CLEAN / raw.strip()
+        if candidate.exists():
+            paths.append(candidate)
+            continue
+        # Try analysis/ directory (JSON files, e.g. "q3_stats" or "q3_stats.json")
+        name = raw.strip()
+        if not name.endswith(".json"):
+            name += ".json"
+        candidate = _DEFAULT_ANALYSIS / name
+        if candidate.exists():
+            paths.append(candidate)
+            continue
+        print(f"  [warn] not found: {raw.strip()}")
     return paths
 
 
@@ -54,16 +67,19 @@ def main() -> None:
     user_input = input("CSV files (comma-separated) or 'all' for a folder:\n> ").strip()
 
     if user_input.lower() == "all":
-        folder_raw = input(f"Folder path [Enter = default]:\n> ").strip()
-        folder = Path(folder_raw) if folder_raw else _DEFAULT_DATA
+        folder_raw = input(f"Folder path [Enter = default clean/], 'analysis' for JSON charts:\n> ").strip()
+        if folder_raw.lower() == "analysis":
+            folder = _DEFAULT_ANALYSIS
+        else:
+            folder = Path(folder_raw) if folder_raw else _DEFAULT_CLEAN
         if not folder.is_dir():
             print(f"Not a directory: {folder}")
             sys.exit(1)
-        paths = sorted(folder.glob("*.csv"))
+        paths = sorted(folder.glob("*.csv")) + sorted(folder.glob("*.json"))
         if not paths:
-            print("No CSV files found.")
+            print("No data files found.")
             sys.exit(1)
-        print(f"\nFound {len(paths)} CSV file(s) in {folder.name}/:")
+        print(f"\nFound {len(paths)} file(s) in {folder.name}/:")
         for p in paths:
             tag = " *" if p.stem in CHART_REGISTRY else ""
             print(f"  {p.name}{tag}")
