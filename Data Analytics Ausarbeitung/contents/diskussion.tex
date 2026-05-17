@@ -3,25 +3,25 @@
 
 \section{Interpretation der Ergebnisse}
 
-\subsection*{F1 — Zeitreduktion}
+\subsection*{F1: Zeitreduktion}
 
 Die starke Variation (9,4~\%–99,5~\%) liegt nicht am Genre --- der Kruskal-Wallis-Test zeigt keinen signifikanten Genreeffekt. Entscheidender sind spielspezifische Faktoren wie Grundlaufzeit und verfügbare Glitches: kurze Spiele mit nutzbaren Programmfehlern lassen sich deutlich stärker optimieren als lange oder technisch eingeschränkte Titel.
 
-\subsection*{F2 — Sättigung}
+\subsection*{F2: Sättigung}
 
 Der universelle Strukturbruch (alle 17~Spiele) zeigt: Auf eine frühe \emph{Hochaktivitätsphase} (Routing, Glitch-Entdeckungen) folgt stets eine flachere \emph{Plateau-Phase} --- oft bereits nach den ersten 10~WRs. Das hohe $R^2$ ($> 0{,}70$) zeigt, dass dieser Verlauf modellunabhängig gut beschreibbar ist.
 
-\subsection*{F3a — Post-Breakthrough-Dynamik}
+\subsection*{F3a: Post-Breakthrough-Dynamik}
 
 Der Breakthrough markiert den größten Einzelschritt in der WR-Zeitreihe --- meist eine Glitch-Entdeckung --- und muss nicht mit dem Chow-Test-Bruchpunkt aus F2 zusammenfallen. Ein $\phi < 0{,}5$ zeigt Konsolidierung, $\phi > 1{,}0$ eine Beschleunigung durch neu erschlossene Routing-Möglichkeiten.
 
 \textit{Donkey Konga} ist der Ausreißer ($\phi = 23{,}97$): Der Breakthrough liegt erst seit Dezember~2024 zurück, sodass kaum Konsolidierungszeit bestand. Alle übrigen auswertbaren Spiele ($n = 5$) zeigen ein klares Plateau ($\phi \leq 0{,}44$). Durchbrüche setzen die Abflachungsrate demnach nicht zurück, sondern leiten eine Konsolidierungsphase ein.
 
-\subsection*{F3b — Annäherung ans theoretische Minimum}
+\subsection*{F3b: Annäherung ans theoretische Minimum}
 
 Dass 15 von 17 Spielen als \texttt{none\_detected} klassifiziert werden, ist kein Methodenproblem --- diese Communities befinden sich noch in einer aktiven Entdeckungsphase ohne stabilen Grenzwert. Die zwei auswertbaren Spiele sind weit in die Sättigungsphase eingetreten: \textit{Half-Life~2} zu 95,5~\%, \textit{Pokémon Red/Blue} zu 82,5~\% der möglichen Reduktion. Ein direkter TAS-Vergleich war nicht möglich, da keine öffentliche API verlässliche TAS-Daten liefert und Frame-genaue Videoanalyse im gegebenen Zeitrahmen nicht leistbar war.
 
-\subsection*{F3c — Lebensdauer}
+\subsection*{F3c: Lebensdauer}
 
 Der Rückgang der WR-Lebensdauer ab 2010 korreliert mit dem Wachstum der Speedrunning-Community nach Gründung von \textit{speedrun.com}~(2014) und der Popularisierung durch Streaming-Plattformen. Der moderate Genreeffekt ($\eta^2 \approx 0{,}044$) zeigt, dass Community-Größe und Spielpopularität wahrscheinlich stärkere Einflussfaktoren sind.
 
@@ -42,5 +42,7 @@ Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~
 \textbf{Fehlende Kontrollvariablen:} Community-Größe, Spieleranzahl und Streaming-Reichweite lagen nicht vor, beeinflussen aber Lebensdauer und Verbesserungsrate erheblich.
 
 \textbf{Kein TAS-Vergleich:} Keine öffentliche API liefert verlässliche TAS-Daten; Frame-genaue Videoanalyse war im Zeitrahmen nicht leistbar --- der Asymptoten-Proxy ist daher nur eine Näherung.
+
+\textbf{Teststärke:} Mit 1–3~Spielen pro Genre ist der Kruskal-Wallis-Test für jährliche Verbesserungsraten (F1) bei $k = 7$~Gruppen und $N = 17$ stark unterpowered; ein nicht signifikantes Ergebnis schließt einen Genreeffekt nicht aus.
 
 \textbf{Kausalität:} Alle Ergebnisse zeigen Zusammenhänge, keine Ursachen.

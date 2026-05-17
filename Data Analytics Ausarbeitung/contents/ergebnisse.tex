@@ -1,7 +1,7 @@
 \chapter{Ergebnisse}
 \label{chap:ergebnisse}
 
-\section{F1 — Prozentuale Zeitreduktion}
+\section{F1: Prozentuale Zeitreduktion}
 
 Tabelle~\ref{tab:q1} zeigt die prozentuale Zeitreduktion aller 17~Spiele, sortiert nach Gesamtreduktion absteigend.
 
@@ -41,9 +41,9 @@ Auf Genre-Ebene zeigen sich deutliche Unterschiede in der mittleren Gesamtredukt
 
 \finding{2}{Ein Kruskal-Wallis-Test auf die jährlichen Verbesserungsraten zeigt keinen statistisch signifikanten Unterschied zwischen Genres ($\mathbf{H = 6{,}24}$; $\mathbf{p = 0{,}284}$). Die Verbesserungsrate hängt demnach stärker vom einzelnen Spiel als vom Genre ab.}
 
-\section{F2 — Sättigung der Verbesserungsrate}
+\section{F2: Sättigung der Verbesserungsrate}
 
-Tabelle~\ref{tab:q2_modelle} fasst die Modellvergleiche zusammen. Über alle 17~Spiele gewinnt das quadratische Polynom~(poly2) am häufigsten nach AIC~(6/17~Spiele), gefolgt von Gompertz~(5/17), exponentiellem Zerfall~(4/17) und logarithmischer Regression~(2/17). Der mittlere $R^2$-Wert des jeweils besten Modells beträgt~$0{,}93$ (Bereich: $0{,}73$–$0{,}98$).
+Tabelle~\ref{tab:q2_modelle} fasst die Modellvergleiche zusammen. Über alle 17~Spiele gewinnt das quadratische Polynom~(poly2) am häufigsten nach AIC~(6/17~Spiele), gefolgt von Gompertz~(4/17) und exponentiellem Zerfall~(4/17), logarithmischer Regression~(2/17) und Potenzgesetz~(1/17). Der mittlere $R^2$-Wert des jeweils besten Modells beträgt~$0{,}93$ (Bereich: $0{,}73$–$0{,}98$).
 
 \begin{table}[htb]
   \centering
@@ -59,6 +59,7 @@ Tabelle~\ref{tab:q2_modelle} fasst die Modellvergleiche zusammen. Über alle 17~
     Exponentieller Zerfall    & 4 & 0,950 \\
     Logarithmisch             & 2 & 0,929 \\
     Potenzgesetz (power\_law) & 1 & 0,720 \\
+    LOWESS (nichtparametrisch) & 0 & --- \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -99,9 +100,9 @@ Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten S
 
 \finding{4}{\textbf{Alle 17~Spiele} weisen einen statistisch signifikanten Strukturbruch auf (Chow-Test, $p < 0{,}05$). Bei \textbf{8 von 17~Spielen} tritt der Bruchpunkt innerhalb der ersten 10~Weltrekorde auf; bei Spielen mit langer WR-Geschichte liegt er deutlich später (Median: WR~\#16).}
 
-\section{F3 — Externer Einfluss auf die Rekordentwicklung}
+\section{F3: Externer Einfluss auf die Rekordentwicklung}
 
-\subsection*{F3a — Post-Breakthrough-Dynamik}
+\subsection*{F3a: Post-Breakthrough-Dynamik}
 
 Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen für alle Spiele, bei denen Pre- und Post-Breakthrough-Segmente ermittelt werden konnten.
 
@@ -128,13 +129,13 @@ Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen f
 
 \finding{5}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (Dezember~2024) liegt so kurz zurück, dass die Post-Phase kaum Konsolidierungszeit enthält. Die stärksten Plateaus: \textit{Zelda: OoT} und \textit{The Talos Principle} (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$).}
 
-\subsection*{F3b — Annäherung ans theoretische Minimum}
+\subsection*{F3b: Annäherung ans theoretische Minimum}
 
 Für 15 von 17~Spielen ist kein stabiler Modell-Floor bestimmbar (\texttt{none\_detected}, $R^2 < 0{,}70$). Für \textit{Half-Life~2} (Floor: $1874{,}7$~s, Gap: $315{,}6$~s) und \textit{Pokémon Red/Blue} (Floor: $6004{,}4$~s, Gap: $215{,}6$~s) konnte ein konvergentes Sättigungsmodell berechnet werden.
 
 \finding{6}{Für \textbf{2 von 17~Spielen} konnte ein konvergentes Sättigungsmodell berechnet werden: \textit{Half-Life~2} hat \textbf{95,5~\%} der möglichen Reduktion bis zum Modell-Floor erreicht (Floor: $1874{,}7$~s, aktueller WR: $2190{,}3$~s), \textit{Pokémon Red/Blue} \textbf{82,5~\%} (Floor: $6004{,}4$~s). Für die übrigen \textbf{15~Spiele} ist kein stabiler Grenzwert bestimmbar (\texttt{none\_detected}) --- diese Communities befinden sich noch in einer aktiven Entdeckungsphase.}
 
-\subsection*{F3c — Lebensdauer von Weltrekorden}
+\subsection*{F3c: Lebensdauer von Weltrekorden}
 
 Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Von den 876~Weltrekord-Datenpunkten sind 17~zum Analysezeitpunkt noch aktiv (rechtszensiert).
 
@@ -162,10 +163,10 @@ Der Kruskal-Wallis-Test zeigt einen hochsignifikanten Unterschied in den Lebensd
 
 Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{,}655$–$0{,}932$): Ein kleiner Anteil der Weltrekorde macht den Großteil der erzielten Zeitersparnis aus.
 
-Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste mittlere Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (95,2~Tage) sind deutlich kurzlebiger.
+Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste arithmetisch mittlere beobachtete Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (95,2~Tage) sind deutlich kurzlebiger. Da pro Jahrzehnt keine rechtszensierungskorrigierten KM-Schätzer berechnet wurden, handelt es sich hier um Rohmittelwerte.
 
 \finding{7}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $\mathbf{H(6) = 43{,}82}$; $\mathbf{p < 0{,}001}$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa \textbf{4,4~\%} der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
 
 \finding{8}{\textit{RPG}-Rekorde überleben mit einem Kaplan-Meier-Median von \textbf{52~Tagen} signifikant länger als Rekorde anderer Genres (Median: \textbf{7–17~Tage}). Die geringere Spielgeschwindigkeit und die größere Komplexität von RPGs erschweren schnelle Optimierungen.}
 
-\finding{9}{Im Jahrzehntvergleich sinkt die mittlere Rekordlebensdauer von \textbf{665,8~Tagen} (2000er) auf \textbf{82,4~Tage} (2010er). Der Einbruch fällt zeitlich mit dem starken Wachstum der Speedrunning-Community ab \textbf{2010} zusammen, das den Wettbewerbsdruck erhöhte.}
+\finding{9}{Im Jahrzehntvergleich sinkt die arithmetisch mittlere beobachtete Rekordlebensdauer von \textbf{665,8~Tagen} (2000er) auf \textbf{82,4~Tage} (2010er). Der Einbruch fällt zeitlich mit dem starken Wachstum der Speedrunning-Community ab \textbf{2010} zusammen, das den Wettbewerbsdruck erhöhte.}

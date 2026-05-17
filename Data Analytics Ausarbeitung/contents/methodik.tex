@@ -9,19 +9,19 @@ Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 876~Weltrekord-Eint
 
 \section{Statistische Methoden}
 
-\subsection*{F1 — Prozentuale Zeitreduktion (Q1)}
+\subsection*{F1: Prozentuale Zeitreduktion (Q1)}
 
 Die prozentuale Zeitreduktion je Spiel~$i$ berechnet sich als $r_i = (t_{\text{first},i} - t_{\text{best},i})\,/\,t_{\text{first},i} \cdot 100\,\%$, wobei $t_{\text{first},i}$ die erste und $t_{\text{best},i}$ die aktuell beste Laufzeit im Datensatz ist. Zusätzlich werden die jährliche Verbesserungsrate und die Weltrekord-Dichte berechnet.
 
 Um zu prüfen, ob Genres sich systematisch in ihren jährlichen Raten unterscheiden, wird der \textbf{Kruskal-Wallis-Test}~\cite{kim2016} eingesetzt. Dieser nichtparametrische Test arbeitet mit Rangzahlen statt Rohdaten und setzt keine Normalverteilung voraus --- eine wichtige Eigenschaft, da Laufzeit-Daten typischerweise stark rechtsschief verteilt sind.
 
-\subsection*{F2 — Sättigung der Verbesserungsrate (Q2)}
+\subsection*{F2: Sättigung der Verbesserungsrate (Q2)}
 
-Für jedes Spiel wird die kumulierte Bestzeit gegen den Weltrekord-Index aufgetragen. Anschließend werden fünf Kurvenmodelle mittels nichtlinearer Regression angepasst: logarithmisch, quadratisches Polynom~(poly2), exponentieller Zerfall, Gompertz-Kurve und LOWESS (nichtparametrisch). Der Modellvergleich erfolgt über das \textbf{Akaike-Informationskriterium}~(AIC)~\cite{ding2018}: Ein niedrigeres AIC zeigt ein besseres Verhältnis von Anpassungsgüte zu Modellkomplexität an — komplexere Modelle werden also nur bevorzugt, wenn sie die Daten deutlich besser erklären. Das Modell mit dem niedrigsten AIC je Spiel gilt als bestes Modell.
+Für jedes Spiel wird die kumulierte Bestzeit gegen den Weltrekord-Index aufgetragen. Anschließend werden fünf Kurvenmodelle mittels nichtlinearer Regression angepasst: logarithmisch, quadratisches Polynom~(poly2), exponentieller Zerfall, Gompertz-Kurve, Potenzgesetz (power\_law) und LOWESS (nichtparametrisch). Der Modellvergleich erfolgt über das \textbf{Akaike-Informationskriterium}~(AIC)~\cite{ding2018}: Ein niedrigeres AIC zeigt ein besseres Verhältnis von Anpassungsgüte zu Modellkomplexität an — komplexere Modelle werden also nur bevorzugt, wenn sie die Daten deutlich besser erklären. Das Modell mit dem niedrigsten AIC je Spiel gilt als bestes Modell.
 
 Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{zeileis2002} eingesetzt. Dieser prüft, ob sich die Regressionskoeffizienten vor und nach einem möglichen Strukturbruch signifikant unterscheiden ($F$-Statistik gegen $F$-Verteilung). Alle validen Trennpunkte werden durchsucht; der Trennpunkt mit der höchsten $F$-Statistik wird als Strukturbruch gemeldet. Der Test setzt voraus, dass die Residuen innerhalb beider Segmente annähernd gleich gestreut sind (Homoskedastizität). Da WR-Zeitreihen mit zunehmender Sättigung stabiler werden, ist diese Voraussetzung im Post-Break-Segment in der Regel besser erfüllt als im gesamten Verlauf; die Ergebnisse sind entsprechend konservativ zu interpretieren.
 
-\subsection*{F3a — Post-Breakthrough-Dynamik}
+\subsection*{F3a: Post-Breakthrough-Dynamik}
 
 Um zu untersuchen, ob ein identifizierbares Durchbruchereignis die Verbesserungsrate zurücksetzt oder abflacht, wird für jedes Spiel der \textbf{Breakthrough} als derjenige WR definiert, bei dem die absolute Zeitersparnis gegenüber dem Vorgänger-Weltrekord am größten ist --- meistens eine Glitch-Entdeckung oder ein großes Routing-Update.
 
@@ -32,9 +32,11 @@ Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die j
 \end{align*}
 Das \textbf{Flattening Ratio} $\phi = v_{\text{post}} / v_{\text{pre}}$ quantifiziert die Veränderung: $\phi < 0{,}5$ signalisiert ein klares Plateau, $\phi > 1{,}0$ eine Beschleunigung, $0{,}5 \leq \phi \leq 1{,}0$ eine graduelle Verlangsamung. Ein ergänzender \textbf{Spearman-Rangkorrelationstest} ($\rho$) quantifiziert den zeitlichen Trend der Post-Breakthrough-Verbesserungsgrößen ($\rho < -0{,}2$: abnehmend, $\rho > 0{,}2$: zunehmend).
 
+Voraussetzung für die Velocity-Berechnung sind mindestens 2~Weltrekorde in beiden Segmenten sowie eine Segmentlänge von mehr als 0~Tagen; 11 von 17~Spielen erfüllten diese Kriterien nicht und wurden ausgeschlossen.
+
 Diese Methode unterscheidet sich vom Chow-Test aus F2: Während der Chow-Test den stärksten Steigungswechsel in der kumulierten Kurve markiert, identifiziert der hier gewählte Ansatz den größten \emph{einzelnen} Verbesserungsschritt --- eine direktere Entsprechung für Glitch-Entdeckungen.
 
-\subsection*{F3b — Annäherung ans theoretische Minimum}
+\subsection*{F3b: Annäherung ans theoretische Minimum}
 
 Das theoretische Zeitminimum einer Speedrunning-Kategorie entspricht dem, was unter optimaler, computergestützter Eingabe möglich wäre --- sogenannte Tool-Assisted Speedruns (TAS). Ein direkter Vergleich mit TAS-Zeiten war im Rahmen dieser Arbeit nicht durchführbar: \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}, verlässliche TAS-Zeiten sind über keine öffentliche API verfügbar, und die vorhandenen TAS-Videos erfordern eine Frame-genaue Auswertung des tatsächlichen Startzeitpunkts --- ein Aufwand, der im gegebenen Zeitrahmen nicht leistbar war. Als Näherung wird stattdessen der mathematische Grenzwert der Sättigungskurve verwendet:
 
@@ -47,7 +49,7 @@ Das theoretische Zeitminimum einer Speedrunning-Kategorie entspricht dem, was un
 
 Die vollständige Analysepipeline ist durch \textbf{164~automatisierte pytest-Tests} abgedeckt (synthetische In-Memory-Daten, keine externen Dateien). Geprüft werden alle Analysemodule sowie zwei Präzisionsklassen für Ausgaben: \texttt{normalize\_columns} (CSV) und \texttt{normalize\_floats} (JSON). Alle 164~Tests laufen mit 0~Fehlern.
 
-\subsection*{F3c — Lebensdauer von Weltrekorden}
+\subsection*{F3c: Lebensdauer von Weltrekorden}
 
 Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor --- eine ursprünglich geplante einfache Trendanalyse kann Zensierung nicht korrekt verarbeiten, weshalb stattdessen der Kaplan-Meier-Schätzer eingesetzt wird.
 
