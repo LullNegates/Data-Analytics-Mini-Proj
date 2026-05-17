@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1779048985.90331 "main.aux" "main.bbl" "main" 1779051537.94046 0
-  "./ausarbeitung.bib" 1779042937 4328 ec5fbd967d331024c44dc22ada0e8f86 ""
+["bibtex main"] 1779053612.81531 "main.aux" "main.bbl" "main" 1779053615.89359 0
+  "./ausarbeitung.bib" 1779053602 4650 3f594b173bc85893aa16fb11d8d4e764 ""
   "./halpha-abbrv.bst" 1779027716 25777 09a9b379cdb9607cf8c023d0f2ec1838 ""
-  "main.aux" 1779051536 5148 85c1a6d927868aad703f9ae53c08c181 "pdflatex"
+  "main.aux" 1779053614 5140 4ae8bde39e4e827a7ec443cb152f2abe "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1779051535.33943 "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" "main.pdf" "main" 1779051537.94133 0
+["pdflatex"] 1779053613.28913 "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" "main.pdf" "main" 1779053615.8945 0
   "FHDW-Logo.eps" 1779027716 127240 cc36ef6bf4d4285435270121dc4cb8f2 ""
   "affirmation.tex" 1779027716 17 10a6eaf503e30abdc19cbc393250e44c ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1764776708 2375 baa924870cfb487815765f9094cf3728 ""
@@ -172,18 +172,18 @@
   "c:/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1764778925 3635704 7ad7a202ee0001c004bb800d641b8d05 ""
   "c:/texlive/2025/texmf.cnf" 1764778592 713 e69b156964470283e0530f5060668171 ""
   "contents/abstract.tex" 1779050734 2002 5f8fa85fc07ce7fc419cddfe35aab05d ""
-  "contents/diskussion.tex" 1779046518 4294 8611c1f447ef9f8a121db2fabfd2388c ""
+  "contents/diskussion.tex" 1779052633 4525 00a2d63152c8f0d079a032d4ee21f977 ""
   "contents/einleitung.tex" 1779045641 3558 38a1b66cd4ef781f169ca067da4c580a ""
-  "contents/ergebnisse.tex" 1779050729 12038 fc59403188f8ff1c77e2c9372ee8db32 ""
-  "contents/fazit.tex" 1779048982 1558 ec41d052051a4d79d48ff326532bda7e ""
+  "contents/ergebnisse.tex" 1779052977 12263 cd77a21b30cd7dcdf8a8f8ff2d0e936f ""
+  "contents/fazit.tex" 1779053207 1558 ec41d052051a4d79d48ff326532bda7e ""
   "contents/figures/kaos.pdf" 1779027716 48645 110059dbfa6ed0ba511f77796a793314 ""
-  "contents/methodik.tex" 1779050723 8542 95a8db0354c0d1a06faed29bc805c9da ""
+  "contents/methodik.tex" 1779053608 8924 b84cb51e868f214d2f56dbf93d2faeda ""
   "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" 1779051537 2262 b605b9922572925e5f4a45460e41d7c4 ""
-  "main.aux" 1779051536 5148 85c1a6d927868aad703f9ae53c08c181 "pdflatex"
-  "main.bbl" 1779048986 2914 9793395818643329123f877ce69b44f2 "bibtex main"
-  "main.out" 1779051536 2003 99d69a105fa089e6cbe33c4cb0eae2cc "pdflatex"
+  "main.aux" 1779053614 5140 4ae8bde39e4e827a7ec443cb152f2abe "pdflatex"
+  "main.bbl" 1779053613 2852 afabbe0800cfd84e4d05a53df456c882 "bibtex main"
+  "main.out" 1779053614 1970 439e2f246bb9a96815ce213037429aa6 "pdflatex"
   "main.tex" 1779051537 2262 b605b9922572925e5f4a45460e41d7c4 ""
-  "main.toc" 1779051536 1086 01d12b119afb8ab27d787dbbc4172625 "pdflatex"
+  "main.toc" 1779053614 1077 dfc1b3dd1bc062eb327c01a49c7941d8 "pdflatex"
   "sethesis.sty" 1779046000 3131 2d95fa99fc7af997eb75bb8285b5ba11 ""
   (generated)
   "main.aux"

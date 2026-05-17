@@ -5,42 +5,42 @@ The style file: halpha-abbrv.bst
 Database file #1: ausarbeitung.bib
 You've used 8 entries,
             2740 wiz_defined-function locations,
-            647 strings with 6444 characters,
-and the built_in function-call counts, 3281 in all, are:
-= -- 325
-> -- 147
-< -- 4
-+ -- 51
-- -- 50
-* -- 223
-:= -- 542
-add.period$ -- 37
+            646 strings with 6412 characters,
+and the built_in function-call counts, 3357 in all, are:
+= -- 333
+> -- 158
+< -- 3
++ -- 56
+- -- 54
+* -- 233
+:= -- 553
+add.period$ -- 35
 call.type$ -- 8
-change.case$ -- 51
+change.case$ -- 52
 chr.to.int$ -- 7
 cite$ -- 8
-duplicate$ -- 127
-empty$ -- 267
-format.name$ -- 61
-if$ -- 684
+duplicate$ -- 126
+empty$ -- 270
+format.name$ -- 64
+if$ -- 698
 int.to.chr$ -- 2
 int.to.str$ -- 0
 missing$ -- 5
-newline$ -- 66
+newline$ -- 64
 num.names$ -- 24
-pop$ -- 68
+pop$ -- 70
 preamble$ -- 1
-purify$ -- 59
+purify$ -- 60
 quote$ -- 0
-skip$ -- 89
+skip$ -- 91
 stack$ -- 0
-substring$ -- 116
+substring$ -- 127
 swap$ -- 8
-text.length$ -- 4
-text.prefix$ -- 4
+text.length$ -- 3
+text.prefix$ -- 3
 top$ -- 0
 type$ -- 64
 warning$ -- 0
-while$ -- 27
+while$ -- 29
 width$ -- 11
-write$ -- 141
+write$ -- 137

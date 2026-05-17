@@ -37,13 +37,6 @@ H.~K. Kim.
 \newblock \doi{10.4097/kjae.2016.69.1.8}.
 \newblock Open Access, PMC4754273.
 
-\bibitem[Lak13]{lakens2013}
-D.~Lakens.
-\newblock Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and {ANOVA}s.
-\newblock {\em Frontiers in Psychology}, 4:863, 2013.
-\newblock \doi{10.3389/fpsyg.2013.00863}.
-\newblock Open Access, PMC3840331.
-
 \bibitem[{spe}24a]{speedruncom_api}
 {speedrun.com}.
 \newblock {speedrun.com API v1 Documentation}.
@@ -55,6 +48,11 @@ D.~Lakens.
 \newblock speedrun.com site rules.
 \newblock \url{https://www.speedrun.com/support/learn/site-rules}, 2024.
 \newblock Abgerufen am 17. Mai 2026; bestätigt TAS-Verbot auf regulären Leaderboards.
+
+\bibitem[TT14]{tomczak2014}
+M.~Tomczak and E.~Tomczak.
+\newblock The need to report effect size estimates revisited. an overview of some recommended measures of effect size.
+\newblock {\em Trends in Sport Sciences}, 1(21):19--25, 2014.
 
 \bibitem[ZLHK02]{zeileis2002}
 A.~Zeileis, F.~Leisch, K.~Hornik, and C.~Kleiber.
