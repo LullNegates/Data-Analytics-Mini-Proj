@@ -5,7 +5,7 @@
 
 Die Rohdaten wurden über die \textit{speedrun.com} API~v1~\cite{speedruncom_api} abgerufen. Ausgewählt wurden 17~Spiele aus sieben~Genres: Platformer (Super Mario Bros., Super Mario~64, Celeste), Action-Adventure (Super Metroid, Zelda: Ocarina of Time, Hollow Knight), RPG (Pokémon Red/Blue, Final Fantasy~VII), FPS (Doom~3, Quake, Half-Life~2), Puzzle (Portal, Portal~2, The Talos Principle), Sandbox (Minecraft: Java Edition) und Arcade (Pac-Man, Donkey Konga). Alle Analysen beschränken sich auf die \emph{any\%}-Kategorie,\footnote{Any\% bezeichnet in der Speedrunning-Community den schnellsten Weg zum Spielabschluss, unabhängig vom Fertigstellungsgrad.} da diese als einzige Kategorie in allen 17~Spielen vorhanden und vergleichbar ist.
 
-Im Bereinigungsschritt wurden unplausible Einträge entfernt (z.\,B.\ Laufzeiten von $0$~Sekunden oder Runs ohne Zeitstempel). Die bereinigten Daten umfassen fünf~CSV-Dateien mit insgesamt 842~Weltrekord-Datenpunkten für die Lebensdaueranalyse (Q3).
+Der Datensatz umfasst insgesamt 58.771 eingereichte Runs und 842~Weltrekord-Einträge aus 17~Spielen. Im Bereinigungsschritt wurden technisch unplausible WR-Einträge entfernt: Weltrekordzeiten unter 1~\% des Medians der jeweiligen WR-Progression und unter 1{,}0~Sekunde gelten als Artefakte (z.\,B.\ Moderator-Platzhalter oder Tippfehler) und werden verworfen --- beschränkt auf Spiele mit Median~$> 10$~Sekunden, damit Arcade-Spiele mit legitim kurzen Zeiten unberührt bleiben. Die bereinigten Daten werden in fünf~CSV-Dateien exportiert; eine konsistente Dezimaldarstellung aller Float-Spalten stellt ein Normalisierungsmodul (\texttt{shared/utils.py}) sicher.
 
 \section{Statistische Methoden}
 
@@ -21,17 +21,37 @@ Für jedes Spiel wird die kumulierte Bestzeit gegen den Weltrekord-Index aufgetr
 
 Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{zeileis2002} eingesetzt. Dieser prüft, ob sich die Regressionskoeffizienten vor und nach einem möglichen Strukturbruch signifikant unterscheiden ($F$-Statistik gegen $F$-Verteilung). Alle validen Trennpunkte werden durchsucht; der Trennpunkt mit der höchsten $F$-Statistik wird als Strukturbruch gemeldet.
 
-\subsection*{F3a — Abflachungsrate nach Durchbruch}
+\subsection*{F3a — Post-Breakthrough-Dynamik}
 
-Um zu untersuchen, ob ein bekannter Durchbruch (z.\,B.\ eine Glitch-Entdeckung oder ein neues Routing) die Abflachungsrate zurücksetzt, wird der \textbf{Decay-Koeffizient} der Verbesserungskurve vor und nach einem identifizierten Zeitsprung verglichen. Hierfür werden Strukturbrüche aus F2 (Chow-Test) als Kandidaten für Durchbruchereignisse genutzt. Eine erneute Beschleunigung nach einem Bruchpunkt würde sich als signifikant erhöhter Decay-Koeffizient im Post-Break-Segment zeigen.
+Um zu untersuchen, ob ein identifizierbares Durchbruchereignis die Verbesserungsrate zurücksetzt oder abflacht, wird für jedes Spiel der \textbf{Breakthrough} als diejenige WR-Iteration definiert, bei der die absolute Zeitersparnis gegenüber dem Vorgänger-Weltrekord maximal ist --- typischerweise die direkte Entsprechung einer Glitch-Entdeckung oder eines fundamentalen Routing-Updates.
 
-\placeholder{Datengrundlage und konkrete Umsetzung der Decay-Koeffizientenberechnung ergänzen (z.\,B.\ welche Spiele, welche Bruchpunkte als Ereignismarker verwendet werden).}
+Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die jeweils die \textbf{Verbesserungsgeschwindigkeit} (Velocity) berechnet wird:
+\begin{align*}
+    v_{\text{pre}}  &= \frac{\sum \Delta t_{\text{pre}}}{d_{\text{pre}}} \quad \text{[s/Tag]}\\
+    v_{\text{post}} &= \frac{\sum \Delta t_{\text{post}}}{d_{\text{post}}} \quad \text{[s/Tag]}
+\end{align*}
+Das \textbf{Flattening Ratio} $\phi = v_{\text{post}} / v_{\text{pre}}$ quantifiziert die Veränderung: $\phi < 0{,}5$ signalisiert ein klares Plateau, $\phi > 1{,}0$ eine Beschleunigung, $0{,}5 \leq \phi \leq 1{,}0$ eine graduelle Verlangsamung. Ein ergänzender \textbf{Spearman-Rangkorrelationstest} ($\rho$) quantifiziert den zeitlichen Trend der Post-Breakthrough-Verbesserungsgrößen ($\rho < -0{,}2$: abnehmend, $\rho > 0{,}2$: zunehmend).
 
-\subsection*{F3b — Messbarkeit des Tool-Einflusses}
+Diese Methode unterscheidet sich vom Chow-Test aus F2: Während der Chow-Test den stärksten Steigungswechsel in der kumulierten Kurve markiert, identifiziert der hier gewählte Ansatz den größten \emph{einzelnen} Verbesserungsschritt --- eine direktere Entsprechung für Glitch-Entdeckungen.
 
-Um zu prüfen, ob der Einfluss von Tools (TAS, Routing-Software) im Datensatz statistisch nachweisbar ist, werden bekannte Tool-Einführungszeitpunkte als externe Ereignisse kodiert und mittels \textbf{Chow-Test} auf Strukturbrüche in der Verbesserungskurve geprüft. Alternativ kann ein Dummy-kodierter Regressionsterm für \enquote{Tool-Ära} gegen die Nullhypothese keines Effekts getestet werden.
+\subsection*{F3b — TAS-Annäherungsanalyse}
 
-\placeholder{Quellen für die Tool-Zeitpunkte angeben (Community-Wikis, speedrun.com-Kategoriedaten o.\,ä.) und Kodierungsschema beschreiben.}
+Tool-Assisted Speedruns (TAS) definieren das theoretische Zeitminimum für eine Spielkategorie bei perfekter Eingabeausführung. \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}; Referenzzeiten sind daher nicht über die API verfügbar und wurden manuell aus TASVideos.org~\cite{tasvideos} entnommen. Der theoretische Rahmen folgt Wooten~\cite{wooten2022}: TAS-Routen wirken als Benchmark-Innovation --- sobald eine Strategie per TAS als durchführbar belegt ist, diffundiert sie über Community-Dokumentation in die RTA-Praxis (\emph{Bannister-Effekt}).
+
+Zwei komplementäre Ansätze werden eingesetzt:
+
+\paragraph{Modellbasierter Asymptoten-Proxy.} Für alle 17~Spiele wird der Floor-Parameter des besten Sättigungsmodells (exp\_decay oder Gompertz, $R^2 \geq 0{,}70$) als Schätzwert für das theoretische Minimum genutzt:
+\[
+    \mathrm{Gap}_{\%} = \frac{t_{\mathrm{WR}} - t_{\mathrm{Floor}}}{t_{\mathrm{first}}} \times 100
+\]
+
+\paragraph{Empirischer TAS-Referenzvergleich.} Für Spiele mit dokumentierter TAS-Zeit ($n = 3$: \textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}) wird die Annäherung direkt gemessen. Die Gap-Schließungsgeschwindigkeit ergibt sich aus den letzten fünf WRs; die Differenz $\Delta = t_{\mathrm{Floor,Modell}} - t_{\mathrm{TAS}}$ bewertet die Qualität des Asymptoten-Proxys.
+
+\subsection*{F3c — Lebensdauer von Weltrekorden (Q3)}
+
+\subsection*{Qualitätssicherung}
+
+Die vollständige Analysepipeline ist durch 134~automatisierte pytest-Tests abgedeckt, die mit synthetischen In-Memory-Daten arbeiten und keine externen Datendateien benötigen. Abgedeckt sind Kurvenanpassungsfunktionen, AIC-Reihenfolge, Chow-Test, Kaplan-Meier-Schätzer, Gini-Koeffizient, Post-Breakthrough-Dynamik sowie TAS-Gap-Berechnung. Alle 134~Tests werden mit 0~Fehlern ausgeführt.
 
 \subsection*{F3c — Lebensdauer von Weltrekorden (Q3)}
 

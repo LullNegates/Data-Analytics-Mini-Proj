@@ -70,13 +70,25 @@ Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten S
 
 \section{F3 — Externer Einfluss auf die Rekordentwicklung}
 
-\subsection*{F3a — Abflachungsrate nach Durchbruch}
+\subsection*{F3a — Post-Breakthrough-Dynamik}
 
-\placeholder{Ergebnisse zur Abflachungsrate vor und nach einem Durchbruch-Ereignis (Decay-Koeffizient je Segment, Vergleich Pre-/Post-Break). Tabelle oder Diagramm mit Werten je Spiel einfügen.}
+Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen für alle Spiele, bei denen Pre- und Post-Breakthrough-Segmente ermittelt werden konnten.
 
-\subsection*{F3b — Messbarkeit des Tool-Einflusses}
+\placeholder{Tabelle~\ref{tab:f3a} einfügen. Spalten: Spiel \textbar{} Breakthrough-Größe (s) \textbar{} Breakthrough-\% der Gesamtreduktion \textbar{} $\phi$ (Flattening Ratio) \textbar{} Post-Trend ($\rho$) \textbar{} Interpretation. Werte nach Ausführung von \texttt{python run.py} aus \texttt{data/analysis/q3\_stats.json["post\_breakthrough\_dynamics"]} übertragen.}
 
-\placeholder{Ergebnisse zur statistischen Nachweisbarkeit des Tool-Einflusses im Datensatz (Chow-Test-Ergebnisse je kodiertem Ereignis, ggf.\ Regressionskoeffizienten). Tabelle oder Diagramm einfügen.}
+\placeholder{Finding~8 ergänzen: Zusammenfassung, wie viele Spiele ein Plateau zeigen ($\phi < 0{,}5$), wie viele eine Beschleunigung ($\phi > 1{,}0$), und welches Spiel den markantesten Breakthrough-Anteil an der Gesamtreduktion aufweist.}
+
+\subsection*{F3b — TAS-Annäherungsanalyse}
+
+Tabelle~\ref{tab:f3b_ref} vergleicht menschliche Weltrekorde mit den TAS-Referenzzeiten der drei Spiele mit dokumentierter TAS-Zeit (\textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}).
+
+\placeholder{Tabelle~\ref{tab:f3b_ref} einfügen. Spalten: Spiel \textbar{} TAS-Zeit (s) \textbar{} Aktueller WR (s) \textbar{} Gap (s) \textbar{} \% geschlossen \textbar{} Est.\ Jahre bis TAS-Match. Werte aus \texttt{data/analysis/f3b\_tas\_stats.json} übertragen.}
+
+Tabelle~\ref{tab:f3b_proxy} zeigt den modellbasierten Asymptoten-Proxy für alle 17~Spiele.
+
+\placeholder{Tabelle~\ref{tab:f3b_proxy} einfügen. Spalten: Spiel \textbar{} Modell \textbar{} Theoretisches Minimum (s) \textbar{} Gap (s) \textbar{} \% der möglichen Reduktion erreicht. Spiele ohne valides Sättigungsmodell ($R^2 < 0{,}70$) als \enquote{none\_detected} kennzeichnen. Werte aus \texttt{data/analysis/q3\_stats.json["tas\_proximity"]} übertragen.}
+
+\placeholder{Finding~9 ergänzen: Mittlere Gap-Prozent über alle TAS-Referenzspiele; Modellvalidierung ($\Delta = t_{\mathrm{Floor}} - t_{\mathrm{TAS}}$, positiv = Modell überschätzt das theoretische Minimum).}
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 

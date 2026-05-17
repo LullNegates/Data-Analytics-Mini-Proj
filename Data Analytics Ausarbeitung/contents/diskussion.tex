@@ -11,19 +11,31 @@ Die starke Variation der prozentualen Zeitreduktion (9,4~\%–98,9~\%) lässt si
 
 Der universelle Strukturbruch (alle 17~Spiele, Chow-Test signifikant) ist das stärkste Ergebnis von F2. Er deutet darauf hin, dass Speedrunning-Optimierung nicht linear verläuft: Eine frühe \emph{Hochaktivitätsphase} (intensive Routing-Suche, Entdeckung spielverändernder Glitches) geht in eine flachere \emph{Plateau-Phase} über, in der nur noch marginale Verbesserungen möglich sind. Die Tatsache, dass der Strukturbruch überwiegend bei den ersten 6–10~Weltrekorden auftritt, legt nahe, dass die initialen Community-Pioniere den größten Anteil der gesamten erzielbaren Optimierung leisten. Das hohe $R^2$ aller Modelle ($> 0{,}73$) bestätigt, dass der Kurvenverfall statistisch gut beschreibbar ist, unabhängig vom gewählten Modelltyp.
 
-\subsection*{F3a — Abflachungsrate nach Durchbruch}
+\subsection*{F3a — Post-Breakthrough-Dynamik}
 
-\placeholder{Interpretation der F3a-Ergebnisse: Setzt ein Durchbruch die Abflachungsrate zurück? Bezug zu den gemessenen Decay-Koeffizienten herstellen und im Kontext der Community-Dynamik einordnen.}
+Die Wahl des maximalen Einzelschritts als Breakthrough-Marker unterscheidet sich konzeptionell vom Chow-Test-Bruchpunkt aus F2: Der Chow-Test detektiert den Punkt stärksten Steigungswechsels in der \emph{kumulierten} Kurve und liegt typischerweise bei den ersten 6–10~WRs, weil dort die Improvement-Rate am steilsten fällt. Der Breakthrough hingegen markiert ein einmaliges Extremereignis --- oft eine Glitch-Entdeckung --- das zeitlich mit dem Chow-Bruch zusammenfallen, aber auch später auftreten kann.
 
-\subsection*{F3b — Messbarkeit des Tool-Einflusses}
+Ein Flattening Ratio $\phi < 0{,}5$ wäre dahingehend zu interpretieren, dass eine Community nach einem Durchbruch ihre Energie auf die Verfeinerung der neuen Technik konzentriert, anstatt grundlegend neue Optimierungsräume zu erschließen. Ein $\phi > 1{,}0$ würde dagegen zeigen, dass der Durchbruch neue Glitch-Ketten oder Routing-Möglichkeiten aktiviert hat, die weitere schnelle Verbesserungen ermöglichen.
 
-\placeholder{Interpretation der F3b-Ergebnisse: Ist der Tool-Einfluss statistisch nachweisbar? Diskussion der Effektgröße, möglicher Confounder (Community-Wachstum, Spielalter) und methodischer Grenzen.}
+\placeholder{Konkrete Interpretation nach Vorlage der Flattening-Ratio-Werte: Welche Spiele zeigen Plateau, welche Beschleunigung? Stimmt der Breakthrough-Zeitpunkt mit dem Chow-Bruch aus F2 überein oder divergiert er? Einordnung spielspezifischer Ausreißer.}
+
+\subsection*{F3b — TAS-Annäherungsanalyse}
+
+Das TAS-Konzept verknüpft die Speedrunning-Analyse mit dem \emph{Bannister-Effekt}~\cite{wooten2022}: Nicht allein der psychologische Nachweis, dass ein Ziel erreichbar ist, sondern die Diffusion konkreter Techniken treibt anschließende Verbesserungen. Im Speedrunning dokumentieren TAS-Routen Strategien Bild für Bild; die Community überträgt diese durch Video-Analyse und Kommentare in die menschliche RTA-Praxis. Die Gap-Schließungsgeschwindigkeit ist damit auch ein Maß für die \emph{Diffusionsgeschwindigkeit} einer TAS-Strategie.
+
+Der Asymptoten-Proxy ist methodisch konservativ: Der $R^2 \geq 0{,}70$-Schwellenwert schließt Spiele ohne stabile Sättigungskurve aus. Spiele, die als \enquote{none\_detected} klassifiziert werden (typischerweise junge Spiele wie \textit{Celeste} oder \textit{Hollow Knight}), befinden sich möglicherweise noch in einer aktiven Entdeckungsphase ohne erkennbares theoretisches Minimum.
+
+\placeholder{Konkrete Interpretation: Bei welchen Spielen ist die menschliche Community nahe am TAS? Für welche ist die Lücke noch groß, und warum (Ausführungskomplexität, Zufallselemente)? Qualität des Asymptoten-Proxys: Wie gut schätzt der Modell-Floor die echten TAS-Zeiten ($\Delta$-Werte für SMB, Super Metroid, Half-Life~2)?}
 
 \subsection*{F3c — Lebensdauer}
 
 Das Jahrzehntmuster --- lange Lebensdauer in den 2000ern, drastischer Rückgang ab 2010 --- passt zur historischen Entwicklung der Speedrunning-Community. Vor der Gründung von \textit{speedrun.com}~(2014) und der Popularisierung über Streaming-Plattformen gab es deutlich weniger aktive Speedrunner, sodass Weltrekorde länger unangefochten blieben. Der moderate Effekt ($\eta^2 = 0{,}044$) zeigt, dass das Genre zwar eine messbare Rolle spielt, aber bei weitem nicht der einzige Einflussfaktor ist. Community-Größe, Spielalter und Popularität auf Streaming-Plattformen sind wahrscheinlich stärkere Prädiktoren, konnten im vorliegenden Datensatz jedoch nicht kontrolliert werden.
 
 Der hohe Gini-Koeffizient in allen Genres ($G = 0{,}65$–$0{,}92$) zeigt, dass Weltrekordverbesserungen hochgradig ungleich verteilt sind: Wenige Schlüsselentdeckungen (Glitches, neue Routen) dominieren die Gesamtoptimierung, während die meisten späteren Rekorde nur marginale Sekundenbruchteile einsparen.
+
+\subsection*{Einordnung in bestehende Forschung}
+
+Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~Spielen, dass WR-Verbesserungen Potenzgesetz-Mustern folgen und systematische Trendbrüche aufweisen. Die vorliegende Arbeit repliziert den universellen Strukturbruch-Befund (F2, Chow-Test für alle 17~Spiele signifikant) auf einem kleineren, aber methodisch tieferen Datensatz. Sie ergänzt ihn um drei Dimensionen, die bei Erdil und Sevilla nicht untersucht werden: die Mechanismus-Ebene (F3a: Post-Breakthrough-Dynamik), eine Minimums-Schätzung (F3b: TAS-Annäherung) und eine Genre-differenzierte Lebensdaueranalyse (F3c). Ein direkter Ergebnisvergleich ist nicht möglich, da unterschiedliche Spielsets, Zeiträume und Kategorien verwendet wurden.
 
 \section{Limitationen}
 
