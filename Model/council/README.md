@@ -106,7 +106,7 @@ Three runs on the same Q1 data, verified claim-by-claim against `q1_reduction.cs
 | **Duplicate findings** | 0 | 4 (F4 = F5 = F6 = F7) | 0 | **0** |
 | **Filler / weak findings** | 1 | 0 | 1 | **0** |
 | **Off-topic metrics** | 2 | 0 | 1 | **0** |
-| **Factual errors** | 1 major | 0 | 1 minor | **0** |
+| **Factual errors** | 1 major | 2 minor | 1 minor | **0** |
 | **Statistician output** | full | full | ✅ full | ✅ **full (5 448 chars)** |
 | **Fact-check result** | n/a | n/a | ~13 / 16 | ✅ **18 / 18, 0 revisions** |
 
@@ -124,7 +124,7 @@ Three runs on the same Q1 data, verified claim-by-claim against `q1_reduction.cs
 
 ## Why genre-level analysis is the right focus
 
-The research questions for this project are framed at the genre level — "do certain genres improve faster than others?" — not at the level of individual games. Council v3 produced 16 findings by citing per-game values (FF7 2.86 %, Quake 1.76 %, Super Metroid 3.07 %, etc.), but those individual data points are already visible in the raw CSV. Repeating them as LLM findings adds no interpretive value and inflates the output with noise that obscures the actual conclusions.
+The research questions for this project are framed at the genre level "do certain genres improve faster than others?" not at the level of individual games. Council v3 produced 16 findings by citing per-game values (FF7 2.86 %, Quake 1.76 %, Super Metroid 3.07 %, etc.), but those individual data points are already visible in the raw CSV. Repeating them as LLM findings adds no interpretive value and inflates the output with noise that obscures the actual conclusions.
 
 Genre-level aggregates are what the Ausarbeitung needs:
 

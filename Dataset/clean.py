@@ -12,8 +12,12 @@ Run: python clean.py
 
 import csv
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared.utils import normalize_columns
 
 
 def _parse_date(s: str) -> datetime:
@@ -262,11 +266,15 @@ def write_csv(rows: list[dict], path: Path) -> None:
     if not rows:
         print(f"  [skip]  {path.name} — no data")
         return
+    # Normalise float columns: every value in a column gets the same number of
+    # decimal places as the entry with the most, preserving trailing zeros as
+    # strings so Excel sees consistent column widths (e.g. "89.7550" not "89.755").
+    normalised = normalize_columns(rows)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer = csv.DictWriter(f, fieldnames=normalised[0].keys())
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(normalised)
     print(f"  [ok]    {path.name}  ({len(rows)} rows)")
 
 

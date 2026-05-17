@@ -29,6 +29,7 @@ from models import fit_all, fit_lowess, chow_test
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from shared.DTOs.q2_dtos import (ImprovementAccelerationResult,
                                   StructuralBreakResult, GameQ2Result)
+from shared.utils import normalize_floats
 
 CLEAN_DIR    = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -151,7 +152,7 @@ def run() -> dict:
 
     ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
     out = ANALYSIS_DIR / "q2_stats.json"
-    out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    out.write_text(json.dumps(normalize_floats(result), ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  [q2] written -> {out.name}")
     return result
 

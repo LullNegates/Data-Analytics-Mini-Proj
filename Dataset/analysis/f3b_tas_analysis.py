@@ -37,6 +37,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from shared.DTOs.f3b_dtos import TasComparisonResult, TasGapSnapshot
+from shared.utils import normalize_floats
 
 CLEAN_DIR    = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -244,7 +245,7 @@ def run() -> dict:
 
     ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
     out = ANALYSIS_DIR / "f3b_tas_stats.json"
-    out.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+    out.write_text(json.dumps(normalize_floats(output), ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  [f3b] written -> {out.name}  ({len(results)} games with TAS, {len(skipped)} skipped)")
     return output
 
