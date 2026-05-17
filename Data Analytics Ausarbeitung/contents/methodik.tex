@@ -25,14 +25,12 @@ Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{z
 
 Um zu untersuchen, ob ein identifizierbares Durchbruchereignis die Verbesserungsrate zurücksetzt oder abflacht, wird für jedes Spiel der \textbf{Breakthrough} als derjenige WR definiert, bei dem die absolute Zeitersparnis gegenüber dem Vorgänger-Weltrekord am größten ist --- meistens eine Glitch-Entdeckung oder ein großes Routing-Update.
 
-Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die jeweils die \textbf{Verbesserungsgeschwindigkeit} (Velocity) berechnet wird:
+Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die jeweils die \textbf{Verbesserungsgeschwindigkeit} (Velocity) berechnet wird --- eine ursprünglich geplante Decay-Koeffizient-Regression erwies sich bei den oft kleinen Segmenten als instabil:
 \begin{align*}
     v_{\text{pre}}  &= \frac{\sum \Delta t_{\text{pre}}}{d_{\text{pre}}} \quad \text{[s/Tag]}\\
     v_{\text{post}} &= \frac{\sum \Delta t_{\text{post}}}{d_{\text{post}}} \quad \text{[s/Tag]}
 \end{align*}
 Das \textbf{Flattening Ratio} $\phi = v_{\text{post}} / v_{\text{pre}}$ quantifiziert die Veränderung: $\phi < 0{,}5$ signalisiert ein klares Plateau, $\phi > 1{,}0$ eine Beschleunigung, $0{,}5 \leq \phi \leq 1{,}0$ eine graduelle Verlangsamung. Ein ergänzender \textbf{Spearman-Rangkorrelationstest} ($\rho$) quantifiziert den zeitlichen Trend der Post-Breakthrough-Verbesserungsgrößen ($\rho < -0{,}2$: abnehmend, $\rho > 0{,}2$: zunehmend).
-
-Ursprünglich war eine Regression des Abfall-Koeffizienten je Segment geplant. Da viele Segmente jedoch zu wenige Datenpunkte für eine stabile Kurvenanpassung enthalten, wurde der Velocity-Ansatz als robustere Alternative gewählt.
 
 Diese Methode unterscheidet sich vom Chow-Test aus F2: Während der Chow-Test den stärksten Steigungswechsel in der kumulierten Kurve markiert, identifiziert der hier gewählte Ansatz den größten \emph{einzelnen} Verbesserungsschritt --- eine direktere Entsprechung für Glitch-Entdeckungen.
 
@@ -53,9 +51,7 @@ Für die Ausgabeformatierung sind zwei Präzisionsklassen getrennt getestet: ein
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 
-Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor: Die tatsächliche Lebensdauer ist unbekannt, aber mindestens so lang wie der bisher vergangene Zeitraum.
-
-Ursprünglich war eine einfache Trendanalyse geplant. Da aktive Rekorde zum Analysezeitpunkt jedoch rechtszensierte Beobachtungen erzeugen, die eine einfache Trendanalyse nicht korrekt verarbeiten kann, kommt stattdessen der Kaplan-Meier-Schätzer zum Einsatz.
+Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor --- eine ursprünglich geplante einfache Trendanalyse kann Zensierung nicht korrekt verarbeiten, weshalb stattdessen der Kaplan-Meier-Schätzer eingesetzt wird.
 
 Der \textbf{Kaplan-Meier-Schätzer}~\cite{darrigo2021} berücksichtigt diese zensierten Beobachtungen korrekt und gibt für jeden Zeitpunkt~$t$ die Wahrscheinlichkeit an, dass ein Weltrekord bis dahin noch steht. Der Median dieser Überlebensfunktion gibt an, nach wie vielen Tagen die Hälfte aller Rekorde eines Genres bereits gebrochen wurde. Voraussetzung des Schätzers ist nicht-informative Zensierung: Das Herausfallen eines Rekords aus dem Beobachtungszeitraum darf nicht mit seiner Lebensdauer zusammenhängen. Da die zensierten Rekorde hier ausschließlich solche sind, die zum Auswertungsstichtag noch aktiv waren (administrative Zensierung durch den Analysezeitpunkt), ist diese Voraussetzung erfüllt.
 

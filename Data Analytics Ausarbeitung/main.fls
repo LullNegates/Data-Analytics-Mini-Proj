@@ -341,8 +341,6 @@ INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
 INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
-INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
-INPUT c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmtti10.tfm
 INPUT ./contents/diskussion.tex
 INPUT ./contents/diskussion.tex
 INPUT ./contents/diskussion.tex
@@ -376,4 +374,3 @@ INPUT c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmro10.pfb
 INPUT c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
 INPUT c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmsy7.pfb
 INPUT c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmtt10.pfb
-INPUT c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmtti10.pfb

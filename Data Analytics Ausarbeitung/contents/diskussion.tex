@@ -13,21 +13,13 @@ Der universelle Strukturbruch (alle 17~Spiele, Chow-Test signifikant) ist das st
 
 \subsection*{F3a — Post-Breakthrough-Dynamik}
 
-Der hier gewählte Ansatz unterscheidet sich vom Chow-Test-Bruchpunkt aus F2: Der Chow-Test findet den Punkt mit dem stärksten Steigungswechsel in der \emph{kumulierten} Zeitreihe und liegt typischerweise bei den ersten 10~WRs, weil die Verbesserungsrate dort am steilsten abfällt. Der Breakthrough hingegen markiert ein einmaliges Extremereignis --- oft eine Glitch-Entdeckung --- das zeitlich mit dem Chow-Bruch zusammenfallen, aber auch früher oder später auftreten kann.
+Der Breakthrough markiert den größten Einzelschritt in der WR-Zeitreihe --- meist eine Glitch-Entdeckung --- und muss nicht mit dem Chow-Test-Bruchpunkt aus F2 zusammenfallen. Ein $\phi < 0{,}5$ zeigt Konsolidierung, $\phi > 1{,}0$ eine Beschleunigung durch neu erschlossene Routing-Möglichkeiten.
 
-Ein $\phi < 0{,}5$ zeigt, dass die Community nach einem Durchbruch die neue Technik verfeinert, statt grundlegend neue Möglichkeiten zu suchen. Ein $\phi > 1{,}0$ zeigt dagegen, dass der Durchbruch neue Glitch-Ketten oder Routing-Möglichkeiten freigelegt hat, die weitere schnelle Verbesserungen ermöglichen.
-
-Für \textit{Portal~2}, \textit{Quake} und \textit{The Talos Principle} stimmt der Breakthrough-Zeitpunkt exakt mit dem Chow-Test-Strukturbruch aus F2 überein (jeweils WR~\#28, \#5 und \#23) --- ein Hinweis, dass der größte Einzelschritt der entscheidende Wendepunkt in der kumulierten Kurve ist. Bei \textit{Zelda: Ocarina of Time} liegt der maximale Einzelschritt (WR~\#4, Januar~2020) sechs~WRs vor dem Chow-Bruch (WR~\#10), was darauf hindeutet, dass ein früher Glitch-Fund das Routing fundamental veränderte, bevor sich die Verbesserungsgeschwindigkeit statistisch stabilisiert hatte.
-
-\textit{Donkey Konga} ist der markanteste Ausreißer: $\phi = 23{,}97$ signalisiert eine Beschleunigung, nicht ein Plateau. Der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass im Post-Segment kaum Konsolidierungszeit bestand --- die hohe Verbesserungsgeschwindigkeit danach spiegelt vor allem direkte Folgeverbesserungen wider. Alle übrigen auswertbaren Spiele ($n = 5$) zeigen ein klares Plateau ($\phi \leq 0{,}44$), wobei \textit{Zelda: OoT} ($\phi = 0{,}02$) und \textit{The Talos Principle} ($\phi = 0{,}02$) mit $\rho = -0{,}79$ ($p < 0{,}001$) die stärkste Abnahme der Post-Breakthrough-Verbesserungen aufweisen. Das Ergebnis zeigt: Durchbrüche setzen die Abflachungsrate nicht zurück, sondern leiten direkt eine Konsolidierungsphase ein.
+\textit{Donkey Konga} ist der Ausreißer ($\phi = 23{,}97$): Der Breakthrough liegt erst seit Dezember~2024 zurück, sodass kaum Konsolidierungszeit bestand. Alle übrigen auswertbaren Spiele ($n = 5$) zeigen ein klares Plateau ($\phi \leq 0{,}44$). Durchbrüche setzen die Abflachungsrate demnach nicht zurück, sondern leiten eine Konsolidierungsphase ein.
 
 \subsection*{F3b — Annäherung ans theoretische Minimum}
 
-Der Asymptoten-Proxy schätzt das theoretische Minimum einer WR-Kurve über den Grenzwert des besten Sättigungsmodells. Der $R^2 \geq 0{,}70$-Schwellenwert schließt Spiele ohne stabile Sättigungskurve aus, damit keine unzuverlässigen Schätzungen einfließen. Dass 15 von 17 Spielen als \enquote{none\_detected} klassifiziert werden, ist kein Mangel der Methode, sondern ein inhaltliches Ergebnis: Diese Communities --- darunter jüngere Spiele wie \textit{Celeste} oder \textit{Hollow Knight} --- befinden sich noch in einer aktiven Entdeckungsphase, in der sich kein stabiler Grenzwert abzeichnet.
-
-Für die zwei auswertbaren Spiele zeigt der Proxy, dass \textit{Half-Life~2} mit einem aktuellen WR von $2190{,}3$~s bereits 95,5~\% der möglichen Reduktion bis zum Modell-Floor ($1874{,}7$~s) erreicht hat. \textit{Pokémon Red/Blue} liegt bei 82,5~\%. Beide Spiele sind damit weit in die Sättigungsphase eingetreten.
-
-Ein direkter Vergleich mit realen TAS-Zeiten war nicht möglich: Verlässliche TAS-Daten sind weder über eine öffentliche API verfügbar, noch lassen sie sich ohne Frame-genaue Videoanalyse zuverlässig erheben --- dabei ist zu berücksichtigen, dass TAS-Videos nicht immer vom tatsächlichen Spielstart beginnen, was die Zeitauswertung zusätzlich erschwert.
+Dass 15 von 17 Spielen als \texttt{none\_detected} klassifiziert werden, ist kein Methodenproblem --- diese Communities befinden sich noch in einer aktiven Entdeckungsphase ohne stabilen Grenzwert. Die zwei auswertbaren Spiele sind weit in die Sättigungsphase eingetreten: \textit{Half-Life~2} zu 95,5~\%, \textit{Pokémon Red/Blue} zu 82,5~\% der möglichen Reduktion. Ein direkter TAS-Vergleich war nicht möglich, da keine öffentliche API verlässliche TAS-Daten liefert und Frame-genaue Videoanalyse im gegebenen Zeitrahmen nicht leistbar war.
 
 \subsection*{F3c — Lebensdauer}
 
@@ -37,18 +29,18 @@ Der hohe Gini-Koeffizient in allen Genres ($G = 0{,}65$–$0{,}92$) zeigt, dass 
 
 \subsection*{Einordnung in bestehende Forschung}
 
-Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~Spielen, dass WR-Verbesserungen Potenzgesetz-Mustern folgen und systematische Trendbrüche aufweisen. Diese Arbeit bestätigt den Strukturbruch-Befund (F2, Chow-Test für alle 17~Spiele signifikant) auf einem kleineren, aber detaillierter ausgewerteten Datensatz. Zusätzlich werden drei Fragen untersucht, die bei Erdil und Sevilla offen bleiben: Post-Breakthrough-Dynamik (F3a), Annäherung ans theoretische Minimum (F3b) und Genre-Vergleich der Lebensdauer (F3c). Ein direkter Ergebnisvergleich ist nicht möglich, da Spielsets, Zeiträume und Kategorien abweichen.
+Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~Spielen, dass WR-Verbesserungen Potenzgesetz-Mustern folgen und systematische Trendbrüche aufweisen. Diese Arbeit bestätigt den Strukturbruch-Befund (F2, Chow-Test für alle 17~Spiele signifikant) auf einem kleineren, aber detaillierter ausgewerteten Datensatz. Zusätzlich werden drei Fragen untersucht, die bei Erdil und Sevilla offen bleiben: Post-Breakthrough-Dynamik (F3a), Annäherung ans theoretische Minimum (F3b) und Genre-Vergleich der Lebensdauer (F3c).
 
 \section{Limitationen}
 
-\textbf{Stichprobengröße:} Mit 17~Spielen ist der Datensatz klein. Verallgemeinerungen auf alle Genres sind daher nur eingeschränkt möglich.
+\textbf{Stichprobengröße:} Mit 17~Spielen sind Verallgemeinerungen auf alle Genres eingeschränkt.
 
-\textbf{Kategorie any\%:} Die Beschränkung auf any\% schließt andere gängige Kategorien aus (z.\,B.~100\%, No-Major-Glitches). Die Dynamiken können sich je nach Kategorie erheblich unterscheiden.
+\textbf{Kategorie any\%:} Andere Kategorien (100\%, No-Major-Glitches) sind nicht abgedeckt; ihre Dynamiken können abweichen.
 
-\textbf{Plattformbias:} \textit{speedrun.com} hat einen Schwerpunkt auf PC-Spielen und englischsprachige Communities. Konsolen-Speedrunning und nicht-englischsprachige Spiele sind unterrepräsentiert.
+\textbf{Plattformbias:} \textit{speedrun.com} bevorzugt PC-Spiele und englischsprachige Communities.
 
-\textbf{Fehlende Kontrollvariablen:} Community-Größe, Spieleranzahl und Medienaufmerksamkeit lagen nicht vor, obwohl sie Lebensdauer und Verbesserungsrate stark beeinflussen dürften.
+\textbf{Fehlende Kontrollvariablen:} Community-Größe, Spieleranzahl und Streaming-Reichweite lagen nicht vor, beeinflussen aber Lebensdauer und Verbesserungsrate erheblich.
 
-\textbf{Kein TAS-Vergleich:} Ein direkter Vergleich mit TAS-Zeiten war nicht realisierbar. Keine öffentliche API liefert verlässliche TAS-Daten; die vorhandenen TAS-Videos erfordern Frame-genaue Auswertung des Startzeitpunkts, was im gegebenen Zeitrahmen nicht leistbar war. Der Asymptoten-Proxy ist daher nur ein Näherungswert für das theoretische Minimum.
+\textbf{Kein TAS-Vergleich:} Keine öffentliche API liefert verlässliche TAS-Daten; Frame-genaue Videoanalyse war im Zeitrahmen nicht leistbar --- der Asymptoten-Proxy ist daher nur eine Näherung.
 
-\textbf{Kausalität:} Alle Ergebnisse zeigen Zusammenhänge, keine Ursachen. Aussagen wie „Glitches \emph{verursachen} Strukturbrüche" lassen sich aus diesen Daten nicht belegen.
+\textbf{Kausalität:} Alle Ergebnisse zeigen Zusammenhänge, keine Ursachen.

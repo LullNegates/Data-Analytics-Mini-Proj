@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1779042938.96548 "main.aux" "main.bbl" "main" 1779044570.54133 0
+["bibtex main"] 1779045831.38125 "main.aux" "main.bbl" "main" 1779045834.50693 0
   "./ausarbeitung.bib" 1779042937 4328 ec5fbd967d331024c44dc22ada0e8f86 ""
   "./halpha-abbrv.bst" 1779027716 25777 09a9b379cdb9607cf8c023d0f2ec1838 ""
-  "main.aux" 1779044569 5510 e7c67c23ac3fc3a4b69dee8edeb638ce "pdflatex"
+  "main.aux" 1779045833 5148 a86e67402442d5bca3f19e38b7c2a76b "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1779044567.90051 "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" "main.pdf" "main" 1779044570.54222 0
+["pdflatex"] 1779045831.86843 "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" "main.pdf" "main" 1779045834.50788 0
   "FHDW-Logo.eps" 1779027716 127240 cc36ef6bf4d4285435270121dc4cb8f2 ""
   "affirmation.tex" 1779027716 17 10a6eaf503e30abdc19cbc393250e44c ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1764776708 2375 baa924870cfb487815765f9094cf3728 ""
@@ -35,7 +35,6 @@
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm" 1764776708 17148 9556e1b5f936b77a796f68d2d559ba99 ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmro10.tfm" 1764776708 12196 3ef208c5996a6e35328a273ab73fa1e1 ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm" 1764776708 1372 2ef2c2b492b3c4cd7879fe083abbb061 ""
-  "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/ec-lmtti10.tfm" 1764776708 1372 0dcee1a56926aed3dd9ded91b7563563 ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/lmex10.tfm" 1764776708 992 ce925c9346c7613270a79afbee98c070 ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/lmmi10.tfm" 1764776708 1528 6d36b2385e0ca062a654de6ac59cb34f ""
   "c:/texlive/2025/texmf-dist/fonts/tfm/public/lm/lmmi5.tfm" 1764776708 1508 51526923e80e59e37a4e87448b5af6e0 ""
@@ -78,7 +77,6 @@
   "c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmsy10.pfb" 1764776708 27863 09ce3735688ffde955e72da27c95b61a ""
   "c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmsy7.pfb" 1764776708 27941 d1f5d03f61a46c3fcc3a2ba904ddda52 ""
   "c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmtt10.pfb" 1764776708 113227 d3d1adc024746ff57b20efba82c6d365 ""
-  "c:/texlive/2025/texmf-dist/fonts/type1/public/lm/lmtti10.pfb" 1764776708 98822 8ee4d12584884e9da356662e14d316f9 ""
   "c:/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1764777013 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "c:/texlive/2025/texmf-dist/tex/generic/babel-german/ngerman.ldf" 1764775173 2289 142d4c4e9b9454344e08718ddd1c1070 ""
   "c:/texlive/2025/texmf-dist/tex/generic/babel-german/ngermanb.ldf" 1764775173 9519 07567e6a5751b56c75ede8e38d955275 ""
@@ -174,18 +172,18 @@
   "c:/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1764778925 3635704 7ad7a202ee0001c004bb800d641b8d05 ""
   "c:/texlive/2025/texmf.cnf" 1764778592 713 e69b156964470283e0530f5060668171 ""
   "contents/abstract.tex" 1779044091 2002 a70ec15c7abe80357fb3d44ed9b4b07a ""
-  "contents/diskussion.tex" 1779042562 8190 486f1645d36f1557b9fe5a965690cd6e ""
-  "contents/einleitung.tex" 1779044090 3865 ec4651f3ed57d26f4af9968cf854eb29 ""
-  "contents/ergebnisse.tex" 1779042078 12902 25f68f12ff8eba9b0be213e1a3a0e15f ""
+  "contents/diskussion.tex" 1779045755 5351 6f64262606e0696d437aad85fa358da6 ""
+  "contents/einleitung.tex" 1779045641 3558 38a1b66cd4ef781f169ca067da4c580a ""
+  "contents/ergebnisse.tex" 1779045767 12474 2f70818e0bd0ff4d758d81c771329290 ""
   "contents/fazit.tex" 1779042130 3337 3546a9b7065f365fe184340af0dbf549 ""
   "contents/figures/kaos.pdf" 1779027716 48645 110059dbfa6ed0ba511f77796a793314 ""
-  "contents/methodik.tex" 1779044567 9229 6d8244c0bb2d39d56189c7efd1c44e3c ""
-  "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" 1779027716 2281 9c92357d4f503477673c026162f328ea ""
-  "main.aux" 1779044569 5510 e7c67c23ac3fc3a4b69dee8edeb638ce "pdflatex"
-  "main.bbl" 1779042939 2914 9793395818643329123f877ce69b44f2 "bibtex main"
-  "main.out" 1779044569 2003 99d69a105fa089e6cbe33c4cb0eae2cc "pdflatex"
-  "main.tex" 1779027716 2281 9c92357d4f503477673c026162f328ea ""
-  "main.toc" 1779044569 1087 e09c5c22b06de6b02951f9d5251c010e "pdflatex"
+  "contents/methodik.tex" 1779045662 8900 02ee16f8af4ba7ab046a1ed612766a07 ""
+  "e:/Repos/Data-Analytics-Mini-Proj/Data Analytics Ausarbeitung/main.tex" 1779045827 2257 f7736a41c3c26c495cb798b25138a9c5 ""
+  "main.aux" 1779045833 5148 a86e67402442d5bca3f19e38b7c2a76b "pdflatex"
+  "main.bbl" 1779045831 2914 9793395818643329123f877ce69b44f2 "bibtex main"
+  "main.out" 1779045833 2003 99d69a105fa089e6cbe33c4cb0eae2cc "pdflatex"
+  "main.tex" 1779045827 2257 f7736a41c3c26c495cb798b25138a9c5 ""
+  "main.toc" 1779045833 1086 0e6ddc42886350af12ec63f51533ef31 "pdflatex"
   "sethesis.sty" 1779027716 3280 0cc913049f1db4b9234e65e5e06aa57d ""
   (generated)
   "main.aux"
