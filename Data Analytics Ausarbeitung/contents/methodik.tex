@@ -5,7 +5,7 @@
 
 Die Rohdaten wurden über die \textit{speedrun.com} API~v1~\cite{speedruncom_api} abgerufen. Ausgewählt wurden 17~Spiele aus sieben~Genres: Platformer (Super Mario Bros., Super Mario~64, Celeste), Action-Adventure (Super Metroid, Zelda: Ocarina of Time, Hollow Knight), RPG (Pokémon Red/Blue, Final Fantasy~VII), FPS (Doom~3, Quake, Half-Life~2), Puzzle (Portal, Portal~2, The Talos Principle), Sandbox (Minecraft: Java Edition) und Arcade (Pac-Man, Donkey Konga). Alle Analysen beschränken sich auf die \emph{any\%}-Kategorie,\footnote{Any\% bezeichnet in der Speedrunning-Community den schnellsten Weg zum Spielabschluss, unabhängig vom Fertigstellungsgrad.} da diese als einzige Kategorie in allen 17~Spielen vorhanden und vergleichbar ist.
 
-Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 842~Weltrekord-Einträge aus 17~Spielen. Im Bereinigungsschritt wurden technisch unplausible WR-Einträge entfernt: Weltrekordzeiten unter 1~\% des Medians der jeweiligen WR-Progression und unter 1{,}0~Sekunde gelten als Artefakte (z.\,B.\ Moderator-Platzhalter oder Tippfehler) und werden verworfen --- beschränkt auf Spiele mit Median~$> 10$~Sekunden, damit Arcade-Spiele mit legitim kurzen Zeiten unberührt bleiben. Die bereinigten Daten werden in fünf~CSV-Dateien exportiert; eine konsistente Dezimaldarstellung aller Float-Spalten stellt ein Normalisierungsmodul (\texttt{shared/utils.py}) sicher.
+Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 842~Weltrekord-Einträge aus 17~Spielen. Im Bereinigungsschritt wurden offensichtlich fehlerhafte WR-Einträge entfernt: Weltrekordzeiten unter 1~\% des Medians der jeweiligen WR-Progression und unter 1{,}0~Sekunde gelten als Fehler (z.\,B.\ Moderator-Platzhalter oder Tippfehler) und werden verworfen --- beschränkt auf Spiele mit Median~$> 10$~Sekunden, damit Arcade-Spiele mit legitim kurzen Zeiten unberührt bleiben. Die bereinigten Daten werden in fünf~CSV-Dateien exportiert; eine konsistente Dezimaldarstellung aller Float-Spalten stellt ein Normalisierungsmodul (\texttt{shared/utils.py}) sicher.
 
 \section{Statistische Methoden}
 
@@ -13,7 +13,7 @@ Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 842~Weltrekord-Eint
 
 Die prozentuale Zeitreduktion je Spiel~$i$ berechnet sich als $r_i = (t_{\text{first},i} - t_{\text{best},i})\,/\,t_{\text{first},i} \cdot 100\,\%$, wobei $t_{\text{first},i}$ die erste und $t_{\text{best},i}$ die aktuell beste Laufzeit im Datensatz ist. Zusätzlich werden die jährliche Verbesserungsrate und die Weltrekord-Dichte berechnet.
 
-Um zu prüfen, ob Genres sich systematisch in ihren jährlichen Raten unterscheiden, wird der \textbf{Kruskal-Wallis-Test}~\cite{kim2016} eingesetzt. Dieser nichtparametrische Test ist eine rangskalierte Erweiterung der einfaktoriellen Varianzanalyse und setzt keine Normalverteilung der Daten voraus --- eine wichtige Eigenschaft, da Laufzeit-Daten typischerweise stark rechtsschief verteilt sind.
+Um zu prüfen, ob Genres sich systematisch in ihren jährlichen Raten unterscheiden, wird der \textbf{Kruskal-Wallis-Test}~\cite{kim2016} eingesetzt. Dieser nichtparametrische Test arbeitet mit Rangzahlen statt Rohdaten und setzt keine Normalverteilung voraus --- eine wichtige Eigenschaft, da Laufzeit-Daten typischerweise stark rechtsschief verteilt sind.
 
 \subsection*{F2 — Sättigung der Verbesserungsrate (Q2)}
 
@@ -23,7 +23,7 @@ Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{z
 
 \subsection*{F3a — Post-Breakthrough-Dynamik}
 
-Um zu untersuchen, ob ein identifizierbares Durchbruchereignis die Verbesserungsrate zurücksetzt oder abflacht, wird für jedes Spiel der \textbf{Breakthrough} als diejenige WR-Iteration definiert, bei der die absolute Zeitersparnis gegenüber dem Vorgänger-Weltrekord maximal ist --- typischerweise die direkte Entsprechung einer Glitch-Entdeckung oder eines fundamentalen Routing-Updates.
+Um zu untersuchen, ob ein identifizierbares Durchbruchereignis die Verbesserungsrate zurücksetzt oder abflacht, wird für jedes Spiel der \textbf{Breakthrough} als derjenige WR definiert, bei dem die absolute Zeitersparnis gegenüber dem Vorgänger-Weltrekord am größten ist --- meistens eine Glitch-Entdeckung oder ein großes Routing-Update.
 
 Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die jeweils die \textbf{Verbesserungsgeschwindigkeit} (Velocity) berechnet wird:
 \begin{align*}
@@ -36,27 +36,27 @@ Diese Methode unterscheidet sich vom Chow-Test aus F2: Während der Chow-Test de
 
 \subsection*{F3b — TAS-Annäherungsanalyse}
 
-Tool-Assisted Speedruns (TAS) definieren das theoretische Zeitminimum für eine Spielkategorie bei perfekter Eingabeausführung. \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}; Referenzzeiten sind daher nicht über die API verfügbar und wurden manuell aus TASVideos.org~\cite{tasvideos} entnommen. Der theoretische Rahmen folgt Wooten~\cite{wooten2022}: TAS-Routen wirken als Benchmark-Innovation --- sobald eine Strategie per TAS als durchführbar belegt ist, diffundiert sie über Community-Dokumentation in die RTA-Praxis (\emph{Bannister-Effekt}).
+Tool-Assisted Speedruns (TAS) definieren das theoretische Zeitminimum für eine Spielkategorie bei perfekter Eingabeausführung. \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}; Referenzzeiten sind daher nicht über die API verfügbar und wurden manuell aus TASVideos.org~\cite{tasvideos} entnommen. Der theoretische Rahmen folgt Wooten~\cite{wooten2022}: TAS-Routen zeigen, was zeitlich möglich ist --- sobald eine Strategie per TAS belegt ist, übernimmt die Community sie durch Video-Analyse in die RTA-Praxis (\emph{Bannister-Effekt}).
 
-Zwei komplementäre Ansätze werden eingesetzt:
+Zwei Ansätze werden kombiniert:
 
 \paragraph{Modellbasierter Asymptoten-Proxy.} Für alle 17~Spiele wird der Floor-Parameter des besten Sättigungsmodells (exp\_decay oder Gompertz, $R^2 \geq 0{,}70$) als Schätzwert für das theoretische Minimum genutzt:
 \[
     \mathrm{Gap}_{\%} = \frac{t_{\mathrm{WR}} - t_{\mathrm{Floor}}}{t_{\mathrm{first}}} \times 100
 \]
 
-\paragraph{Empirischer TAS-Referenzvergleich.} Für Spiele mit dokumentierter TAS-Zeit ($n = 3$: \textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}) wird die Annäherung direkt gemessen. Die Gap-Schließungsgeschwindigkeit ergibt sich aus den letzten fünf WRs; die Differenz $\Delta = t_{\mathrm{Floor,Modell}} - t_{\mathrm{TAS}}$ bewertet die Qualität des Asymptoten-Proxys.
+\paragraph{Empirischer TAS-Referenzvergleich.} Für Spiele mit dokumentierter TAS-Zeit ($n = 3$: \textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}) wird die Annäherung direkt gemessen. Die Gap-Schließungsgeschwindigkeit ergibt sich aus den letzten fünf WRs; die Differenz $\Delta = t_{\mathrm{Floor,Modell}} - t_{\mathrm{TAS}}$ zeigt, wie gut der Proxy die TAS-Zeit schätzt.
 
-\subsection*{F3c — Lebensdauer von Weltrekorden (Q3)}
+\paragraph{TAS-Zeitreihenkorrelation.} Als dritter Ansatz wird geprüft, ob TAS-Meilensteine nachfolgende WR-Verbesserungen ankündigen. Dazu werden die WR-Datenpunkte im Zeitverlauf als Streudiagramm dargestellt und eine Abklingkurve angepasst. TAS-Veröffentlichungen aus TASVideos.org werden als Ereignisse in dieselbe Zeitachse eingetragen. Für jeden menschlichen WR wird geprüft, ob in den vorangegangenen 60~Tagen ein TAS-Meilenstein veröffentlicht wurde. WRs mit und ohne vorangehenden TAS-Meilenstein werden hinsichtlich ihrer Verbesserungsgröße verglichen (Mann-Whitney-U-Test). Größere WR-Sprünge nach TAS-Meilensteinen wären ein Hinweis auf den Übertragungsweg nach Wooten~\cite{wooten2022}: TAS dokumentiert eine neue Strategie, die Community setzt sie innerhalb weniger Wochen im Speedrun um.
 
 \subsection*{Qualitätssicherung}
 
 Die vollständige Analysepipeline ist durch 134~automatisierte pytest-Tests abgedeckt, die mit synthetischen In-Memory-Daten arbeiten und keine externen Datendateien benötigen. Abgedeckt sind Kurvenanpassungsfunktionen, AIC-Reihenfolge, Chow-Test, Kaplan-Meier-Schätzer, Gini-Koeffizient, Post-Breakthrough-Dynamik sowie TAS-Gap-Berechnung. Alle 134~Tests werden mit 0~Fehlern ausgeführt.
 
-\subsection*{F3c — Lebensdauer von Weltrekorden (Q3)}
+\subsection*{F3c — Lebensdauer von Weltrekorden}
 
 Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor: Die tatsächliche Lebensdauer ist unbekannt, aber mindestens so lang wie der bisher vergangene Zeitraum.
 
-Der \textbf{Kaplan-Meier-Schätzer}~\cite{darrigo2021} berücksichtigt diese zensierten Beobachtungen korrekt und liefert für jeden Zeitpunkt~$t$ die geschätzte Wahrscheinlichkeit, dass ein Weltrekord bis dahin noch Bestand hat. Der Median dieser Überlebensfunktion gibt an, nach wie vielen Tagen die Hälfte aller Rekorde eines Genres bereits gebrochen wurde.
+Der \textbf{Kaplan-Meier-Schätzer}~\cite{darrigo2021} berücksichtigt diese zensierten Beobachtungen korrekt und gibt für jeden Zeitpunkt~$t$ die Wahrscheinlichkeit an, dass ein Weltrekord bis dahin noch steht. Der Median dieser Überlebensfunktion gibt an, nach wie vielen Tagen die Hälfte aller Rekorde eines Genres bereits gebrochen wurde.
 
-Zum Vergleich der Lebensdauerverteilungen zwischen Genres wird der \textbf{Kruskal-Wallis-Test} eingesetzt. Als Effektgröße wird $\eta^2 = (H - k + 1)/(N - k)$ berechnet~\cite{lakens2013}. Paarweise Unterschiede werden mit dem \textbf{Mann-Whitney-U-Test}~\cite{kim2016} geprüft. Die Konzentration der Verbesserungsgrößen wird über den \textbf{Gini-Koeffizienten} quantifiziert ($G = 0$: vollkommen gleiche Verbesserungen, $G = 1$: eine einzelne Verbesserung dominiert alles).
+Zum Vergleich der Lebensdauerverteilungen zwischen Genres wird der \textbf{Kruskal-Wallis-Test} eingesetzt. Als Effektgröße wird $\eta^2 = (H - k + 1)/(N - k)$ berechnet~\cite{lakens2013}. Paarweise Unterschiede werden mit dem \textbf{Mann-Whitney-U-Test}~\cite{kim2016} geprüft. Der \textbf{Gini-Koeffizient} misst, wie gleichmäßig die Verbesserungsgrößen verteilt sind ($G = 0$: alle gleich, $G = 1$: eine einzelne Verbesserung dominiert alles).

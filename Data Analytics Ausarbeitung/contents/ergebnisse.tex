@@ -96,7 +96,7 @@ Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen f
   {\small \% Ges.\ = Breakthrough-Anteil an der Gesamtreduktion. $^{*}$\,$p < 0{,}05$; $^{***}$\,$p < 0{,}001$; n.\,a.\ = zu wenige Post-WRs für Spearman-Test. 11 von 17~Spielen hatten unzureichende Segmentgröße für die Velocity-Berechnung.}
 \end{table}
 
-\finding{8}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass die Post-Phase nur wenige Folgeverbesserungen enthält. Die stärksten Plateaus weisen \textit{Zelda: Ocarina of Time} und \textit{The Talos Principle} auf (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$). Der Breakthrough-Anteil an der Gesamtreduktion reicht von \textbf{13,6~\%} (\textit{Pokémon Red/Blue}) bis \textbf{42,4~\%} (\textit{Donkey Konga}).}
+\finding{5}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass die Post-Phase nur wenige Folgeverbesserungen enthält. Die stärksten Plateaus weisen \textit{Zelda: Ocarina of Time} und \textit{The Talos Principle} auf (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$). Der Breakthrough-Anteil an der Gesamtreduktion reicht von \textbf{13,6~\%} (\textit{Pokémon Red/Blue}) bis \textbf{42,4~\%} (\textit{Donkey Konga}).}
 
 \subsection*{F3b — TAS-Annäherungsanalyse}
 
@@ -139,11 +139,13 @@ Tabelle~\ref{tab:f3b_proxy} zeigt den modellbasierten Asymptoten-Proxy für alle
   \end{tabular}
 \end{table}
 
-\finding{9}{Über alle drei TAS-Referenzspiele beträgt die mittlere Lücke \textbf{0,015~\%} des ersten WRs --- praktisch null. \textit{Half-Life~2} und \textit{Super Metroid} haben die dokumentierte TAS-Zeit bereits unterschritten (\textbf{152,2~\%} bzw.\ \textbf{149,8~\%} der möglichen Reduktion erreicht), weil menschliche Runner eine effizientere Route entdeckten. Der Modell-Floor für \textit{Half-Life~2} ($1874{,}7$~s) liegt $\Delta = -2619$~s unterhalb der TAS-Referenzzeit, was konsistent ist: Das Modell projiziert zutreffend eine weitere Annäherung über den historischen TAS-Stand hinaus. 15~von 17~Spielen zeigen kein konvergentes Sättigungsmodell (\texttt{none\_detected}).}
+\placeholder{TAS-Zeitreihenkorrelation (Tab.\ \ref{tab:f3b_corr}): Für jedes Spiel mit TAS-Verlaufsdaten --- TAS-Veröffentlichungsdaten manuell aus TASVideos.org entnehmen und in \texttt{data/reference/tas\_known.json} eintragen (Felder \texttt{tas\_history[].date}). Dann \texttt{python analysis/f3b\_tas\_correlation.py} ausführen. Spalten: Spiel \textbar{} Anzahl TAS-Meilensteine \textbar{} WRs nach TAS-Ereignis ($n$) \textbar{} Ø Verbesserung danach (s) \textbar{} Ø Verbesserung ohne TAS-Ereignis (s) \textbar{} $p$-Wert (Mann-Whitney). Zeitfenster: 60~Tage.}
+
+\finding{6}{Über alle drei TAS-Referenzspiele beträgt die mittlere Lücke \textbf{0,015~\%} des ersten WRs --- praktisch null. \textit{Half-Life~2} und \textit{Super Metroid} haben die dokumentierte TAS-Zeit bereits unterschritten (\textbf{152,2~\%} bzw.\ \textbf{149,8~\%} der möglichen Reduktion erreicht), weil menschliche Runner eine effizientere Route entdeckten. Der Modell-Floor für \textit{Half-Life~2} ($1874{,}7$~s) liegt $\Delta = -2619$~s unterhalb der TAS-Referenzzeit, was konsistent ist: Das Modell projiziert zutreffend eine weitere Annäherung über den historischen TAS-Stand hinaus. 15~von 17~Spielen zeigen kein konvergentes Sättigungsmodell (\texttt{none\_detected}).}
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 
-Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Die 842~ausgewerteten Weltrekord-Datenpunkte umfassen 17~rechtszensierte Rekorde (zum Analysezeitpunkt noch Bestand).
+Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Von den 842~Weltrekord-Datenpunkten sind 17~zum Analysezeitpunkt noch aktiv (rechtszensiert).
 
 \begin{table}[htb]
   \centering
@@ -171,8 +173,8 @@ Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{
 
 Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste mittlere Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (95,2~Tage) sind deutlich kurzlebiger.
 
-\finding{5}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $\mathbf{H = 43{,}82}$; $\mathbf{p < 0{,}001}$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa \textbf{4,4~\%} der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
+\finding{7}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $\mathbf{H = 43{,}82}$; $\mathbf{p < 0{,}001}$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa \textbf{4,4~\%} der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
 
-\finding{6}{\textit{RPG}-Rekorde überleben mit einem Kaplan-Meier-Median von \textbf{52~Tagen} signifikant länger als Rekorde anderer Genres (Median: \textbf{7–17~Tage}). Die geringere Spielgeschwindigkeit und die größere Komplexität von RPGs erschweren schnelle Optimierungen.}
+\finding{8}{\textit{RPG}-Rekorde überleben mit einem Kaplan-Meier-Median von \textbf{52~Tagen} signifikant länger als Rekorde anderer Genres (Median: \textbf{7–17~Tage}). Die geringere Spielgeschwindigkeit und die größere Komplexität von RPGs erschweren schnelle Optimierungen.}
 
-\finding{7}{Im Jahrzehntvergleich sinkt die mittlere Rekordlebensdauer von \textbf{665,8~Tagen} (2000er) auf \textbf{82,4~Tage} (2010er). Der Einbruch fällt zeitlich mit dem starken Wachstum der Speedrunning-Community ab \textbf{2010} zusammen, das den Wettbewerbsdruck erhöhte.}
+\finding{9}{Im Jahrzehntvergleich sinkt die mittlere Rekordlebensdauer von \textbf{665,8~Tagen} (2000er) auf \textbf{82,4~Tage} (2010er). Der Einbruch fällt zeitlich mit dem starken Wachstum der Speedrunning-Community ab \textbf{2010} zusammen, das den Wettbewerbsdruck erhöhte.}
