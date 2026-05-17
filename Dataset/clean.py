@@ -309,7 +309,7 @@ def main() -> None:
         print(f"  {'Game':<45} {'%':<8} {'Years'}")
         print(f"  {'-'*45} {'-'*8} {'-'*5}")
         for r in q1[:5]:
-            print(f"  {r['game']:<45} {r['pct_reduction']:<8.2f} {r['years_span']}")
+            print(f"  {r['game']:<45} {r['pct_reduction']:<8.2f} {float(r['years_span']):<5.2f}")
 
 
 if __name__ == "__main__":

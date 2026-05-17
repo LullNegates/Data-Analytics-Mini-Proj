@@ -262,9 +262,15 @@ def print_summary(result: dict) -> None:
     print("  " + "-" * 85)
     for g in games:
         yrs = f"{g['est_years_to_match_tas']:.1f}" if g['est_years_to_match_tas'] else "--"
-        pct = f"{g['pct_closed']:.1f}%" if g['pct_closed'] is not None else "--"
+        pct_val = g['pct_closed']
+        if pct_val is not None and pct_val > 100:
+            pct = f"{pct_val:.1f}% (*surpassed)"
+        elif pct_val is not None:
+            pct = f"{pct_val:.1f}%"
+        else:
+            pct = "--"
         print(f"  {g['game']:<38} {g['tas_time_s']:<10.1f} {g['current_wr_time_s']:<10.1f} "
-              f"{g['current_gap_s']:<10.3f} {pct:<10} {yrs}")
+              f"{g['current_gap_s']:<10.3f} {pct:<20} {yrs}")
 
     s = result.get("summary", {})
     if s:
@@ -274,4 +280,4 @@ def print_summary(result: dict) -> None:
         mv = s.get("model_validation", {})
         if mv:
             print(f"  Model validation ({mv['n_games_with_both_model_and_tas']} games): "
-                  f"mean delta = {mv['mean_model_vs_tas_delta_s']} s ({mv['interpretation']})")
+                  f"mean delta = {mv['mean_model_vs_tas_delta_s']:.3f} s ({mv['interpretation']})")

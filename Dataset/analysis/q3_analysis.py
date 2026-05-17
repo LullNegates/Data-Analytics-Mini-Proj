@@ -263,7 +263,9 @@ def _tas_proximity(game: str, wr_rows: list[dict]) -> TasProximityResult | None:
     elif gomp is not None and gomp.r2 > 0.70 and gomp.params.get("floor", 0) > 0:
         floor_s, floor_model = gomp.params["floor"], "gompertz"
 
-    if floor_s is None or floor_s >= current_wr_s:
+    # Reject implausible floors: must be at least 5 % of first_wr_s and > 1 s
+    plausibility_min = max(1.0, 0.05 * first_wr_s)
+    if floor_s is None or floor_s >= current_wr_s or floor_s < plausibility_min:
         return TasProximityResult(
             game        = game,
             floor_model = "none_detected",
@@ -445,20 +447,22 @@ def print_summary(result: dict) -> None:
     for genre, s in sorted(result["genre_stats"].items(),
                            key=lambda x: -(x[1]["km_median_days"] or 0)):
         km_str = f"{s['km_median_days']:.0f}d" if s["km_median_days"] is not None else "inf"
-        print(f"  {genre:<18} {km_str:<12} {s['survival_at_365']:<10.3f} "
-              f"{s['survival_at_730']:<10.3f} {s['n_standing']:<10} "
-              f"{imp_gini.get(genre, 'n/a')}")
+        gini_val = imp_gini.get(genre)
+        gini_str = f"{gini_val:.4f}" if gini_val is not None else "n/a"
+        print(f"  {genre:<18} {km_str:<12} {s['survival_at_365']:<10.4f} "
+              f"{s['survival_at_730']:<10.4f} {s['n_standing']:<10} "
+              f"{gini_str}")
 
     kw = result.get("kruskal_wallis", {})
     if kw.get("pvalue") is not None:
         sig = "YES" if kw.get("significant_at_0.05") else "no"
-        print(f"\n  Kruskal-Wallis (genres differ?): p={kw['pvalue']}  significant={sig}")
+        print(f"\n  Kruskal-Wallis (genres differ?): p={kw['pvalue']:.4f}  significant={sig}")
 
     sig_pairs = [p for p in result.get("pairwise_mannwhitney", []) if p["significant"]]
     if sig_pairs:
         print(f"\n  Significantly different genre pairs (Mann-Whitney U, p<0.05):")
         for p in sig_pairs[:5]:
-            print(f"    {p['genres']:<35} p={p['pvalue']}")
+            print(f"    {p['genres']:<35} p={p['pvalue']:.4f}")
 
     print("\n  Decade comparison (observed durations):")
     for decade, s in result.get("decade_stats", {}).items():
@@ -476,14 +480,14 @@ def print_summary(result: dict) -> None:
 
     tas = result.get("tas_proximity", [])
     if tas:
-        print("\n  F3b -- TAS Proximity (theoretical floor)")
-        print(f"  {'Game':<38} {'Floor(s)':<12} {'Gap%':<10} {'%Achieved':<12} {'Est.yrs'}")
+        print("\n  F3b -- TAS Proximity (model asymptote floor -- NOT the same as real TAS time)")
+        print(f"  {'Game':<38} {'ModelFloor(s)':<14} {'Gap%':<10} {'%Achieved':<12} {'Est.yrs'}")
         print("  " + "-" * 90)
         for g in tas:
             if g.get("floor_model") == "none_detected":
-                print(f"  {g['game']:<38} {'no floor':<12} {'--':<10} {'--':<12} --")
+                print(f"  {g['game']:<38} {'no floor':<14} {'--':<10} {'--':<12} --")
             else:
                 yrs = f"{g['estimated_years_to_floor']:.1f}" if g.get('estimated_years_to_floor') else "inf"
-                print(f"  {g['game']:<38} {g['theoretical_floor_s']:<12.1f} "
+                print(f"  {g['game']:<38} {g['theoretical_floor_s']:<14.1f} "
                       f"{g['gap_to_floor_pct_of_first_wr']:<10.2f} "
                       f"{g['pct_of_theoretical_reduction_achieved']:<12} {yrs}")
