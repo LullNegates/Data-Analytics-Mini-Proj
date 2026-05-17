@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from data.analysis import (
+from f3b_tas_analysis import (
     _build_gap_history,
     _gap_velocity,
     _analyse_game,
@@ -336,7 +336,7 @@ class TestLoadTasReference:
         p.parent.mkdir()
         p.write_text(json.dumps(ref), encoding="utf-8")
 
-        from data.analysis import f3b_tas_analysis as m
+        import f3b_tas_analysis as m
         original = m.REFERENCE_DIR
         m.REFERENCE_DIR = tmp_path / "reference"
         try:
@@ -346,7 +346,7 @@ class TestLoadTasReference:
             m.REFERENCE_DIR = original
 
     def test_raises_when_missing(self, tmp_path):
-        from data.analysis import f3b_tas_analysis as m
+        import f3b_tas_analysis as m
         original = m.REFERENCE_DIR
         m.REFERENCE_DIR = tmp_path
         try:

@@ -80,56 +80,39 @@ class TestGini:
 # ---------- _kaplan_meier ----------
 
 class TestKaplanMeier:
+    """_kaplan_meier returns a KaplanMeierResult DTO."""
+
     def test_all_events_steps_down(self):
-        durations = [1.0, 2.0, 3.0, 4.0]
-        events    = [1, 1, 1, 1]
-        median, curve = _kaplan_meier(durations, events)
-        assert median <= 4.0
-        # Survival curve must be non-increasing
-        probs = [p for _, p in curve]
+        km = _kaplan_meier([1.0, 2.0, 3.0, 4.0], [1, 1, 1, 1])
+        assert km.median_days <= 4.0
+        probs = [p for _, p in km.curve]
         assert all(probs[i] >= probs[i + 1] for i in range(len(probs) - 1))
 
     def test_all_censored_never_drops(self):
-        durations = [10.0, 20.0, 30.0]
-        events    = [0, 0, 0]
-        median, curve = _kaplan_meier(durations, events)
-        assert median == float("inf")
-        # Curve stays at 1.0 throughout
-        assert all(p == 1.0 for _, p in curve)
+        km = _kaplan_meier([10.0, 20.0, 30.0], [0, 0, 0])
+        assert km.median_days == float("inf")
+        assert all(p == 1.0 for _, p in km.curve)
 
     def test_median_correct_simple_case(self):
-        # 4 records: all broken at t=1,2,3,4 → S(2)=0.5, median=2
-        durations = [1.0, 2.0, 3.0, 4.0]
-        events    = [1, 1, 1, 1]
-        median, _ = _kaplan_meier(durations, events)
-        # S(t) = (3/4)*(2/3)*(1/2)... median where S≤0.5
-        assert 2.0 <= median <= 4.0
+        km = _kaplan_meier([1.0, 2.0, 3.0, 4.0], [1, 1, 1, 1])
+        assert 2.0 <= km.median_days <= 4.0
 
     def test_censored_record_doesnt_step_curve(self):
-        # 3 events + 1 censored late → median should be same as without censored
-        d1 = [1.0, 2.0, 3.0]
-        e1 = [1, 1, 1]
-        median1, _ = _kaplan_meier(d1, e1)
-
-        d2 = [1.0, 2.0, 3.0, 10.0]
-        e2 = [1, 1, 1, 0]
-        median2, _ = _kaplan_meier(d2, e2)
-        assert median1 == median2
+        km1 = _kaplan_meier([1.0, 2.0, 3.0],        [1, 1, 1])
+        km2 = _kaplan_meier([1.0, 2.0, 3.0, 10.0],  [1, 1, 1, 0])
+        assert km1.median_days == km2.median_days
 
     def test_mixed_tied_times(self):
-        # Two events at same time — should not crash
-        durations = [5.0, 5.0, 10.0, 20.0]
-        events    = [1, 1, 0, 1]
-        median, curve = _kaplan_meier(durations, events)
-        assert median is not None
+        km = _kaplan_meier([5.0, 5.0, 10.0, 20.0], [1, 1, 0, 1])
+        assert km.median_days is not None
 
     def test_single_event(self):
-        median, curve = _kaplan_meier([7.0], [1])
-        assert median == 7.0
+        km = _kaplan_meier([7.0], [1])
+        assert km.median_days == 7.0
 
     def test_curve_starts_at_1(self):
-        median, curve = _kaplan_meier([1.0, 2.0, 3.0], [1, 0, 1])
-        assert curve[0] == (0.0, 1.0)
+        km = _kaplan_meier([1.0, 2.0, 3.0], [1, 0, 1])
+        assert km.curve[0] == (0.0, 1.0)
 
 
 # ---------- _km_predict ----------

@@ -43,7 +43,8 @@ from models import fit_exp_decay, fit_gompertz
 
 # shared/ lives two levels up from analysis/
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from shared.DTOs.q3_dtos import PostBreakthroughResult, PostTrendDTO, TasProximityResult
+from shared.DTOs.q3_dtos import (KaplanMeierResult, PostBreakthroughResult,
+                                  PostTrendDTO, TasProximityResult)
 
 CLEAN_DIR    = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -72,14 +73,14 @@ def _gini(values: np.ndarray) -> float:
                  / (n * cumsum[-1])) if cumsum[-1] > 0 else 0.0
 
 
-def _kaplan_meier(durations: list[float], events: list[int]) -> tuple[float, list[tuple]]:
+def _kaplan_meier(durations: list[float], events: list[int]) -> KaplanMeierResult:
     """
     Kaplan-Meier survival estimator.
 
     durations: observed lifetimes in days (both broken and still-standing records).
     events:    1 if the record was broken (event observed), 0 if still standing (censored).
 
-    Returns (median_survival_days, [(time, S(t)), ...]).
+    Returns a KaplanMeierResult with median_days and the step curve.
     Median = first time S(t) drops to or below 0.5. Returns inf if the curve never
     reaches 0.5 (record type so dominant it outlasts all observations).
 
@@ -112,7 +113,7 @@ def _kaplan_meier(durations: list[float], events: list[int]) -> tuple[float, lis
         if p <= 0.5:
             median = t
             break
-    return median, curve
+    return KaplanMeierResult(median_days=median, curve=curve)
 
 
 def _km_predict(curve: list[tuple], t: float) -> float:
@@ -315,13 +316,13 @@ def run() -> dict:
     for genre, data in sorted(by_genre.items()):
         durations = data["durations"]
         events    = data["events"]
-        median_d, curve = _kaplan_meier(durations, events)
+        km = _kaplan_meier(durations, events)
         genre_stats[genre] = {
             "n_records":          len(durations),
             "n_standing":         sum(1 for e in events if e == 0),
-            "km_median_days":     None if median_d == float("inf") else round(median_d, 1),
-            "survival_at_365":    round(_km_predict(curve, 365.0), 4),
-            "survival_at_730":    round(_km_predict(curve, 730.0), 4),
+            "km_median_days":     None if km.median_days == float("inf") else round(km.median_days, 1),
+            "survival_at_365":    round(_km_predict(km.curve, 365.0), 4),
+            "survival_at_730":    round(_km_predict(km.curve, 730.0), 4),
             "mean_observed_days": round(float(np.mean(durations)), 1),
             "max_observed_days":  round(float(np.max(durations)), 1),
         }

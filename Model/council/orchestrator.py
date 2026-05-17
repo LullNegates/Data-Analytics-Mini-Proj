@@ -25,7 +25,8 @@ from council import transcripts as tr
 from council.agents import CouncilAgent
 from council.context_builder import (build_q1_context, build_q2_context,
                                      build_q3_context)
-from council.fact_checker import VerificationReport, build_index_for_question, verify
+from council.fact_checker import (VerificationReport, build_index_for_question,
+                                  check_q2_structural_breaks, verify)
 from council.manager import ManagerAgent
 from council.ollama_client import parse_json_response
 
@@ -134,6 +135,9 @@ def run_council(
             break
 
         report = verify(draft, source_index)
+        if question == "q2":
+            sb_errors = check_q2_structural_breaks(draft, analysis_dir / "q2_stats.json")
+            report.categorical_errors.extend(sb_errors)
         final_report = report
 
         if report.all_verified:

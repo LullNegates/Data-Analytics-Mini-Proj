@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 import q2_analysis
+from q2_analysis import _detect_structural_break, _analyse_game
 
 
 def _make_rows(times_s: list[float], days: list[float] | None = None,
@@ -34,116 +35,138 @@ def _make_rows(times_s: list[float], days: list[float] | None = None,
 # ---------- _detect_structural_break ----------
 
 class TestDetectStructuralBreak:
+    """_detect_structural_break returns a StructuralBreakResult DTO or None."""
+
     def _call(self, rows):
         x = np.array([float(r["days_since_first"]) for r in rows])
         y = np.array([float(r["time_seconds"]) for r in rows])
-        return q2_analysis._detect_structural_break(x, y, rows)
+        return _detect_structural_break(x, y, rows)
 
     def test_returns_none_for_too_few_points(self):
         rows = _make_rows([200.0, 190.0, 180.0, 170.0, 160.0])
         assert self._call(rows) is None
 
     def test_detects_significant_break(self):
-        # Left segment: gentle improvement; right segment: steep drop (break)
-        left_times  = [200.0 - i * 1.0 for i in range(8)]   # ~1 s/step
-        right_times = [left_times[-1] - i * 15.0 for i in range(8)]  # ~15 s/step
-        times = left_times + right_times
-        days  = [float(i * 30) for i in range(len(times))]
-        rows  = _make_rows(times, days)
+        left_times  = [200.0 - i * 1.0 for i in range(8)]
+        right_times = [left_times[-1] - i * 15.0 for i in range(8)]
+        rows   = _make_rows(left_times + right_times,
+                            [float(i * 30) for i in range(16)])
         result = self._call(rows)
         assert result is not None
-        assert result["significant_at_0.05"] is True
+        assert result.significant_at_005 is True
 
     def test_no_significant_break_on_noisy_linear_trend(self):
-        # Uniformly noisy linear descent — no real structural break.
-        # A perfect straight line has near-zero RSS and is numerically unstable
-        # (floating point artifacts can push the Chow F above 3.0 by accident).
-        # Adding small Gaussian noise anchors the residual so F stays low.
         import random
-        rng = random.Random(99)
+        rng   = random.Random(99)
         times = [200.0 - i * 5.0 + rng.gauss(0, 0.2) for i in range(16)]
         days  = [float(i * 30) for i in range(16)]
         rows  = _make_rows(times, days)
         result = self._call(rows)
-        # True structural breaks have F >> 10; noise artifacts stay well below
         if result is not None:
-            assert result["f_statistic"] < 15.0
+            assert result.f_statistic < 15.0
 
-    def test_result_has_required_keys(self):
+    def test_result_has_required_attributes(self):
         left_times  = [200.0 - i * 0.5 for i in range(8)]
         right_times = [left_times[-1] - i * 20.0 for i in range(8)]
-        rows = _make_rows(left_times + right_times)
+        rows   = _make_rows(left_times + right_times)
         result = self._call(rows)
         if result is not None:
-            assert "split_wr_number" in result
-            assert "split_date" in result
-            assert "f_statistic" in result
-            assert "significant_at_0.05" in result
+            assert hasattr(result, "split_wr_number")
+            assert hasattr(result, "split_date")
+            assert hasattr(result, "f_statistic")
+            assert hasattr(result, "significant_at_005")
+
+    def test_to_dict_uses_dot_05_key(self):
+        left_times  = [200.0 - i * 0.5 for i in range(8)]
+        right_times = [left_times[-1] - i * 20.0 for i in range(8)]
+        rows   = _make_rows(left_times + right_times)
+        result = self._call(rows)
+        if result is not None:
+            d = result.to_dict()
+            assert "significant_at_0.05" in d
 
     def test_f_statistic_is_non_negative(self):
         left_times  = [200.0 - i * 0.5 for i in range(8)]
         right_times = [left_times[-1] - i * 20.0 for i in range(8)]
-        rows = _make_rows(left_times + right_times)
+        rows   = _make_rows(left_times + right_times)
         result = self._call(rows)
         if result is not None:
-            assert result["f_statistic"] >= 0
+            assert result.f_statistic >= 0
 
 
 # ---------- _analyse_game ----------
 
 class TestAnalyseGame:
-    def test_returns_dict_with_required_keys(self):
-        times = [200.0 - i * 3.0 for i in range(12)]
-        rows  = _make_rows(times)
-        result = q2_analysis._analyse_game("TestGame", rows)
-        assert "game"              in result
-        assert "best_model"        in result
-        assert "model_comparison"  in result
-        assert "improvement_acceleration" in result
+    """_analyse_game returns a GameQ2Result DTO."""
+
+    def test_returns_dto_with_required_attributes(self):
+        times  = [200.0 - i * 3.0 for i in range(12)]
+        rows   = _make_rows(times)
+        result = _analyse_game("TestGame", rows)
+        assert hasattr(result, "game")
+        assert hasattr(result, "best_model")
+        assert hasattr(result, "model_comparison")
+        assert hasattr(result, "improvement_acceleration")
+        assert hasattr(result, "structural_break")
 
     def test_game_and_genre_match_input(self):
-        rows = _make_rows([200.0 - i * 3.0 for i in range(12)], game="MyGame", genre="FPS")
-        result = q2_analysis._analyse_game("MyGame", rows)
-        assert result["game"]  == "MyGame"
-        assert result["genre"] == "FPS"
+        rows   = _make_rows([200.0 - i * 3.0 for i in range(12)], game="MyGame", genre="FPS")
+        result = _analyse_game("MyGame", rows)
+        assert result.game  == "MyGame"
+        assert result.genre == "FPS"
 
-    def test_best_model_is_dict(self):
+    def test_best_model_is_dict_or_none(self):
         rows   = _make_rows([200.0 - i * 3.0 for i in range(12)])
-        result = q2_analysis._analyse_game("TestGame", rows)
-        if result["best_model"] is not None:
-            assert "model" in result["best_model"]
-            assert "r2"    in result["best_model"]
+        result = _analyse_game("TestGame", rows)
+        if result.best_model is not None:
+            assert "model" in result.best_model
+            assert "r2"    in result.best_model
 
     def test_improvement_acceleration_sign_for_decelerating(self):
-        # Improvements shrink over time: slope should be negative
         imps  = [50.0, 30.0, 20.0, 10.0, 8.0, 5.0, 3.0, 1.0, 0.5, 0.2, 0.1, 0.05]
         times = [300.0]
         for imp in imps:
             times.append(times[-1] - imp)
-        days = [float(i * 60) for i in range(len(times))]
-        rows = _make_rows(times, days)
-        result = q2_analysis._analyse_game("TestGame", rows)
-        acc = result.get("improvement_acceleration")
-        if acc is not None:
-            assert acc["interpretation"] == "decelerating"
+        days   = [float(i * 60) for i in range(len(times))]
+        rows   = _make_rows(times, days)
+        result = _analyse_game("TestGame", rows)
+        if result.improvement_acceleration is not None:
+            assert result.improvement_acceleration.interpretation == "decelerating"
 
-    def test_structural_break_key_present(self):
+    def test_to_dict_has_required_keys(self):
         rows   = _make_rows([200.0 - i * 3.0 for i in range(12)])
-        result = q2_analysis._analyse_game("TestGame", rows)
-        assert "structural_break" in result
+        result = _analyse_game("TestGame", rows)
+        d = result.to_dict()
+        for key in ("game", "genre", "n_wrs", "span_days", "best_model",
+                    "model_comparison", "improvement_acceleration", "structural_break"):
+            assert key in d
 
     def test_n_wrs_equals_row_count(self):
-        times = [200.0 - i * 3.0 for i in range(10)]
-        rows  = _make_rows(times)
-        result = q2_analysis._analyse_game("TestGame", rows)
-        assert result["n_wrs"] == len(rows)
+        times  = [200.0 - i * 3.0 for i in range(10)]
+        rows   = _make_rows(times)
+        result = _analyse_game("TestGame", rows)
+        assert result.n_wrs == len(rows)
 
-    def test_span_days_positive(self):
-        times = [200.0 - i * 3.0 for i in range(10)]
-        days  = [float(i * 45) for i in range(10)]
-        rows  = _make_rows(times, days)
-        result = q2_analysis._analyse_game("TestGame", rows)
-        assert result["span_days"] >= 0
+    def test_span_days_non_negative(self):
+        times  = [200.0 - i * 3.0 for i in range(10)]
+        days   = [float(i * 45) for i in range(10)]
+        rows   = _make_rows(times, days)
+        result = _analyse_game("TestGame", rows)
+        assert result.span_days >= 0
+
+    def test_improvement_acceleration_is_dto_or_none(self):
+        from shared.DTOs.q2_dtos import ImprovementAccelerationResult
+        rows   = _make_rows([200.0 - i * 3.0 for i in range(12)])
+        result = _analyse_game("TestGame", rows)
+        assert result.improvement_acceleration is None or \
+               isinstance(result.improvement_acceleration, ImprovementAccelerationResult)
+
+    def test_structural_break_is_dto_or_none(self):
+        from shared.DTOs.q2_dtos import StructuralBreakResult
+        rows   = _make_rows([200.0 - i * 3.0 for i in range(12)])
+        result = _analyse_game("TestGame", rows)
+        assert result.structural_break is None or \
+               isinstance(result.structural_break, StructuralBreakResult)
 
 
 # ---------- run() smoke — requires no real CSV ----------

@@ -19,11 +19,16 @@ Writes: data/analysis/q2_stats.json
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 
 from models import fit_all, fit_lowess, chow_test
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from shared.DTOs.q2_dtos import (ImprovementAccelerationResult,
+                                  StructuralBreakResult, GameQ2Result)
 
 CLEAN_DIR    = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -37,7 +42,8 @@ def _load_csv(name: str) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def _detect_structural_break(x: np.ndarray, y: np.ndarray, rows: list[dict]) -> dict | None:
+def _detect_structural_break(x: np.ndarray, y: np.ndarray,
+                             rows: list[dict]) -> StructuralBreakResult | None:
     """
     Scan all valid split points and return the one with the highest Chow Test F-statistic.
 
@@ -59,15 +65,15 @@ def _detect_structural_break(x: np.ndarray, y: np.ndarray, rows: list[dict]) -> 
     if best_idx is None:
         return None
 
-    return {
-        "split_wr_number":    int(rows[best_idx]["wr_number"]),
-        "split_date":         rows[best_idx]["date"],
-        "f_statistic":        round(float(best_f), 4),
-        "significant_at_0.05": bool(best_f > 3.0),
-    }
+    return StructuralBreakResult(
+        split_wr_number  = int(rows[best_idx]["wr_number"]),
+        split_date       = rows[best_idx]["date"],
+        f_statistic      = round(float(best_f), 4),
+        significant_at_005 = bool(best_f > 3.0),
+    )
 
 
-def _analyse_game(game: str, rows: list[dict]) -> dict:
+def _analyse_game(game: str, rows: list[dict]) -> GameQ2Result:
     """
     Fit all curve models to one game's WR time series and detect structural breaks.
 
@@ -82,9 +88,8 @@ def _analyse_game(game: str, rows: list[dict]) -> dict:
     y = np.array([float(r["time_seconds"]) for r in rows])
 
     fits = fit_all(x, y)
-    lowess_r = next((f for f in fits if f.name == "lowess"), None)
+    lowess_r  = next((f for f in fits if f.name == "lowess"), None)
     parametric = [f for f in fits if f.name != "lowess"]
-
     best = parametric[0] if parametric else None
 
     # Improvement acceleration: linear slope of per-WR improvement sizes over time.
@@ -93,31 +98,28 @@ def _analyse_game(game: str, rows: list[dict]) -> dict:
     # growing, signalling an active discovery or optimisation phase.
     imps = [(float(r["days_since_first"]), float(r["improvement_s"]))
             for r in rows if float(r.get("improvement_s") or 0) > 0]
-    acceleration = None
+    acceleration: ImprovementAccelerationResult | None = None
     if len(imps) >= 4:
-        xi = np.array([p[0] for p in imps])
-        yi = np.array([p[1] for p in imps])
-        coeffs = np.polyfit(xi, yi, 1)
-        slope = round(float(coeffs[0]), 8)
-        acceleration = {
-            "slope_s_per_day": slope,
-            "interpretation": "decelerating" if slope < 0 else "accelerating",
-        }
+        xi    = np.array([p[0] for p in imps])
+        yi    = np.array([p[1] for p in imps])
+        slope = round(float(np.polyfit(xi, yi, 1)[0]), 8)
+        acceleration = ImprovementAccelerationResult(
+            slope_s_per_day = slope,
+            interpretation  = "decelerating" if slope < 0 else "accelerating",
+        )
 
-    pct_coverage = round(float(rows[-1].get("pct_of_total_reduction", 0)), 2)
-
-    return {
-        "game":    game,
-        "genre":   rows[0]["genre"],
-        "n_wrs":   len(rows),
-        "span_days": int(x[-1]),
-        "pct_of_reduction_in_dataset": pct_coverage,
-        "model_comparison": [f.to_dict() for f in parametric],
-        "best_model": best.to_dict() if best else None,
-        "lowess_r2": lowess_r.r2 if lowess_r else None,
-        "improvement_acceleration": acceleration,
-        "structural_break": _detect_structural_break(x, y, rows),
-    }
+    return GameQ2Result(
+        game                        = game,
+        genre                       = rows[0]["genre"],
+        n_wrs                       = len(rows),
+        span_days                   = int(x[-1]),
+        pct_of_reduction_in_dataset = round(float(rows[-1].get("pct_of_total_reduction", 0)), 2),
+        model_comparison            = [f.to_dict() for f in parametric],
+        best_model                  = best.to_dict() if best else None,
+        lowess_r2                   = lowess_r.r2 if lowess_r else None,
+        improvement_acceleration    = acceleration,
+        structural_break            = _detect_structural_break(x, y, rows),
+    )
 
 
 def run() -> dict:
@@ -136,14 +138,14 @@ def run() -> dict:
     # Cross-game: which model wins most often?
     model_wins: dict[str, int] = {}
     for g in games:
-        if g["best_model"]:
-            name = g["best_model"]["model"]
+        if g.best_model:
+            name = g.best_model["model"]
             model_wins[name] = model_wins.get(name, 0) + 1
 
     result = {
-        "analysis": "q2_saturation",
-        "games":       games,
-        "model_wins":  model_wins,
+        "analysis":           "q2_saturation",
+        "games":              [g.to_dict() for g in games],
+        "model_wins":         model_wins,
         "best_overall_model": max(model_wins, key=model_wins.get) if model_wins else None,
     }
 

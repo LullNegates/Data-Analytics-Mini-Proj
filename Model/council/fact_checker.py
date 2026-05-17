@@ -32,34 +32,42 @@ class Claim:
 
 @dataclass
 class VerificationReport:
-    verified:   list[Claim] = field(default_factory=list)
-    unverified: list[Claim] = field(default_factory=list)
+    verified:           list[Claim] = field(default_factory=list)
+    unverified:         list[Claim] = field(default_factory=list)
+    categorical_errors: list[str]   = field(default_factory=list)
 
     @property
     def all_verified(self) -> bool:
-        return not self.unverified
+        return not self.unverified and not self.categorical_errors
 
     @property
     def n_total(self) -> int:
         return len(self.verified) + len(self.unverified)
 
     def summary_line(self) -> str:
+        cat = f", {len(self.categorical_errors)} categorical" if self.categorical_errors else ""
         return (
             f"verified {len(self.verified)} / {self.n_total} numeric claims, "
-            f"{len(self.unverified)} unverified"
+            f"{len(self.unverified)} unverified{cat}"
         )
 
     def revision_brief(self) -> str:
         """Compact list passed to the manager when asking for a revision."""
-        if not self.unverified:
-            return ""
-        lines = [
-            "Folgende Zahlen in deinem Entwurf finden sich NICHT in den Quelldaten "
-            "(CSV oder stats.json). Korrigiere sie oder entferne die Aussage:"
-        ]
-        for c in self.unverified:
-            lines.append(f"  • {c.path}: '{c.raw}' im Kontext: \"{c.snippet}\"")
-        return "\n".join(lines)
+        parts: list[str] = []
+        if self.unverified:
+            lines = [
+                "Folgende Zahlen in deinem Entwurf finden sich NICHT in den Quelldaten "
+                "(CSV oder stats.json). Korrigiere sie oder entferne die Aussage:"
+            ]
+            for c in self.unverified:
+                lines.append(f"  • {c.path}: '{c.raw}' im Kontext: \"{c.snippet}\"")
+            parts.append("\n".join(lines))
+        if self.categorical_errors:
+            lines = ["Folgende strukturelle Fehler wurden gefunden — korrigiere sie exakt:"]
+            for err in self.categorical_errors:
+                lines.append(f"  • {err}")
+            parts.append("\n".join(lines))
+        return "\n\n".join(parts)
 
 
 # ─── Source index ────────────────────────────────────────────────────────────
@@ -263,6 +271,48 @@ def _shorten(text: str, around: str, width: int = 80) -> str:
 
 
 # ─── Convenience: per-question source-index loader ───────────────────────────
+
+
+def check_q2_structural_breaks(draft: dict, q2_stats_path: Path) -> list[str]:
+    """Return error messages for every game where the council output has a null
+    structural_break but q2_stats.json shows significant_at_0.05 = true.
+
+    Also flags games where saturation is set to true for log/poly2/power_law models.
+    """
+    if not q2_stats_path.exists():
+        return []
+    with open(q2_stats_path, encoding="utf-8") as f:
+        stats = json.load(f)
+
+    # Map game name → (split_date, significant)
+    break_map: dict[str, str] = {}
+    for g in stats.get("games", []):
+        sb = g.get("structural_break") or {}
+        if sb.get("significant_at_0.05"):
+            break_map[g["game"]] = (g.get("structural_break") or {}).get("split_date", "")[:10]
+
+    non_saturating = {"log", "power_law", "poly2"}
+    errors: list[str] = []
+
+    for entry in draft.get("saturation_by_game", []):
+        game  = entry.get("game", "?")
+        sb    = entry.get("structural_break")
+        model = entry.get("best_model", "")
+        sat   = entry.get("saturation")
+
+        if game in break_map and (sb is None or str(sb).strip().lower() in ("null", "none", "")):
+            errors.append(
+                f"structural_break für '{game}' ist null, aber q2_stats hat "
+                f"significant_at_0.05=true (split_date: {break_map[game]}). Datum eintragen."
+            )
+
+        if model in non_saturating and sat is True:
+            errors.append(
+                f"saturation für '{game}' ist true, aber best_model='{model}' sättigt NICHT. "
+                f"saturation muss false sein."
+            )
+
+    return errors
 
 
 def build_index_for_question(

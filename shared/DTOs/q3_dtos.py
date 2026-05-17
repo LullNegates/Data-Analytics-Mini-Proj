@@ -1,9 +1,20 @@
 """
-Q3 Data Transfer Objects -- F3a (post-breakthrough) and F3b (TAS proximity).
+Q3 Data Transfer Objects — Kaplan-Meier, F3a (post-breakthrough), F3b (TAS proximity).
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+@dataclass
+class KaplanMeierResult:
+    """Output of the Kaplan-Meier estimator for a single cohort.
+
+    median_days: first time S(t) ≤ 0.5; float("inf") if the curve never crosses 0.5.
+    curve:       step-function as [(time_days, S(t)), ...] starting at (0.0, 1.0).
+    """
+    median_days: float
+    curve: list[tuple[float, float]] = field(default_factory=list)
 
 
 @dataclass

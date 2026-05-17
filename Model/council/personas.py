@@ -42,7 +42,10 @@ Regeln:
 - Unterscheide zwischen absoluter Reduktion und jährlicher Rate.
 - Korrelation ≠ Kausalität — weise darauf hin, falls relevant.
 - Mindestens 4 Findings, mindestens ein Genre-Muster pro Genre in den Daten (alle 7 Genres).
-- Beantworte IMMER explizit: Welches Genre hat die höchste mittlere jährliche Verbesserungsrate? Nenne Genrenamen und konkrete Prozentzahl aus genre_summary in den Daten.\
+- Beantworte IMMER explizit: Welches Genre hat die höchste mittlere jährliche Verbesserungsrate? Nenne Genrenamen und konkrete Prozentzahl aus genre_summary in den Daten.
+- PFLICHT-FINDING Beschleunigung: Ein Finding muss explizit benennen, wie viele Spiele ihre
+  Verbesserungsrate beschleunigen vs. verlangsamen (Spalte 'Trend' in der Tabelle).
+  Nenne mindestens ein Beispiel für ein beschleunigendes und ein abbremsendes Spiel.\
 """
 
 Q2_SCHEMA_CONTRACT = """\
@@ -82,13 +85,30 @@ Das JSON muss EXAKT diese Struktur haben:
   "summary": "<Gesamtzusammenfassung in 3-4 Sätzen>"
 }
 
+SÄTTIGUNGSREGEL (absolut, keine Ausnahmen):
+  exp_decay  → saturation = true   (Hard Floor vorhanden)
+  gompertz   → saturation = true   (Hard Floor vorhanden)
+  log        → saturation = false  (logarithmisch, KEIN Floor — log sättigt NICHT)
+  power_law  → saturation = false  (stetig, KEIN Floor)
+  poly2      → saturation = false  (anomal/U-förmig, KEIN Floor)
+
+STRUKTURBRUCH — unabhängig von Sättigung:
+  structural_break ist für JEDES der 17 Spiele ein Datum (NIEMALS null).
+  Alle 17 Spiele haben significant_at_0.05 = true.
+  Das Datum kommt aus der Spalte 'StrukturBruch?' in der Übersichtstabelle.
+  Ein Spiel kann einen Strukturbruch haben UND nicht sättigen — das ist normal.
+
+PFLICHT-FINDING best_overall_model:
+  Ein Finding muss explizit nennen, was best_overall_model ist ("poly2") und was
+  das für die Forschungsfrage bedeutet (die Mehrheit der Spiele sättigt NICHT).
+
 Regeln:
 - saturation_by_game muss ALLE 17 Spiele enthalten — kürze die Liste nicht.
 - best_model: lies den Wert aus der Spalte "BestesModell" — nicht erraten.
-- saturation: true nur wenn best_model == "exp_decay" oder "gompertz".
-- structural_break: Datum aus Spalte "StrukturBruch?" oder null wenn "nein".
+- saturation: strikt nach SÄTTIGUNGSREGEL oben — log und poly2 sind NIEMALS true.
+- structural_break: Datum aus Spalte "StrukturBruch?" — NIEMALS null (alle 17 haben einen).
 - genre_patterns: genau 7 Einträge, einen pro Genre — keine Genres gruppieren.
-- Mindestens 4 Findings.\
+- Mindestens 4 Findings, davon eines zu best_overall_model.\
 """
 
 Q3_SCHEMA_CONTRACT = """\

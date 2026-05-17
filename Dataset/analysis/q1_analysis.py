@@ -13,12 +13,16 @@ Writes: data/analysis/q1_stats.json
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 from scipy.stats import kruskal, spearmanr
 
-from models import fit_power_law, fit_log
+from models import fit_power_law, fit_log, FitResult
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from shared.DTOs.q1_dtos import VelocityTrendResult
 
 CLEAN_DIR   = Path(__file__).parent.parent / "data" / "clean"
 ANALYSIS_DIR = Path(__file__).parent.parent / "data" / "analysis"
@@ -32,11 +36,12 @@ def _load_csv(name: str) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def _power_law_on_improvements(wr_rows: list[dict]) -> dict | None:
+def _power_law_on_improvements(wr_rows: list[dict]) -> FitResult | None:
     """
     Fit a power law to per-WR improvement sizes for one game.
     x = WR number (1, 2, 3, ...), y = seconds saved by that WR.
     Exponent b < 0 confirms diminishing returns pattern.
+    Returns FitResult directly; callers call .to_dict() at the serialisation boundary.
     """
     improvements = []
     for r in wr_rows:
@@ -49,10 +54,10 @@ def _power_law_on_improvements(wr_rows: list[dict]) -> dict | None:
     result = fit_power_law(x, y)
     if result is None:
         result = fit_log(x, y)
-    return result.to_dict() if result else None
+    return result
 
 
-def _velocity_trend(wr_rows: list[dict]) -> dict:
+def _velocity_trend(wr_rows: list[dict]) -> VelocityTrendResult:
     """
     Spearman correlation between WR date and per-WR improvement size.
     rho < 0 => improvements are shrinking over time (saturation).
@@ -66,10 +71,9 @@ def _velocity_trend(wr_rows: list[dict]) -> dict:
     pairs = [(r["date"], float(r.get("improvement_s") or 0))
              for r in wr_rows if r.get("improvement_s")]
     if len(pairs) < 4:
-        return {"rho": None, "pvalue": None, "interpretation": "insufficient_data"}
+        return VelocityTrendResult(rho=None, pvalue=None, interpretation="insufficient_data")
     dates  = [p[0] for p in pairs]
     values = [p[1] for p in pairs]
-    # Convert dates to ordinal numbers for correlation
     from datetime import date
     x = np.array([(date.fromisoformat(d) - date.fromisoformat(dates[0])).days for d in dates], dtype=float)
     y = np.array(values)
@@ -80,7 +84,11 @@ def _velocity_trend(wr_rows: list[dict]) -> dict:
         interp = "decelerating"
     else:
         interp = "accelerating"
-    return {"rho": round(float(rho), 4), "pvalue": round(float(pval), 4), "interpretation": interp}
+    return VelocityTrendResult(
+        rho=round(float(rho), 4),
+        pvalue=round(float(pval), 4),
+        interpretation=interp,
+    )
 
 
 def run() -> dict:
@@ -98,6 +106,8 @@ def run() -> dict:
         game_wrs = wr_by_game.get(r["game"], [])
         total_runs = max(float(r.get("total_runs") or 1), 1)
         wr_count   = float(r.get("wr_count") or 0)
+        pl_fit = _power_law_on_improvements(game_wrs)
+        vt     = _velocity_trend(game_wrs)
         games.append({
             "game":               r["game"],
             "genre":              r["genre"],
@@ -109,9 +119,9 @@ def run() -> dict:
             # Fraction of all submitted runs that set a new WR.
             # Low wr_rate = record is hard to break relative to total attempts (saturation signal).
             # High wr_rate = community was actively improving at a high success rate.
-            "wr_rate": round(wr_count / total_runs, 6),
-            "power_law_fit":      _power_law_on_improvements(game_wrs),
-            "velocity_trend":     _velocity_trend(game_wrs),
+            "wr_rate":            round(wr_count / total_runs, 6),
+            "power_law_fit":      pl_fit.to_dict() if pl_fit is not None else None,
+            "velocity_trend":     vt.to_dict(),
         })
 
     # --- Genre aggregation ---

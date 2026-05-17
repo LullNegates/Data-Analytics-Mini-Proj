@@ -140,13 +140,55 @@ def build_q1_context(data_dir: Path, analysis_dir: Path, dataset_md: Path) -> tu
         "Wichtig: WR_pro_Jahr und wr_rate sind VERSCHIEDENE Metriken — nicht verwechseln."
     )
 
+    # Load per-game acceleration from q2_stats (improvement_acceleration.interpretation)
+    # q1_stats velocity_trend is insufficient_data for all games due to small n;
+    # q2_stats runs the same Spearman test on improvement magnitudes with more data.
+    accel_map: dict[str, str] = {}
+    q2_stats_path = analysis_dir / "q2_stats.json"
+    if q2_stats_path.exists():
+        with open(q2_stats_path, encoding="utf-8") as f:
+            q2data = json.load(f)
+        for g in q2data.get("games", []):
+            interp = (g.get("improvement_acceleration") or {}).get("interpretation", "")
+            if interp:
+                accel_map[g["game"]] = interp
+
+    # Rebuild table with Trend column
+    header = (
+        f"{'Spiel':<42} {'Genre':<18} "
+        f"{'%Reduktion':<11} {'Jahre':<7} {'%/Jahr':<8} "
+        f"{'WR_Anzahl':<10} {'WR_pro_Jahr':<12} "
+        f"{'Erste_Zeit':<12} {'Aktuelle_Zeit':<14} {'Trend'}"
+    )
+    sep = "-" * len(header)
+    lines = [header, sep]
+    for r in rows:
+        trend = accel_map.get(r["game"], "?")
+        lines.append(
+            f"{r['game']:<42} {r['genre']:<18} "
+            f"{float(r['pct_reduction']):<11.2f} {float(r['years_span']):<7.1f} "
+            f"{float(r['annual_rate_pct']):<8.3f} "
+            f"{r['wr_count']:<10} {float(r['wr_density_per_year']):<12.3f} "
+            f"{_fmt_seconds(float(r['first_time_s'])):<12} "
+            f"{_fmt_seconds(float(r['last_time_s'])):<14} "
+            f"{trend}"
+        )
+    table = "\n".join(lines)
+
+    accel_count   = sum(1 for v in accel_map.values() if v == "accelerating")
+    decel_count   = sum(1 for v in accel_map.values() if v == "decelerating")
+    accel_summary = (
+        f"Trend-Überblick (Spalte 'Trend'): {accel_count} Spiele beschleunigend, "
+        f"{decel_count} Spiele verlangsamend (aus q2_stats improvement_acceleration)."
+    )
+
     stats = _load_stats(analysis_dir, 1)
     schema = dataset_excerpt(dataset_md, 1)
 
     combined = (
         f"{schema}\n\n---\n\n"
         f"## Rohdaten (q1_reduction.csv — alle {len(rows)} Spiele)\n\n"
-        f"{legend}\n\n{table}\n\n---\n\n"
+        f"{legend}\n\n{accel_summary}\n\n{table}\n\n---\n\n"
         f"## Statistische Analyse (q1_stats.json)\n\n```json\n{stats}\n```"
     )
     return combined, _estimate_tokens(combined)
@@ -231,8 +273,33 @@ def build_q2_context(data_dir: Path, analysis_dir: Path, dataset_md: Path) -> tu
     slim_stats = _slim_q2_stats(analysis_dir)
     schema = dataset_excerpt(dataset_md, 2)
 
+    # Build prominent header from q2_stats so model can't miscount or omit key facts
+    model_wins_block = ""
+    best_overall     = ""
+    sat_count        = 0
+    nonsat_count     = 0
+    if stats_path.exists():
+        mw = q2data.get("model_wins", {})
+        best_overall  = q2data.get("best_overall_model", "?")
+        sat_count     = mw.get("exp_decay", 0) + mw.get("gompertz", 0)
+        nonsat_count  = 17 - sat_count
+        mw_parts      = " | ".join(f"{k}: {v}" for k, v in mw.items())
+        model_wins_block = (
+            "## KRITISCHE KENNZAHLEN — direkt aus q2_stats.json (NICHT neu berechnen)\n\n"
+            f"Modell-Siegerverteilung (model_wins): {mw_parts}\n"
+            f"best_overall_model = \"{best_overall}\" — das ist KEIN Sättigungsmodell.\n"
+            f"WICHTIG: poly2 ist das häufigste Modell (6/17 Spiele). Poly2-Spiele sättigen NICHT.\n\n"
+            f"Sättigungsverteilung (unveränderlich — aus Modellkategorien ablesen, nicht zählen):\n"
+            f"  Saturierende Spiele (exp_decay + gompertz): {sat_count} von 17\n"
+            f"  NICHT saturierende Spiele (log, power_law, poly2):  {nonsat_count} von 17\n\n"
+            "Strukturbrüche:\n"
+            "  ALLE 17 Spiele haben significant_at_0.05 = true.\n"
+            "  Das Datum steht in der Spalte 'StrukturBruch?' — structural_break DARF NICHT null sein.\n"
+        )
+
     combined = (
         f"{schema}\n\n---\n\n"
+        f"{model_wins_block}\n---\n\n"
         f"## Übersicht je Spiel — {len(games)} Spiele (Spalte 'BestesModell' ist maßgeblich)\n\n"
         f"{legend}\n\n{summary}\n\n---\n\n"
         f"## Statistische Details (q2_stats.json, model_comparison-Arrays entfernt)\n\n"
