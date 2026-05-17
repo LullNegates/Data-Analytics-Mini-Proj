@@ -1,0 +1,109 @@
+\documentclass[a4paper,oneside,openright,11pt]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xspace}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{epstopdf}
+\usepackage{xcolor}
+\usepackage{mdframed}
+
+\setlength{\emergencystretch}{3em}
+\usepackage{etoolbox}
+\apptocmd{\thebibliography}{\raggedright}{}{}
+
+\hyphenpenalty=5000
+\tolerance=1000
+
+\newcommand{\stdScaleFactor}{0.45}
+
+% Finding-Box im Klünder-Stil
+\definecolor{findingbg}{gray}{0.93}
+\definecolor{todobg}{RGB}{255,243,205}
+\newcommand{\placeholder}[1]{%
+  \begin{mdframed}[
+    backgroundcolor=todobg,
+    linewidth=0.8pt,
+    linecolor=orange,
+    skipabove=\medskipamount,
+    skipbelow=\medskipamount,
+    innerleftmargin=10pt,
+    innerrightmargin=10pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+  ]
+  \noindent\textbf{[Ausstehend]} #1
+  \end{mdframed}%
+}
+\newcommand{\finding}[2]{%
+  \begin{mdframed}[
+    backgroundcolor=findingbg,
+    linewidth=0pt,
+    skipabove=\medskipamount,
+    skipbelow=\medskipamount,
+    innerleftmargin=10pt,
+    innerrightmargin=10pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+  ]
+  \noindent\textbf{Finding #1:} #2
+  \end{mdframed}%
+}
+
+\usepackage{sethesis}
+
+\unilogo{\includegraphics[width=5cm]{FHDW-Logo.eps}}
+\fachgebiet{}
+\institut{}
+\fachbereich{}
+
+\author{Mattis Dennhardt, Arun Dylan Gopala, Alex Haase,\\Viktor Lind, Darko Marjanovic, Benedikt Racette}
+\title{Speedrunning-Weltrekord-Analyse}
+\englishtitle{Speedrunning World Record Analysis}
+\ort{Hannover}
+\thesistype{Projektarbeit}
+\datum{17. Mai 2026}
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\clearpage
+\input{affirmation}
+
+\clearpage
+\input{contents/abstract}
+
+\tableofcontents
+
+\mainmatter
+
+\input{contents/einleitung}
+
+\input{contents/methodik}
+
+\input{contents/ergebnisse}
+
+\input{contents/diskussion}
+
+\input{contents/fazit}
+
+\bibliographystyle{halpha-abbrv}
+\bibliography{ausarbeitung}
+
+\backmatter
+
+\end{document}
