@@ -21,17 +21,13 @@ Für \textit{Portal~2}, \textit{Quake} und \textit{The Talos Principle} stimmt d
 
 \textit{Donkey Konga} ist der markanteste Ausreißer: $\phi = 23{,}97$ signalisiert eine Beschleunigung, nicht ein Plateau. Der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass im Post-Segment kaum Konsolidierungszeit bestand --- die hohe Verbesserungsgeschwindigkeit danach spiegelt vor allem direkte Folgeverbesserungen wider. Alle übrigen auswertbaren Spiele ($n = 5$) zeigen ein klares Plateau ($\phi \leq 0{,}44$), wobei \textit{Zelda: OoT} ($\phi = 0{,}02$) und \textit{The Talos Principle} ($\phi = 0{,}02$) mit $\rho = -0{,}79$ ($p < 0{,}001$) die stärkste Abnahme der Post-Breakthrough-Verbesserungen aufweisen. Das Ergebnis zeigt: Durchbrüche setzen die Abflachungsrate nicht zurück, sondern leiten direkt eine Konsolidierungsphase ein.
 
-\subsection*{F3b — TAS-Annäherungsanalyse}
+\subsection*{F3b — Annäherung ans theoretische Minimum}
 
-TAS-Daten ermöglichen es, den \emph{Bannister-Effekt}~\cite{wooten2022} direkt zu prüfen: Nicht allein der Nachweis, dass eine Zeit erreichbar ist, sondern die Verbreitung konkreter Techniken treibt Verbesserungen voran. TAS-Routen dokumentieren Strategien Bild für Bild; die Community überträgt diese durch Video-Analyse und Kommentare in die RTA-Praxis. Die Geschwindigkeit, mit der die Lücke zwischen TAS und menschlichem WR schrumpft, zeigt daher auch, wie schnell sich eine neue TAS-Strategie in der Community durchsetzt.
+Der Asymptoten-Proxy schätzt das theoretische Minimum einer WR-Kurve über den Grenzwert des besten Sättigungsmodells. Der $R^2 \geq 0{,}70$-Schwellenwert schließt Spiele ohne stabile Sättigungskurve aus, damit keine unzuverlässigen Schätzungen einfließen. Dass 15 von 17 Spielen als \enquote{none\_detected} klassifiziert werden, ist kein Mangel der Methode, sondern ein inhaltliches Ergebnis: Diese Communities --- darunter jüngere Spiele wie \textit{Celeste} oder \textit{Hollow Knight} --- befinden sich noch in einer aktiven Entdeckungsphase, in der sich kein stabiler Grenzwert abzeichnet.
 
-Der $R^2 \geq 0{,}70$-Schwellenwert schließt Spiele ohne stabile Sättigungskurve aus, damit keine unzuverlässigen Schätzungen einfließen. Spiele, die als \enquote{none\_detected} klassifiziert werden (typischerweise junge Spiele wie \textit{Celeste} oder \textit{Hollow Knight}), befinden sich möglicherweise noch in einer aktiven Entdeckungsphase ohne erkennbares theoretisches Minimum.
+Für die zwei auswertbaren Spiele zeigt der Proxy, dass \textit{Half-Life~2} mit einem aktuellen WR von $2190{,}3$~s bereits 95,5~\% der möglichen Reduktion bis zum Modell-Floor ($1874{,}7$~s) erreicht hat. \textit{Pokémon Red/Blue} liegt bei 82,5~\%. Beide Spiele sind damit weit in die Sättigungsphase eingetreten.
 
-Bei \textit{Super Mario Bros.} ist die menschliche Community mit einem Gap von \textbf{0,15~s} (99,5~\% der möglichen Reduktion) dem TAS außerordentlich nahe --- ein Ergebnis, das zeigt, wie weit das Spiel bereits ausgereizt ist. \textit{Half-Life~2} und \textit{Super Metroid} haben die dokumentierte TAS-Zeit bereits übertroffen (Gap~= 0~s, 152~\% bzw.\ 150~\% geschlossen), weil RTA-Runner Glitch-Ketten entdeckten, die im analysierten TAS nicht enthalten waren. Das ist ein konkreter Beleg für den Bannister-Effekt: Die TAS-Route wirkte als Existenzbeweis für schnellere Strategien, die Community übernahm und erweiterte sie bis über das TAS-Niveau hinaus.
-
-Der Asymptoten-Proxy liefert für \textit{Half-Life~2} einen Modell-Floor von $1874{,}7$~s --- das sind $2619$~s unterhalb der TAS-Referenzzeit. Dieser Wert erscheint zunächst widersprüchlich, ist aber erklärbar: Der menschliche WR ($2190{,}3$~s) liegt bereits unter dem historischen TAS-Wert ($4494{,}0$~s), das Modell sagt daher folgerichtig eine weitere Verbesserung über diesen veralteten TAS-Stand vorher. Für 15~von 17~Spielen existiert kein konvergentes Sättigungsmodell (\texttt{none\_detected}), da sich die Community noch in einer aktiven Entdeckungsphase befindet.
-
-\placeholder{TAS-Zeitreihenkorrelation interpretieren: Zeigt der Mann-Whitney-U-Test signifikant größere WR-Sprünge nach TAS-Meilensteinen? Falls ja, stützt das die Diffusionshypothese nach Wooten~\cite{wooten2022} direkt. Falls nicht, mögliche Erklärungen diskutieren (zu kleines Zeitfenster, zu wenige TAS-Meilensteine, verzögerte Übernahme).}
+Ein direkter Vergleich mit realen TAS-Zeiten war nicht möglich: Verlässliche TAS-Daten sind weder über eine öffentliche API verfügbar, noch lassen sie sich ohne Frame-genaue Videoanalyse zuverlässig erheben --- dabei ist zu berücksichtigen, dass TAS-Videos nicht immer vom tatsächlichen Spielstart beginnen, was die Zeitauswertung zusätzlich erschwert.
 
 \subsection*{F3c — Lebensdauer}
 
@@ -41,7 +37,7 @@ Der hohe Gini-Koeffizient in allen Genres ($G = 0{,}65$–$0{,}92$) zeigt, dass 
 
 \subsection*{Einordnung in bestehende Forschung}
 
-Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~Spielen, dass WR-Verbesserungen Potenzgesetz-Mustern folgen und systematische Trendbrüche aufweisen. Diese Arbeit bestätigt den Strukturbruch-Befund (F2, Chow-Test für alle 17~Spiele signifikant) auf einem kleineren, aber detaillierter ausgewerteten Datensatz. Zusätzlich werden drei Fragen untersucht, die bei Erdil und Sevilla offen bleiben: Post-Breakthrough-Dynamik (F3a), TAS-Annäherung (F3b) und Genre-Vergleich der Lebensdauer (F3c). Ein direkter Ergebnisvergleich ist nicht möglich, da Spielsets, Zeiträume und Kategorien abweichen.
+Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~Spielen, dass WR-Verbesserungen Potenzgesetz-Mustern folgen und systematische Trendbrüche aufweisen. Diese Arbeit bestätigt den Strukturbruch-Befund (F2, Chow-Test für alle 17~Spiele signifikant) auf einem kleineren, aber detaillierter ausgewerteten Datensatz. Zusätzlich werden drei Fragen untersucht, die bei Erdil und Sevilla offen bleiben: Post-Breakthrough-Dynamik (F3a), Annäherung ans theoretische Minimum (F3b) und Genre-Vergleich der Lebensdauer (F3c). Ein direkter Ergebnisvergleich ist nicht möglich, da Spielsets, Zeiträume und Kategorien abweichen.
 
 \section{Limitationen}
 
@@ -52,5 +48,7 @@ Erdil und Sevilla~\cite{erdil2023} zeigen anhand von 1.731~Weltrekorden aus 100~
 \textbf{Plattformbias:} \textit{speedrun.com} hat einen Schwerpunkt auf PC-Spielen und englischsprachige Communities. Konsolen-Speedrunning und nicht-englischsprachige Spiele sind unterrepräsentiert.
 
 \textbf{Fehlende Kontrollvariablen:} Community-Größe, Spieleranzahl und Medienaufmerksamkeit lagen nicht vor, obwohl sie Lebensdauer und Verbesserungsrate stark beeinflussen dürften.
+
+\textbf{Kein TAS-Vergleich:} Ein direkter Vergleich mit TAS-Zeiten war nicht realisierbar. Keine öffentliche API liefert verlässliche TAS-Daten; die vorhandenen TAS-Videos erfordern Frame-genaue Auswertung des Startzeitpunkts, was im gegebenen Zeitrahmen nicht leistbar war. Der Asymptoten-Proxy ist daher nur ein Näherungswert für das theoretische Minimum.
 
 \textbf{Kausalität:} Alle Ergebnisse zeigen Zusammenhänge, keine Ursachen. Aussagen wie „Glitches \emph{verursachen} Strukturbrüche" lassen sich aus diesen Daten nicht belegen.

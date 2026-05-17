@@ -48,26 +48,13 @@ D.~Lakens.
 {speedrun.com}.
 \newblock {speedrun.com API v1 Documentation}.
 \newblock \url{https://github.com/speedruncomorg/api}, 2024.
-\newblock Abgerufen am 15. Mai 2026.
+\newblock Abgerufen am 15. Mai 2026; TAS-Runs werden auf regulären Leaderboards nicht gelistet und sind über die API nicht abrufbar.
 
 \bibitem[{spe}24b]{speedruncom_rules}
 {speedrun.com}.
 \newblock speedrun.com site rules.
 \newblock \url{https://www.speedrun.com/support/learn/site-rules}, 2024.
 \newblock Abgerufen am 17. Mai 2026; bestätigt TAS-Verbot auf regulären Leaderboards.
-
-\bibitem[{TAS}26]{tasvideos}
-{TASVideos Community}.
-\newblock {TASVideos} --- tool-assisted speedrun archive.
-\newblock \url{https://tasvideos.org}, 2026.
-\newblock Abgerufen am 17. Mai 2026; TAS-Referenzzeiten für F3b manuell entnommen.
-
-\bibitem[Woo22]{wooten2022}
-D.~B. Wooten.
-\newblock Leaps in innovation and the {Bannister} effect in contests.
-\newblock {\em Production and Operations Management}, 2022.
-\newblock \doi{10.1111/poms.13707}.
-\newblock Abgerufen am 17. Mai 2026.
 
 \bibitem[ZLHK02]{zeileis2002}
 A.~Zeileis, F.~Leisch, K.~Hornik, and C.~Kleiber.

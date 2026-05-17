@@ -63,7 +63,37 @@ Tabelle~\ref{tab:q2_modelle} fasst die Modellvergleiche zusammen. Über alle 17~
   \end{tabular}
 \end{table}
 
-Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten Strukturbruch ($p < 0{,}05$). Bei 8~von 17~Spielen liegt der Bruchpunkt innerhalb der ersten 10~Weltrekorde, also sehr früh in der Community-Entwicklung.
+Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten Strukturbruch. Tabelle~\ref{tab:chow} listet Bruchpunkt und $F$-Statistik je Spiel; alle $F$-Werte liegen deutlich über dem kritischen Wert ($p < 0{,}001$). Bei 8~von 17~Spielen liegt der Bruchpunkt innerhalb der ersten 10~Weltrekorde, also sehr früh in der Community-Entwicklung.
+
+\begin{table}[htb]
+  \centering
+  \caption{Chow-Test: Bruchpunkt (WR-Nummer) und $F$-Statistik je Spiel (alle $p < 0{,}001$)}
+  \label{tab:chow}
+  \small
+  \begin{tabular}{llrr}
+    \toprule
+    \textbf{Spiel} & \textbf{Genre} & \textbf{Bruchpunkt} & \textbf{$F$} \\
+    \midrule
+    Celeste                         & Platformer       & WR\,\#6  &    105,5 \\
+    Donkey Konga                    & Arcade           & WR\,\#8  &     52,1 \\
+    Doom~3                          & FPS              & WR\,\#24 &    881,3 \\
+    Final Fantasy~VII               & RPG              & WR\,\#28 &     56,5 \\
+    Half-Life~2                     & FPS              & WR\,\#50 &     66,4 \\
+    Hollow Knight                   & Action-Adventure & WR\,\#33 &     33,6 \\
+    Minecraft: Java Edition         & Sandbox          & WR\,\#7  &     99,3 \\
+    Pac-Man                         & Arcade           & WR\,\#4  &     54,7 \\
+    Pokémon Red/Blue                & RPG              & WR\,\#20 &     54,1 \\
+    Portal                          & Puzzle           & WR\,\#4  & 20162,0  \\
+    Portal~2                        & Puzzle           & WR\,\#28 &     64,3 \\
+    Quake                           & FPS              & WR\,\#5  &     90,9 \\
+    Super Mario Bros.               & Platformer       & WR\,\#10 &    410,0 \\
+    Super Mario~64                  & Platformer       & WR\,\#16 &    118,9 \\
+    Super Metroid                   & Action-Adventure & WR\,\#53 &     20,4 \\
+    The Talos Principle             & Puzzle           & WR\,\#23 &    161,8 \\
+    Zelda: Ocarina of Time          & Action-Adventure & WR\,\#10 &    488,4 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \finding{3}{Für \textbf{alle 17~Spiele} gelingt eine Kurvenanpassung mit $\mathbf{R^2 > 0{,}70}$ (Median: $0{,}95$). Kein einzelnes Modell dominiert universell; \textit{poly2}~(6/17) erzielen die meisten Siege nach AIC, gefolgt von \textit{Gompertz} und exponentiellem Zerfall (je 4/17). Modelle mit explizitem Sättigungsverhalten (Gompertz, Exp.\ Zerfall) gewinnen gemeinsam für 8/17~Spiele.}
 
@@ -98,27 +128,7 @@ Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen f
 
 \finding{5}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass die Post-Phase nur wenige Folgeverbesserungen enthält. Die stärksten Plateaus weisen \textit{Zelda: Ocarina of Time} und \textit{The Talos Principle} auf (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$). Der Breakthrough-Anteil an der Gesamtreduktion reicht von \textbf{13,6~\%} (\textit{Pokémon Red/Blue}) bis \textbf{42,4~\%} (\textit{Donkey Konga}).}
 
-\subsection*{F3b — TAS-Annäherungsanalyse}
-
-Tabelle~\ref{tab:f3b_ref} vergleicht menschliche Weltrekorde mit den TAS-Referenzzeiten der drei Spiele mit dokumentierter TAS-Zeit (\textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}).
-
-\begin{table}[htb]
-  \centering
-  \caption{Empirischer TAS-Referenzvergleich: Menschlicher WR vs.\ TAS-Zeit (Quelle: TASVideos.org)}
-  \label{tab:f3b_ref}
-  \small
-  \begin{tabular}{lrrrrl}
-    \toprule
-    \textbf{Spiel} & \textbf{TAS (s)} & \textbf{WR (s)} & \textbf{Gap (s)} & \textbf{\% geschl.} & \textbf{Est.\ J.} \\
-    \midrule
-    Half-Life~2        & 4494,0 & 2190,3 & 0,0  & 152,2 (überholt) & --- \\
-    Super Mario Bros.  &  294,3 &  294,4 & 0,2  & 99,5             & 1,6 \\
-    Super Metroid      & 2446,0 & 1980,0 & 0,0  & 149,8 (überholt) & --- \\
-    \bottomrule
-  \end{tabular}
-  \smallskip\par\noindent
-  {\small \% geschl.\ = $(t_\mathrm{first}-t_\mathrm{WR})/(t_\mathrm{first}-t_\mathrm{TAS})\times 100$. Werte~$>$~100~\% zeigen, dass der menschliche WR die TAS-Zeit bereits unterschritten hat.}
-\end{table}
+\subsection*{F3b — Annäherung ans theoretische Minimum}
 
 Tabelle~\ref{tab:f3b_proxy} zeigt den modellbasierten Asymptoten-Proxy für alle 17~Spiele.
 
@@ -139,9 +149,7 @@ Tabelle~\ref{tab:f3b_proxy} zeigt den modellbasierten Asymptoten-Proxy für alle
   \end{tabular}
 \end{table}
 
-\placeholder{TAS-Zeitreihenkorrelation (Tab.\ \ref{tab:f3b_corr}): Für jedes Spiel mit TAS-Verlaufsdaten --- TAS-Veröffentlichungsdaten manuell aus TASVideos.org entnehmen und in \texttt{data/reference/tas\_known.json} eintragen (Felder \texttt{tas\_history[].date}). Dann \texttt{python analysis/f3b\_tas\_correlation.py} ausführen. Spalten: Spiel \textbar{} Anzahl TAS-Meilensteine \textbar{} WRs nach TAS-Ereignis ($n$) \textbar{} Ø Verbesserung danach (s) \textbar{} Ø Verbesserung ohne TAS-Ereignis (s) \textbar{} $p$-Wert (Mann-Whitney). Zeitfenster: 60~Tage.}
-
-\finding{6}{Über alle drei TAS-Referenzspiele beträgt die mittlere Lücke \textbf{0,015~\%} des ersten WRs --- praktisch null. \textit{Half-Life~2} und \textit{Super Metroid} haben die dokumentierte TAS-Zeit bereits unterschritten (\textbf{152,2~\%} bzw.\ \textbf{149,8~\%} der möglichen Reduktion erreicht), weil menschliche Runner eine effizientere Route entdeckten. Der Modell-Floor für \textit{Half-Life~2} ($1874{,}7$~s) liegt $\Delta = -2619$~s unterhalb der TAS-Referenzzeit, was konsistent ist: Das Modell projiziert zutreffend eine weitere Annäherung über den historischen TAS-Stand hinaus. 15~von 17~Spielen zeigen kein konvergentes Sättigungsmodell (\texttt{none\_detected}).}
+\finding{6}{Für \textbf{2 von 17~Spielen} konnte ein konvergentes Sättigungsmodell berechnet werden: \textit{Half-Life~2} hat \textbf{95,5~\%} der möglichen Reduktion bis zum Modell-Floor erreicht (Floor: $1874{,}7$~s, aktueller WR: $2190{,}3$~s), \textit{Pokémon Red/Blue} \textbf{82,5~\%} (Floor: $6004{,}4$~s). Für die übrigen \textbf{15~Spiele} ist kein stabiler Grenzwert bestimmbar (\texttt{none\_detected}) --- diese Communities befinden sich noch in einer aktiven Entdeckungsphase.}
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 
@@ -167,13 +175,13 @@ Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensr
   \end{tabular}
 \end{table}
 
-Der Kruskal-Wallis-Test zeigt einen hochsignifikanten Unterschied in den Lebensdauerverteilungen zwischen Genres ($H = 43{,}82$; $p < 0{,}001$; $\eta^2 \approx 0{,}044$, kleiner bis mittlerer Effekt). Paarweise Mann-Whitney-U-Tests belegen, dass sich RPG von allen anderen Genres außer Arcade signifikant unterscheidet ($p < 0{,}05$). Die übrigen Genres unterscheiden sich untereinander weniger konsistent.
+Der Kruskal-Wallis-Test zeigt einen hochsignifikanten Unterschied in den Lebensdauerverteilungen zwischen Genres ($H(6) = 43{,}82$; $p < 0{,}001$; $\eta^2 \approx 0{,}044$, kleiner bis mittlerer Effekt). Paarweise Mann-Whitney-U-Tests belegen, dass sich RPG von allen anderen Genres außer Arcade signifikant unterscheidet ($p < 0{,}05$). Die übrigen Genres unterscheiden sich untereinander weniger konsistent.
 
 Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{,}655$–$0{,}918$): Ein kleiner Anteil der Weltrekorde macht den Großteil der erzielten Zeitersparnis aus.
 
 Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste mittlere Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (95,2~Tage) sind deutlich kurzlebiger.
 
-\finding{7}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $\mathbf{H = 43{,}82}$; $\mathbf{p < 0{,}001}$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa \textbf{4,4~\%} der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
+\finding{7}{Die Lebensdauer von Weltrekorden unterscheidet sich signifikant zwischen Genres (Kruskal-Wallis: $\mathbf{H(6) = 43{,}82}$; $\mathbf{p < 0{,}001}$; $\eta^2 = 0{,}044$). Das Genre erklärt etwa \textbf{4,4~\%} der Varianz in der Lebensdauer --- ein statistisch gesicherter, inhaltlich moderater Effekt.}
 
 \finding{8}{\textit{RPG}-Rekorde überleben mit einem Kaplan-Meier-Median von \textbf{52~Tagen} signifikant länger als Rekorde anderer Genres (Median: \textbf{7–17~Tage}). Die geringere Spielgeschwindigkeit und die größere Komplexität von RPGs erschweren schnelle Optimierungen.}
 

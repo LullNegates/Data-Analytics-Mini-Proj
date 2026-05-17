@@ -19,7 +19,7 @@ Um zu prüfen, ob Genres sich systematisch in ihren jährlichen Raten unterschei
 
 Für jedes Spiel wird die kumulierte Bestzeit gegen den Weltrekord-Index aufgetragen. Anschließend werden fünf Kurvenmodelle mittels nichtlinearer Regression angepasst: logarithmisch, quadratisches Polynom~(poly2), exponentieller Zerfall, Gompertz-Kurve und LOWESS (nichtparametrisch). Der Modellvergleich erfolgt über das \textbf{Akaike-Informationskriterium}~(AIC)~\cite{ding2018}: Ein niedrigeres AIC zeigt ein besseres Verhältnis von Anpassungsgüte zu Modellkomplexität an — komplexere Modelle werden also nur bevorzugt, wenn sie die Daten deutlich besser erklären. Das Modell mit dem niedrigsten AIC je Spiel gilt als bestes Modell.
 
-Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{zeileis2002} eingesetzt. Dieser prüft, ob sich die Regressionskoeffizienten vor und nach einem möglichen Strukturbruch signifikant unterscheiden ($F$-Statistik gegen $F$-Verteilung). Alle validen Trennpunkte werden durchsucht; der Trennpunkt mit der höchsten $F$-Statistik wird als Strukturbruch gemeldet.
+Um den Sättigungspunkt direkt nachzuweisen, wird der \textbf{Chow-Test}~\cite{zeileis2002} eingesetzt. Dieser prüft, ob sich die Regressionskoeffizienten vor und nach einem möglichen Strukturbruch signifikant unterscheiden ($F$-Statistik gegen $F$-Verteilung). Alle validen Trennpunkte werden durchsucht; der Trennpunkt mit der höchsten $F$-Statistik wird als Strukturbruch gemeldet. Der Test setzt voraus, dass die Residuen innerhalb beider Segmente annähernd gleich gestreut sind (Homoskedastizität). Da WR-Zeitreihen mit zunehmender Sättigung stabiler werden, ist diese Voraussetzung im Post-Break-Segment in der Regel besser erfüllt als im gesamten Verlauf; die Ergebnisse sind entsprechend konservativ zu interpretieren.
 
 \subsection*{F3a — Post-Breakthrough-Dynamik}
 
@@ -32,31 +32,31 @@ Die WR-Zeitreihe wird am Breakthrough-Punkt in zwei Segmente geteilt, für die j
 \end{align*}
 Das \textbf{Flattening Ratio} $\phi = v_{\text{post}} / v_{\text{pre}}$ quantifiziert die Veränderung: $\phi < 0{,}5$ signalisiert ein klares Plateau, $\phi > 1{,}0$ eine Beschleunigung, $0{,}5 \leq \phi \leq 1{,}0$ eine graduelle Verlangsamung. Ein ergänzender \textbf{Spearman-Rangkorrelationstest} ($\rho$) quantifiziert den zeitlichen Trend der Post-Breakthrough-Verbesserungsgrößen ($\rho < -0{,}2$: abnehmend, $\rho > 0{,}2$: zunehmend).
 
+Ursprünglich war eine Regression des Abfall-Koeffizienten je Segment geplant. Da viele Segmente jedoch zu wenige Datenpunkte für eine stabile Kurvenanpassung enthalten, wurde der Velocity-Ansatz als robustere Alternative gewählt.
+
 Diese Methode unterscheidet sich vom Chow-Test aus F2: Während der Chow-Test den stärksten Steigungswechsel in der kumulierten Kurve markiert, identifiziert der hier gewählte Ansatz den größten \emph{einzelnen} Verbesserungsschritt --- eine direktere Entsprechung für Glitch-Entdeckungen.
 
-\subsection*{F3b — TAS-Annäherungsanalyse}
+\subsection*{F3b — Annäherung ans theoretische Minimum}
 
-Tool-Assisted Speedruns (TAS) definieren das theoretische Zeitminimum für eine Spielkategorie bei perfekter Eingabeausführung. \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}; Referenzzeiten sind daher nicht über die API verfügbar und wurden manuell aus TASVideos.org~\cite{tasvideos} entnommen. Der theoretische Rahmen folgt Wooten~\cite{wooten2022}: TAS-Routen zeigen, was zeitlich möglich ist --- sobald eine Strategie per TAS belegt ist, übernimmt die Community sie durch Video-Analyse in die RTA-Praxis (\emph{Bannister-Effekt}).
-
-Zwei Ansätze werden kombiniert:
+Das theoretische Zeitminimum einer Speedrunning-Kategorie entspricht dem, was unter optimaler, computergestützter Eingabe möglich wäre --- sogenannte Tool-Assisted Speedruns (TAS). Ein direkter Vergleich mit TAS-Zeiten war im Rahmen dieser Arbeit nicht durchführbar: \textit{speedrun.com} untersagt TAS-Einreichungen auf regulären Leaderboards~\cite{speedruncom_rules}, verlässliche TAS-Zeiten sind über keine öffentliche API verfügbar, und die vorhandenen TAS-Videos erfordern eine Frame-genaue Auswertung des tatsächlichen Startzeitpunkts --- ein Aufwand, der im gegebenen Zeitrahmen nicht leistbar war. Als Näherung wird stattdessen der mathematische Grenzwert der Sättigungskurve verwendet:
 
 \paragraph{Modellbasierter Asymptoten-Proxy.} Für alle 17~Spiele wird der Floor-Parameter des besten Sättigungsmodells (exp\_decay oder Gompertz, $R^2 \geq 0{,}70$) als Schätzwert für das theoretische Minimum genutzt:
 \[
     \mathrm{Gap}_{\%} = \frac{t_{\mathrm{WR}} - t_{\mathrm{Floor}}}{t_{\mathrm{first}}} \times 100
 \]
 
-\paragraph{Empirischer TAS-Referenzvergleich.} Für Spiele mit dokumentierter TAS-Zeit ($n = 3$: \textit{Super Mario Bros.}, \textit{Super Metroid}, \textit{Half-Life~2}) wird die Annäherung direkt gemessen. Die Gap-Schließungsgeschwindigkeit ergibt sich aus den letzten fünf WRs; die Differenz $\Delta = t_{\mathrm{Floor,Modell}} - t_{\mathrm{TAS}}$ zeigt, wie gut der Proxy die TAS-Zeit schätzt.
-
-\paragraph{TAS-Zeitreihenkorrelation.} Als dritter Ansatz wird geprüft, ob TAS-Meilensteine nachfolgende WR-Verbesserungen ankündigen. Dazu werden die WR-Datenpunkte im Zeitverlauf als Streudiagramm dargestellt und eine Abklingkurve angepasst. TAS-Veröffentlichungen aus TASVideos.org werden als Ereignisse in dieselbe Zeitachse eingetragen. Für jeden menschlichen WR wird geprüft, ob in den vorangegangenen 60~Tagen ein TAS-Meilenstein veröffentlicht wurde. WRs mit und ohne vorangehenden TAS-Meilenstein werden hinsichtlich ihrer Verbesserungsgröße verglichen (Mann-Whitney-U-Test). Größere WR-Sprünge nach TAS-Meilensteinen wären ein Hinweis auf den Übertragungsweg nach Wooten~\cite{wooten2022}: TAS dokumentiert eine neue Strategie, die Community setzt sie innerhalb weniger Wochen im Speedrun um.
-
 \subsection*{Qualitätssicherung}
 
-Die vollständige Analysepipeline ist durch 134~automatisierte pytest-Tests abgedeckt, die mit synthetischen In-Memory-Daten arbeiten und keine externen Datendateien benötigen. Abgedeckt sind Kurvenanpassungsfunktionen, AIC-Reihenfolge, Chow-Test, Kaplan-Meier-Schätzer, Gini-Koeffizient, Post-Breakthrough-Dynamik sowie TAS-Gap-Berechnung. Alle 134~Tests werden mit 0~Fehlern ausgeführt.
+Die vollständige Analysepipeline ist durch \textbf{164~automatisierte pytest-Tests} abgedeckt, die mit synthetischen In-Memory-Daten arbeiten und keine externen Datendateien benötigen. Geprüft werden: Kurvenanpassung (logarithmisch, poly2, exp\_decay, Gompertz, Potenzgesetz), AIC-Reihenfolge, Chow-Test, Kaplan-Meier-Schätzer, Gini-Koeffizient, Post-Breakthrough-Dynamik und TAS-Gap-Berechnung.
+
+Für die Ausgabeformatierung sind zwei Präzisionsklassen getrennt getestet: einheitliche Dezimalstellen in CSV-Ausgaben (\texttt{normalize\_columns}) und gleichmäßige Rundung von Fließkommazahlen in JSON-Ausgaben (\texttt{normalize\_floats}). Alle 164~Tests werden mit 0~Fehlern ausgeführt.
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 
 Die Lebensdauer eines Weltrekords wird als die Anzahl Tage gemessen, die vergehen, bis er durch einen neuen Rekord abgelöst wird. Für Rekorde, die zum Analysezeitpunkt noch Bestand haben, liegt eine \emph{rechtszensierte} Beobachtung vor: Die tatsächliche Lebensdauer ist unbekannt, aber mindestens so lang wie der bisher vergangene Zeitraum.
 
-Der \textbf{Kaplan-Meier-Schätzer}~\cite{darrigo2021} berücksichtigt diese zensierten Beobachtungen korrekt und gibt für jeden Zeitpunkt~$t$ die Wahrscheinlichkeit an, dass ein Weltrekord bis dahin noch steht. Der Median dieser Überlebensfunktion gibt an, nach wie vielen Tagen die Hälfte aller Rekorde eines Genres bereits gebrochen wurde.
+Ursprünglich war eine einfache Trendanalyse geplant. Da aktive Rekorde zum Analysezeitpunkt jedoch rechtszensierte Beobachtungen erzeugen, die eine einfache Trendanalyse nicht korrekt verarbeiten kann, kommt stattdessen der Kaplan-Meier-Schätzer zum Einsatz.
+
+Der \textbf{Kaplan-Meier-Schätzer}~\cite{darrigo2021} berücksichtigt diese zensierten Beobachtungen korrekt und gibt für jeden Zeitpunkt~$t$ die Wahrscheinlichkeit an, dass ein Weltrekord bis dahin noch steht. Der Median dieser Überlebensfunktion gibt an, nach wie vielen Tagen die Hälfte aller Rekorde eines Genres bereits gebrochen wurde. Voraussetzung des Schätzers ist nicht-informative Zensierung: Das Herausfallen eines Rekords aus dem Beobachtungszeitraum darf nicht mit seiner Lebensdauer zusammenhängen. Da die zensierten Rekorde hier ausschließlich solche sind, die zum Auswertungsstichtag noch aktiv waren (administrative Zensierung durch den Analysezeitpunkt), ist diese Voraussetzung erfüllt.
 
 Zum Vergleich der Lebensdauerverteilungen zwischen Genres wird der \textbf{Kruskal-Wallis-Test} eingesetzt. Als Effektgröße wird $\eta^2 = (H - k + 1)/(N - k)$ berechnet~\cite{lakens2013}. Paarweise Unterschiede werden mit dem \textbf{Mann-Whitney-U-Test}~\cite{kim2016} geprüft. Der \textbf{Gini-Koeffizient} misst, wie gleichmäßig die Verbesserungsgrößen verteilt sind ($G = 0$: alle gleich, $G = 1$: eine einzelne Verbesserung dominiert alles).
