@@ -642,6 +642,174 @@ the LLM council for F3b inference without any Model code changes.
 
 ---
 
+---
+
+## TAS Fetch — Per-Game TAS Improvement Timelines (added 2026-05-17)
+
+Two new scripts fetch TAS evolution data for all 17 games in the dataset, creating
+individual JSON files in `data/reference/tas_{game_slug}.json`.
+
+---
+
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `fetch_tas.py` | Fetches TAS timelines from TASVideos.org API for games hosted there |
+| `curate_tas_external.py` | Creates manually-curated TAS timelines for games hosted outside TASVideos |
+
+Run `python main.py --tas` to run `fetch_tas.py`, or run the scripts independently.
+Use `python fetch_tas.py --force` to re-fetch all TASVideos data.
+
+---
+
+### TAS Data per Game
+
+| Game | Status | Source | n TAS records | Time range |
+|------|--------|--------|---------------|-----------|
+| Super Mario Bros. | found | TASVideos pub chain (warps branch) | 13 | 2003–2011 |
+| Super Mario 64 | found | TASVideos (16 stars branch) | 6 | 2005–2026 |
+| Celeste | found | TASVideos (baseline branch) | 1 | 2019 |
+| Super Metroid | found ⚠️ | TASVideos (baseline branch, category mismatch) | 11 | 2004–2018 |
+| Zelda: OoT | found | TASVideos (baseline branch, ACE route) | 6 | 2006–2014 |
+| Pokemon Red/Blue | found | TASVideos (baseline + warp/save glitch branches) | 7 | 2005–2011 |
+| Final Fantasy VII | found | TASVideos (baseline branch) | 3 | 2019–2025 |
+| Doom | found ⚠️ | TASVideos (The Ultimate Doom, all 4 episodes) | 4 | 2015–2020 |
+| Donkey Kong | found | TASVideos (arcade, single pub) | 1 | 2018 |
+| Quake | found | Quake Done Quick / Speed Demos Archive | 6 | 1997–2024 |
+| Half-Life 2 | found | SourceRuns.org | 2 | 2014–2016 |
+| Portal | found | SourceRuns.org (OoB TAS, Jukspa et al.) | 2 | 2012–2016 |
+| Portal 2 | found | Portal 2 TASing community / SourceRuns | 1 | 2022 |
+| Hollow Knight | found | YouTube community TAS (ConstructiveCynicism) | 1 | 2021 |
+| Pac-Man | found_proxy ⚠️ | TASVideos NES Tengen proxy (arcade not on TASVideos) | 1 | 2023 |
+| Minecraft: Java Edition | no_tas_available | — (procedural generation prevents meaningful TAS) | 0 | — |
+| The Talos Principle | no_tas_available | — (no documented TAS exists anywhere as of 2025) | 0 | — |
+
+⚠️ = category mismatch or proxy (TAS branch does not exactly match human Any% category).
+
+---
+
+### Output JSON Schema
+
+Each file `data/reference/tas_{game_slug}.json` contains:
+
+```json
+{
+  "game": "...",
+  "tasvideos_game_id": 1,
+  "source": "TASVideos.org",
+  "source_url": "https://tasvideos.org/Movies-List-1G-Obs",
+  "status": "found",
+  "branch": "warps",
+  "branch_note": "...",
+  "category_mismatch": false,
+  "timeline": [
+    {
+      "publication_id": 665,
+      "date": "2003-12-06",
+      "time_s": 315.65,
+      "authors": ["Bisqwit"],
+      "is_current": false
+    }
+  ],
+  "first_tas": {"date": "2003-12-06", "time_s": 315.65},
+  "current_best": {"date": "2011-01-06", "time_s": 297.31},
+  "n_improvements": 13,
+  "pct_improvement_total": 5.81
+}
+```
+
+`timeline` = only entries that set a new TAS record (progression, like WR progression for humans).
+`all_publications` = every valid publication for the branch, including non-improving ones.
+
+---
+
+### Unrealistic Run Filter
+
+`fetch_tas.py` applies the same filter as `clean.py`'s `sanitize_wr_progressions`:
+
+- Compute **median time** across all publications for the branch
+- Drop any entry where `time_s < min(1.0, 0.01 × median)` AND `median > 10.0`
+
+This catches ACE-based TAS entries that appear in the wrong branch (e.g., an arbitrary-code-
+execution run filed under a non-ACE branch), which would be impossibly fast relative to the
+genuine TAS progression.
+
+---
+
+### How TASVideos API Was Used
+
+- `GET /api/v1/publications/{id}` — works for **both current and obsoleted** publications.
+  The TAS timeline requires obsoleted publications since they represent historical improvements.
+- `GET /Movies-List-{gameId}G-Obs` — HTML page listing all publication IDs (current + obsoleted)
+  for a game. Used to discover which pub IDs to fetch.
+- Branch field: TASVideos uses `"baseline"` as the API branch name for the primary/Any% category.
+  The human-readable branch name (e.g., "warps", "game end glitch") appears in the `title` field.
+- Time calculation: `frames / systemFrameRate = seconds`.
+
+---
+
+## F3b+ — TAS Release Impact on WR Velocity (added 2026-05-17)
+
+**Question:** Does a new TAS record accelerate human WR improvement in the following months?
+This is the quantitative Bannister Effect: a TAS acts as an "existence proof" that faster times
+are possible, motivating human runners to adopt the same route.
+
+### Method
+
+For each TAS record release across all 17 games, `f3b_tas_analysis.py` computes a
+**before/after event study** in a fixed `window_days` window (default: 180 days):
+
+| Metric | Formula | Interpretation |
+|--------|---------|---------------|
+| `wr_at_tas_s` | last human WR with date ≤ TAS date | baseline WR active when TAS came out |
+| `wr_post_s` | min(WR times in `(tas_date, tas_date + window_days]`) | best WR achieved in the window |
+| `improvement_s` | `wr_at_tas_s − wr_post_s` | seconds improved (0 if no new WR in window) |
+| `improvement_pct` | `improvement_s / wr_at_tas_s × 100` | relative improvement |
+| `n_wrs_in_window` | count of WRs in `(tas_date, tas_date + window_days]` | activity in the period |
+| `vel_pre_s_per_year` | `(wr_start − wr_end) / span_days × 365` over `[tas_date − window, tas_date]` | WR velocity before TAS |
+| `vel_post_s_per_year` | same formula over `(tas_date, tas_date + window]` | WR velocity after TAS |
+| `velocity_ratio` | `vel_post / vel_pre` | > 1 = TAS accelerated improvement (Bannister Effect) |
+
+### Aggregate summary across all TAS events
+
+From 42 TAS-impact events (games with non-mismatch TAS data):
+
+- **19/42** TAS releases were followed by at least one WR improvement within 180 days
+- **Mean improvement**: 48.6 s per TAS event
+- Velocity ratio computed for 5 events (requires ≥2 WRs in both pre and post windows)
+- **Half-Life 2 (2016)**: velocity ratio 1.35× — the only clear accelerated improvement case
+
+### Notes / Limitations
+
+- **Category mismatches** (⚠ games) distort the comparison; e.g., Hollow Knight TAS is NMG-restricted
+  while human any% uses unrestricted glitches.
+- **Short human WR history on speedrun.com**: games whose WR data starts after 2010 may miss
+  TAS events from the 1990s–2000s (Quake Done Quick, early SourceRuns).
+- A velocity ratio < 1 does not necessarily mean TAS had no effect — the human WR might already
+  have been improving rapidly before the TAS, and the TAS simply maintained that pace.
+- No regression was run due to insufficient per-game TAS data points (1–13 events per game).
+  The before/after event study is the appropriate non-parametric alternative.
+
+### Output
+
+Added to `data/analysis/f3b_tas_stats.json` under key `"tas_impact"`:
+```json
+{
+  "window_days": 180,
+  "events": [ { "game": "...", "tas_date": "...", "improvement_s": ..., "velocity_ratio": ..., ... } ],
+  "summary": { "n_tas_events": 42, "n_with_wr_improvement": 19, "mean_velocity_ratio": 0.6, ... }
+}
+```
+
+### New DTO: `TasImpactWindow` (`shared/DTOs/f3b_dtos.py`)
+
+One instance per TAS event. Key fields: `tas_date`, `tas_time_s`, `wr_at_tas_s`, `wr_post_s`,
+`improvement_s`, `improvement_pct`, `n_wrs_in_window`, `vel_pre_s_per_year`,
+`vel_post_s_per_year`, `velocity_ratio`, `window_days`.
+
+---
+
 ## References
 
 ### Data Sources
@@ -674,3 +842,15 @@ the LLM council for F3b inference without any Model code changes.
 | [14] | *Setting World Records in Speedrunning: Technical, Strategic and Psychological Considerations* — Academia.edu (2024) — https://www.academia.edu/144611877 | Frames TAS as "research tool" not competitor; supports F3b framing |
 | [15] | LessWrong linkpost: *Analysis of World Records in Speedrunning* — https://www.lesswrong.com/posts/nhjaegqWxbBhiqMGS | Identifies "successive cascades of improvements" pattern; validates structural break model approach |
 | [16] | speedrun.com site rules — https://www.speedrun.com/support/learn/site-rules | Confirms TAS prohibition on standard leaderboards; explains why no TAS API exists |
+| [17] | TASVideos REST API — https://tasvideos.org/api (Swagger UI) | TAS timeline fetch: `/publications/{id}` returns frame count + framerate for obsoleted and current runs; used by `fetch_tas.py` |
+| [18] | TASVideos Movies-List pages — https://tasvideos.org/Movies-List-{id}G-Obs | Lists all publication IDs for a game (current + obsoleted); used to discover which pubs to fetch for the TAS timeline |
+| [19] | Quake Done Quick — https://quake.speeddemosarchive.com/quake/qdq/ | Full history of Quake TAS (QdQ series, 1997–2024): 19:49 → 8:43 across all episodes on Nightmare difficulty |
+| [20] | Wikipedia: Quake done Quick — https://en.wikipedia.org/wiki/Quake_Done_Quick | Release dates and total times for QdQ, QdQ Quicker, QdQ with a Vengeance; confirms September 2000 release and bunny-hopping breakthrough |
+| [21] | SourceRuns.org — https://sourceruns.org | Half-Life 2 "Done Quicker" TAS (40:49, 2016); Portal TAS documentation by Jukspa (5:13.665, 2016) |
+| [22] | Jukspa Portal TASing documentation — https://www.speedrun.com/Portal/guide/ptmif | Documents Portal OoB TAS routing and techniques; basis for Portal timeline entry |
+| [23] | Portal 2 TAS premiere (SGDQ 2022) — https://www.youtube.com/watch?v=MZi1dXwCqG8 | First ever Portal 2 full-game TAS: 47:13.033, Inbounds No SLA, by "Can't Even" and mlugg |
+| [24] | Hollow Knight Any% NMG TAS — https://www.youtube.com/watch?v=XBpo9j-I4kI | ConstructiveCynicism NMG TAS in 28:59.37 (2021); first major community Hollow Knight TAS |
+| [25] | TASVideos Pac-Man (NES Tengen) pub #5231 — https://tasvideos.org/5231M | NES Tengen Pac-Man TAS by eien86 in 12:02.86 (2023); used as proxy for arcade Pac-Man (original arcade not on TASVideos) |
+| [26] | Campbell, D.T., & Stanley, J.C. (1963). *Experimental and Quasi-Experimental Designs for Research*. Rand McNally. | Theoretical basis for the before/after event-study methodology used in F3b+ TAS impact analysis; specifically the interrupted time-series design (Chapter 5) |
+| [27] | MacKinlay, A.C. (1997). Event studies in economics and finance. *Journal of Economic Literature*, 35(1), 13–39. https://www.jstor.org/stable/2729691 | Event-study methodology for measuring the impact of discrete events on time-series outcomes — adapted here to measure the effect of TAS publication on human WR velocity |
+| [28] | Wooten, D.B. (2022). *Leaps in Innovation and the Bannister Effect in Contests*. Production and Operations Management. https://doi.org/10.1111/poms.13707 | Formal model of the Bannister Effect (also cited as [4]); `velocity_ratio` operationalises Wooten's "diffusion acceleration" hypothesis |
