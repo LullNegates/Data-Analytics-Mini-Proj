@@ -95,9 +95,9 @@ Der Chow-Test zeigt für \emph{alle 17~Spiele} einen statistisch signifikanten S
   \end{tabular}
 \end{table}
 
-\finding{3}{Für \textbf{alle 17~Spiele} gelingt eine Kurvenanpassung mit $\mathbf{R^2 > 0{,}70}$ (Median: $0{,}95$). Kein einzelnes Modell dominiert universell; \textit{poly2}~(6/17) erzielen die meisten Siege nach AIC, gefolgt von \textit{Gompertz} und exponentiellem Zerfall (je 4/17). Modelle mit explizitem Sättigungsverhalten (Gompertz, Exp.\ Zerfall) gewinnen gemeinsam für 8/17~Spiele.}
+\finding{3}{Für \textbf{alle 17~Spiele} gelingt eine Kurvenanpassung mit $\mathbf{R^2 > 0{,}70}$ (Median: $0{,}95$). Kein einzelnes Modell dominiert universell: \textit{poly2}~(6/17) erzielt die meisten AIC-Siege, gefolgt von \textit{Gompertz} und exponentiellem Zerfall (je 4/17).}
 
-\finding{4}{\textbf{Alle 17~Spiele} weisen einen statistisch signifikanten Strukturbruch auf (Chow-Test, $p < 0{,}05$). Bei \textbf{8 von 17~Spielen} tritt der Bruchpunkt innerhalb der ersten 10~Weltrekorde auf; bei Spielen mit langer WR-Geschichte liegt er deutlich später (Median: WR~\#16). In beiden Fällen folgt auf den initialen Optimierungsschub (Routing, \emph{Glitch}-Entdeckungen) eine flachere \emph{Sättigungsphase}.}
+\finding{4}{\textbf{Alle 17~Spiele} weisen einen statistisch signifikanten Strukturbruch auf (Chow-Test, $p < 0{,}05$). Bei \textbf{8 von 17~Spielen} tritt der Bruchpunkt innerhalb der ersten 10~Weltrekorde auf; bei Spielen mit langer WR-Geschichte liegt er deutlich später (Median: WR~\#16).}
 
 \section{F3 — Externer Einfluss auf die Rekordentwicklung}
 
@@ -126,7 +126,7 @@ Tabelle~\ref{tab:f3a} zeigt das Flattening Ratio sowie Breakthrough-Kennzahlen f
   {\small \% Ges.\ = Breakthrough-Anteil an der Gesamtreduktion. $^{*}$\,$p < 0{,}05$; $^{***}$\,$p < 0{,}001$; n.\,a.\ = zu wenige Post-WRs für Spearman-Test. 11 von 17~Spielen hatten unzureichende Segmentgröße für die Velocity-Berechnung.}
 \end{table}
 
-\finding{5}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (WR~\#9, Dezember~2024) liegt so kurz zurück, dass die Post-Phase nur wenige Folgeverbesserungen enthält. Die stärksten Plateaus weisen \textit{Zelda: Ocarina of Time} und \textit{The Talos Principle} auf (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$). Der Breakthrough-Anteil an der Gesamtreduktion reicht von \textbf{13,6~\%} (\textit{Pokémon Red/Blue}) bis \textbf{42,4~\%} (\textit{Donkey Konga}).}
+\finding{5}{\textbf{5 von 6} auswertbaren Spielen zeigen ein Plateau nach dem Breakthrough ($\phi < 0{,}5$). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- der Breakthrough (Dezember~2024) liegt so kurz zurück, dass die Post-Phase kaum Konsolidierungszeit enthält. Die stärksten Plateaus: \textit{Zelda: OoT} und \textit{The Talos Principle} (je $\phi = 0{,}02$; $\rho = -0{,}79$; $p < 0{,}001$).}
 
 \subsection*{F3b — Annäherung ans theoretische Minimum}
 
@@ -136,7 +136,7 @@ Für 15 von 17~Spielen ist kein stabiler Modell-Floor bestimmbar (\texttt{none\_
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 
-Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Von den 842~Weltrekord-Datenpunkten sind 17~zum Analysezeitpunkt noch aktiv (rechtszensiert).
+Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensrate je Genre. Von den 876~Weltrekord-Datenpunkten sind 17~zum Analysezeitpunkt noch aktiv (rechtszensiert).
 
 \begin{table}[htb]
   \centering
@@ -150,17 +150,17 @@ Tabelle~\ref{tab:q3} zeigt den Kaplan-Meier-Median und die 1-Jahres-Überlebensr
     RPG              & 52  & 15,5~\% & 58  & 0,655 \\
     FPS              & 14  & 10,6~\% & 146 & 0,753 \\
     Action-Adventure & 14  & 6,4~\%  & 140 & 0,716 \\
-    Platformer       & 17  & 6,0~\%  & 209 & 0,878 \\
+    Platformer       & 17  & 6,0~\%  & 225 & 0,878 \\
     Arcade           & 7   & 18,8~\% & 32  & 0,838 \\
     Puzzle           & 8   & 6,5~\%  & 197 & 0,849 \\
-    Sandbox          & 7   & 5,0~\%  & 60  & 0,918 \\
+    Sandbox          & 7   & 5,0~\%  & 78  & 0,932 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 Der Kruskal-Wallis-Test zeigt einen hochsignifikanten Unterschied in den Lebensdauerverteilungen zwischen Genres ($H(6) = 43{,}82$; $p < 0{,}001$; $\eta^2 \approx 0{,}044$, kleiner bis mittlerer Effekt). Paarweise Mann-Whitney-U-Tests belegen, dass sich RPG von allen anderen Genres außer Arcade signifikant unterscheidet ($p < 0{,}05$). Die übrigen Genres unterscheiden sich untereinander weniger konsistent.
 
-Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{,}655$–$0{,}918$): Ein kleiner Anteil der Weltrekorde macht den Großteil der erzielten Zeitersparnis aus.
+Der Gini-Koeffizient der Verbesserungsgrößen ist in allen Genres hoch ($G = 0{,}655$–$0{,}932$): Ein kleiner Anteil der Weltrekorde macht den Großteil der erzielten Zeitersparnis aus.
 
 Im Jahrzehntvergleich zeigen Rekorde aus den 2000er~Jahren die höchste mittlere Lebensdauer (665,8~Tage), gefolgt von den 1990er~Jahren (172,7~Tage). Rekorde der 2010er (82,4~Tage) und 2020er (95,2~Tage) sind deutlich kurzlebiger.
 

@@ -5,7 +5,7 @@
 
 Die Rohdaten wurden über die \textit{speedrun.com} API~v1~\cite{speedruncom_api} abgerufen. Ausgewählt wurden 17~Spiele aus sieben~Genres: Platformer (Super Mario Bros., Super Mario~64, Celeste), Action-Adventure (Super Metroid, Zelda: Ocarina of Time, Hollow Knight), RPG (Pokémon Red/Blue, Final Fantasy~VII), FPS (Doom~3, Quake, Half-Life~2), Puzzle (Portal, Portal~2, The Talos Principle), Sandbox (Minecraft: Java Edition) und Arcade (Pac-Man, Donkey Konga). Alle Analysen beschränken sich auf die \emph{any\%}-Kategorie,\footnote{Any\% bezeichnet in der Speedrunning-Community den schnellsten Weg zum Spielabschluss, unabhängig vom Fertigstellungsgrad.} da diese als einzige Kategorie in allen 17~Spielen vorhanden und vergleichbar ist.
 
-Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 842~Weltrekord-Einträge aus 17~Spielen. Im Bereinigungsschritt wurden offensichtlich fehlerhafte WR-Einträge entfernt: Weltrekordzeiten unter 1~\% des Medians der jeweiligen WR-Progression und unter 1{,}0~Sekunde gelten als Fehler (z.\,B.\ Moderator-Platzhalter oder Tippfehler) und werden verworfen --- beschränkt auf Spiele mit Median~$> 10$~Sekunden, damit Arcade-Spiele mit legitim kurzen Zeiten unberührt bleiben. Die bereinigten Daten werden in fünf~CSV-Dateien exportiert; eine konsistente Dezimaldarstellung aller Float-Spalten stellt ein Normalisierungsmodul (\texttt{shared/utils.py}) sicher.
+Der Datensatz umfasst insgesamt 77.686 eingereichte Runs und 876~Weltrekord-Einträge aus 17~Spielen. Im Bereinigungsschritt wurden offensichtlich fehlerhafte WR-Einträge entfernt: Weltrekordzeiten unter 1~\% des Medians der jeweiligen WR-Progression und unter 1{,}0~Sekunde gelten als Fehler (z.\,B.\ Moderator-Platzhalter oder Tippfehler) und werden verworfen --- beschränkt auf Spiele mit Median~$> 10$~Sekunden, damit Arcade-Spiele mit legitim kurzen Zeiten unberührt bleiben. Die bereinigten Daten werden in fünf~CSV-Dateien exportiert; eine konsistente Dezimaldarstellung aller Float-Spalten stellt ein Normalisierungsmodul (\texttt{shared/utils.py}) sicher.
 
 \section{Statistische Methoden}
 
@@ -45,9 +45,7 @@ Das theoretische Zeitminimum einer Speedrunning-Kategorie entspricht dem, was un
 
 \subsection*{Qualitätssicherung}
 
-Die vollständige Analysepipeline ist durch \textbf{164~automatisierte pytest-Tests} abgedeckt, die mit synthetischen In-Memory-Daten arbeiten und keine externen Datendateien benötigen. Geprüft werden: Kurvenanpassung (logarithmisch, poly2, exp\_decay, Gompertz, Potenzgesetz), AIC-Reihenfolge, Chow-Test, Kaplan-Meier-Schätzer, Gini-Koeffizient, Post-Breakthrough-Dynamik und TAS-Gap-Berechnung.
-
-Für die Ausgabeformatierung sind zwei Präzisionsklassen getrennt getestet: einheitliche Dezimalstellen in CSV-Ausgaben (\texttt{normalize\_columns}) und gleichmäßige Rundung von Fließkommazahlen in JSON-Ausgaben (\texttt{normalize\_floats}). Alle 164~Tests werden mit 0~Fehlern ausgeführt.
+Die vollständige Analysepipeline ist durch \textbf{164~automatisierte pytest-Tests} abgedeckt (synthetische In-Memory-Daten, keine externen Dateien). Geprüft werden alle Analysemodule sowie zwei Präzisionsklassen für Ausgaben: \texttt{normalize\_columns} (CSV) und \texttt{normalize\_floats} (JSON). Alle 164~Tests laufen mit 0~Fehlern.
 
 \subsection*{F3c — Lebensdauer von Weltrekorden}
 

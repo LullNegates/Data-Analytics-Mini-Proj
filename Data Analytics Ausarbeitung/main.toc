@@ -10,5 +10,5 @@
 \contentsline {section}{\numberline {3.3}F3 — Externer Einfluss auf die Rekordentwicklung}{9}{section.3.3}%
 \contentsline {chapter}{\numberline {4}Diskussion}{12}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Interpretation der Ergebnisse}{12}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Limitationen}{14}{section.4.2}%
+\contentsline {section}{\numberline {4.2}Limitationen}{13}{section.4.2}%
 \contentsline {chapter}{\numberline {5}Fazit}{15}{chapter.5}%

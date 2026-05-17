@@ -1,22 +1,14 @@
 \chapter{Fazit}
 \label{chap:fazit}
 
-Diese Ausarbeitung hat drei Forschungsfragen zur Dynamik von Speedrunning-Weltrekorden auf \textit{speedrun.com} untersucht. Die wichtigsten Ergebnisse im Überblick:
+Diese Ausarbeitung hat drei Forschungsfragen zur Dynamik von Speedrunning-Weltrekorden auf \textit{speedrun.com} untersucht. Die wichtigsten Ergebnisse:
 
-Die \textbf{Zeitreduktion} variiert zwischen Spielen erheblich (\textbf{9,4~\%–99,5~\%}) und wird stärker von spielspezifischen Faktoren wie Spiellänge und verfügbaren Glitches bestimmt als vom Genre (kein signifikanter Genreunterschied, $\mathbf{p = 0{,}284}$).
+Die \textbf{Zeitreduktion} variiert erheblich (\textbf{9,4~\%–99,5~\%}) und wird stärker von spielspezifischen Faktoren (Spiellänge, Glitches) bestimmt als vom Genre (kein signifikanter Genreunterschied, $p = 0{,}284$).
 
-Der \textbf{Sättigungspunkt} ist in allen 17~Spielen statistisch nachweisbar: Der Chow-Test zeigt universelle Strukturbrüche, die typischerweise in der frühen Rekordphase auftreten. Die Verbesserungskurve lässt sich mit hoher Güte modellieren ($\mathbf{R^2 > 0{,}70}$), wobei kein einzelnes Modell für alle Spiele optimal ist.
+Der \textbf{Sättigungspunkt} ist in allen 17~Spielen nachweisbar: universelle Strukturbrüche (Chow-Test), typischerweise früh in der Rekordphase. Die Kurve ist modellunabhängig gut beschreibbar ($R^2 > 0{,}70$).
 
-Der \textbf{externe Einfluss} auf die Rekordentwicklung wurde in drei Teilfragen aufgeteilt. \textbf{F3c~(Lebensdauer)} ist vollständig beantwortet: Die Lebensdauer unterscheidet sich signifikant zwischen Genres ($\mathbf{H(6) = 43{,}82}$; $\mathbf{p < 0{,}001}$). \textit{RPG}-Rekorde halten mit einem Median von \textbf{52~Tagen} deutlich länger als Rekorde anderer Genres (\textbf{7–17~Tage}); der Rückgang ab den 2010er~Jahren korreliert mit dem Wachstum der Speedrunning-Community.
-
-\textbf{F3a~(Post-Breakthrough-Dynamik)} misst erstmals, ob und wie stark ein konkreter Durchbruch die Verbesserungsrate einer Community verändert. Das Flattening Ratio $\phi$ macht diesen Effekt messbar --- auf Basis öffentlich zugänglicher WR-Daten und damit reproduzierbar.
-
-Für 6~von 17~Spielen konnte $\phi$ berechnet werden. \textbf{5 dieser 6~Spiele} zeigen ein klares Plateau ($\phi < 0{,}5$), insbesondere \textit{Zelda: Ocarina of Time} und \textit{The Talos Principle} ($\phi = 0{,}02$ jeweils). Nur \textit{Donkey Konga} zeigt eine Beschleunigung ($\phi = 23{,}97$) --- ein Sonderfall, weil der Breakthrough (Dezember~2024) erst kurz zurückliegt. Der dominierende Befund ist das Plateau: Durchbrüche setzen die Abflachungsrate nicht zurück, sondern leiten unmittelbar eine Konsolidierungsphase ein.
-
-\textbf{F3b~(Annäherung ans theoretische Minimum)} schätzt über den mathematischen Grenzwert der Sättigungskurve, wie nah menschliche Weltrekorde dem theoretisch möglichen Minimum kommen. Ein direkter Vergleich mit TAS-Zeiten war nicht realisierbar, da verlässliche TAS-Daten weder per API verfügbar sind noch ohne Frame-genaue Videoanalyse erhoben werden können.
-
-Für \textbf{2 von 17~Spielen} konnte ein konvergentes Sättigungsmodell berechnet werden: \textit{Half-Life~2} hat 95,5~\% der möglichen Reduktion bis zum Modell-Floor erreicht, \textit{Pokémon Red/Blue} 82,5~\%. Für die übrigen \textbf{15~Spiele} ist kein stabiler Grenzwert bestimmbar --- diese Communities befinden sich noch in einer aktiven Entdeckungsphase.
+Der \textbf{externe Einfluss} wurde in drei Teilfragen untersucht. \textbf{F3c~(Lebensdauer):} signifikante Genreunterschiede ($H(6) = 43{,}82$; $p < 0{,}001$); \textit{RPG}-Rekorde halten mit 52~Tagen deutlich länger als andere Genres (7–17~Tage). \textbf{F3a~(Post-Breakthrough-Dynamik):} 5 von 6~auswertbaren Spielen zeigen Plateau ($\phi < 0{,}5$) --- Durchbrüche leiten eine Konsolidierungsphase ein. \textbf{F3b~(Annäherung ans Minimum):} Für 2 von 17~Spielen konvergentes Modell (\textit{Half-Life~2}: 95,5~\%; \textit{Pokémon Red/Blue}: 82,5~\% der möglichen Reduktion); für 15~Spiele kein stabiler Grenzwert bestimmbar.
 
 \section*{Ausblick}
 
-Weiterführende Analysen könnten die Stichprobe auf 100 oder mehr Spiele erweitern und zusätzliche Kategorien (100\%, Glitchless) einbeziehen. Eine Verknüpfung mit Community-Metriken (Anzahl aktiver Speedrunner, Twitch-Zuschauerzahlen) würde ermöglichen, die beobachteten Muster kausal zu erklären. Maschinelle Lernverfahren könnten eingesetzt werden, um die verbleibende Optimierungsspanne für aktive Rekorde vorherzusagen.
+Weiterführende Analysen könnten die Stichprobe auf 100 oder mehr Spiele erweitern und zusätzliche Kategorien (100\%, Glitchless) einbeziehen. Eine Verknüpfung mit Community-Metriken würde ermöglichen, die beobachteten Muster kausal zu erklären.
